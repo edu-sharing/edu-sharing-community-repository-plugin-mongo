@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+
+  repository-mongo:
+    ports:
+      - "127.0.0.1:${REPOSITORY_DATABASE_PORT_MONGO:-27017}:27017"
+
+  repository-mongo-express:
+    ports:
+      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_EXPRESS_PORT_HTTP:-8400}:8081"

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.edu_sharing</groupId>
+        <artifactId>edu_sharing-community-parent</artifactId>
+        <version>develop-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>edu_sharing-community-repository-plugin-mongo</artifactId>
+    <packaging>pom</packaging>
+    <version>git</version>
+
+    <name>edu_sharing-community-repository-plugin-mongo</name>
+
+    <scm>
+        <connection>scm:git:https://scm.edu-sharing.com/edu-sharing/community/repository/edu-sharing-community-repository-plugin-mongo.git</connection>
+        <developerConnection>scm:git:https://scm.edu-sharing.com/edu-sharing/community/repository/edu-sharing-community-repository-plugin-mongo.git
+        </developerConnection>
+        <url>https://scm.edu-sharing.com/edu-sharing/community/repository/edu-sharing-community-repository-plugin-mongo.git</url>
+    </scm>
+
+    <properties>
+
+        <community.platform>${project.version}</community.platform>
+
+        <maven.deploy.releases>https://artifacts.edu-sharing.com/repository/community-releases/</maven.deploy.releases>
+        <maven.deploy.snapshots>https://artifacts.edu-sharing.com/repository/community-snapshots/</maven.deploy.snapshots>
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>license.addThirdParty</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>env.CI_COMMIT_REF_NAME</name>
+                </property>
+            </activation>
+            <properties>
+                <license.skipAddThirdParty>false</license.skipAddThirdParty>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>edu_sharing-community-bom</artifactId>
+                <version>${community.platform}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco-fixes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>edu_sharing-community-repository-plugin-mongo-backend-services-module</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+
+        <repository>
+            <id>edu-sharing.public.releases</id>
+            <url>https://artifacts.edu-sharing.com/repository/public-releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>edu-sharing.public.snapshots</id>
+            <url>https://artifacts.edu-sharing.com/repository/public-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
+    </repositories>
+
+    <distributionManagement>
+
+        <repository>
+            <id>maven.deploy.releases</id>
+            <url>${maven.deploy.releases}</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>maven.deploy.snapshots</id>
+            <url>${maven.deploy.snapshots}</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
+    <modules>
+        <module>Backend</module>
+        <module>deploy</module>
+        <module>config</module>
+    </modules>
+
+
+</project>

@@ -1,0 +1,24 @@
+variables:
+  COMMON_BIND_HOST: "0.0.0.0"
+  DOCKER_DRIVER: "$DIND_DRIVER"
+  DOCKER_HOST: "$DIND_HOST"
+  DOCKER_TLS_CERTDIR: "$DIND_TLS_CERTDIR"
+  MAVEN_CLI_OPTS: "-Ddocker.registry=$DOCKER_REGISTRY -Dmaven.deploy.releases=$MAVEN_RELEASES -Dmaven.deploy.snapshots=$MAVEN_SNAPSHOTS --batch-mode --errors --show-version"
+  MAVEN_HOME: "/builds/$CI_PROJECT_PATH/mnt/.m2"
+  MAVEN_OPTS: "-Dmaven.repo.local=/builds/$CI_PROJECT_PATH/mnt/.m2/repository"
+
+default:
+  image: maven:3.8.4-jdk-8
+  services:
+    - name: "$DIND_IMAGE"
+      alias: docker
+      entrypoint: [ "env", "-u", "DOCKER_HOST" ]
+      command: [ "dockerd-entrypoint.sh" ]
+
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS -s .mvn/settings.xml deploy

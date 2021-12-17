@@ -1,0 +1,43 @@
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <mirrors>
+
+    <mirror>
+      <id>mirror</id>
+      <url>https://artifacts.edu-sharing.com/repository/public-releases/</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+
+  </mirrors>
+
+  <servers>
+
+    <server>
+      <id>maven.deploy.releases</id>
+      <username>${env.MAVEN_USERNAME}</username>
+      <password>${env.MAVEN_PASSWORD}</password>
+    </server>
+    <server>
+      <id>maven.deploy.snapshots</id>
+      <username>${env.MAVEN_USERNAME}</username>
+      <password>${env.MAVEN_PASSWORD}</password>
+    </server>
+
+    <server>
+      <id>edu-sharing.plugin.cluster.releases</id>
+      <username>${env.EDUSHARING_USERNAME}</username>
+      <password>${env.EDUSHARING_PASSWORD}</password>
+    </server>
+    <server>
+      <id>edu-sharing.plugin.cluster.snapshots</id>
+      <username>${env.EDUSHARING_USERNAME}</username>
+      <password>${env.EDUSHARING_PASSWORD}</password>
+    </server>
+
+  </servers>
+
+</settings>

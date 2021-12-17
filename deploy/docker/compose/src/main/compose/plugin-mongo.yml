@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  repository-mongo:
+    image: "${docker.image}-mongo:${docker.tag}"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${REPOSITORY_MONGODB_USER:-repository}"
+      MONGO_INITDB_ROOT_PASSWORD: "${REPOSITORY_MONGODB_PASS:-repository}"
+    expose:
+      - "27017"
+    volumes:
+      - "repository-mongo-volume:/data/db"
+
+  repository-mongo-express:
+    image: "${docker.image}-mongo-express:${docker.tag}"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: "repository-mongo"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGODB_USER:-repository}"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGODB_PASS:-repository}"
+      ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGODB_USER:-repository}:${REPOSITORY_MONGODB_PASS:-repository}@repository-mongo:27017/"
+
+    depends_on:
+      - repository-mongo
+
+  repository-service:
+    depends_on:
+      - repository-mongo
+
+volumes:
+  repository-mongo-volume:

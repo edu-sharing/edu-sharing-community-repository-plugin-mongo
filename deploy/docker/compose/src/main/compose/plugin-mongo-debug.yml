@@ -1,0 +1,6 @@
+version: '3.4'
+
+services:
+  repository-service:
+    volumes:
+      - "${PLUGIN_PATH}/Backend/services/module/target/edu_sharing-community-repository-plugin-mongo-backend-services-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-services-module:amp.version}.amp:/opt/alfresco/amps/edu-sharing/1/edu_sharing-community-repository-plugin-mongo-backend-services-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-services-module:amp.version}.amp"
