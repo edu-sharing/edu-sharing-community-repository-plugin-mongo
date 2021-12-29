@@ -2,43 +2,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker</artifactId>
-        <groupId>org.edu_sharing</groupId>
-        <version>git</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build</artifactId>
-    <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
 
-    <build>
+  <parent>
+    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker</artifactId>
+    <groupId>org.edu_sharing</groupId>
+    <version>git</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-        <resources>
-            <resource>
-                <directory>src/main/build</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+  <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build</artifactId>
+  <packaging>pom</packaging>
 
-        <plugins>
+  <build>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/build</outputDirectory>
-                </configuration>
-            </plugin>
+    <resources>
+      <resource>
+        <directory>src/main/build</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
 
-        </plugins>
+    <plugins>
 
-    </build>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${project.build.directory}/build</outputDirectory>
+        </configuration>
+      </plugin>
 
-    <modules>
-        <module>mongo</module>
-        <module>mongo_express</module>
-        <module>service</module>
-    </modules>
+    </plugins>
+
+  </build>
+
+  <modules>
+    <module>mongo</module>
+    <module>mongo_express</module>
+    <module>service</module>
+  </modules>
+
 </project>

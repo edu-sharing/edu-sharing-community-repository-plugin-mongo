@@ -2,48 +2,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.edu_sharing</groupId>
-        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy</artifactId>
-        <version>git</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker</artifactId>
-    <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
 
-    <name>edu_sharing-community-repository-plugin-mongo-deploy-docker</name>
+  <parent>
+    <groupId>org.edu_sharing</groupId>
+    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy</artifactId>
+    <version>git</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-    <properties>
-        <docker.from.mongo.db>docker.io/mongo:5.0.5</docker.from.mongo.db>
-        <docker.from.mongo.express>docker.io/mongo-express:0.54.0</docker.from.mongo.express>
-    </properties>
+  <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker</artifactId>
+  <packaging>pom</packaging>
 
-    <profiles>
+  <name>edu_sharing-community-repository-plugin-mongo-deploy-docker</name>
 
-        <profile>
+  <properties>
 
-            <id>docker-build-timestamp</id>
+    <docker.from.mongo.db>docker.io/mongo:5.0.5</docker.from.mongo.db>
+    <docker.from.mongo.express>docker.io/mongo-express:0.54.0</docker.from.mongo.express>
 
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <property>
-                    <name>env.DOCKER_BUILD_TIMESTAMP</name>
-                    <value>true</value>
-                </property>
-            </activation>
+  </properties>
 
-            <properties>
-                <docker.tag>${project.version}-${build.timestamp}</docker.tag>
-            </properties>
+  <modules>
+    <module>compose</module>
+    <module>build</module>
+  </modules>
 
-        </profile>
-
-    </profiles>
-
-    <modules>
-        <module>compose</module>
-        <module>build</module>
-    </modules>
 </project>

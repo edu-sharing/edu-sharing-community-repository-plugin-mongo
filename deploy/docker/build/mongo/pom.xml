@@ -28,7 +28,7 @@
         <configuration>
           <images>
             <image>
-              <name>${docker.image}-mongo:${docker.tag}</name>
+              <name>${docker.repository}/edusharing-mongo:${docker.tag}</name>
             </image>
           </images>
         </configuration>

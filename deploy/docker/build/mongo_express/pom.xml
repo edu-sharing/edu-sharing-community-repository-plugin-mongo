@@ -13,10 +13,10 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo-express</artifactId>
+  <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express</artifactId>
   <packaging>jar</packaging>
 
-  <name>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo-express</name>
+  <name>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express</name>
 
   <build>
 
@@ -28,7 +28,7 @@
         <configuration>
           <images>
             <image>
-              <name>${docker.image}-mongo-express:${docker.tag}</name>
+              <name>${docker.repository}/edusharing-mongo_express:${docker.tag}</name>
             </image>
           </images>
         </configuration>

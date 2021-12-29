@@ -2,36 +2,41 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.edu_sharing</groupId>
-        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build</artifactId>
-        <version>git</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-service</artifactId>
-    <packaging>jar</packaging>
+  <parent>
+    <groupId>org.edu_sharing</groupId>
+    <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build</artifactId>
+    <version>git</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-    <name>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-service</name>
+  <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-service</artifactId>
+  <packaging>jar</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>verify</phase>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <name>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-service</name>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
 
 </project>

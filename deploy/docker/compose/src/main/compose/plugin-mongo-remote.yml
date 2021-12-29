@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+
+  repository-mongo:
+    image: "${docker.registry}/${docker.repository}/edusharing-mongo:${docker.tag}"
+
+  repository-mongo-express:
+    image: "${docker.registry}/${docker.repository}/edusharing-mongo_express:${docker.tag}"
