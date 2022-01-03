@@ -1,0 +1,58 @@
+<model name="lom" xmlns="http://www.edu-sharing.com/model/dictionary/1.0">
+  <description>Defines the default Metadata structure</description>
+  <author>S. Wollner</author>
+  <version>0.1</version>
+
+  <properties>
+    <property name="General">
+      <type name="General">
+        <property name="Title" type="String" mapping="{http://www.alfresco.org/model/content/1.0}title"/>
+        <property name="ShortTitle" type="String"/>
+        <property name="Language" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}general_language"/>
+        <property name="Description" type="String" mapping="{http://www.alfresco.org/model/content/1.0}description"/>
+        <property name="ShortDescription" type="String"/>
+        <property name="Keyword" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}general_keyword"/>
+        <property name="Coverage" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}coverage"/>
+        <property name="Structure">
+          <type name="RangedValue">
+            <property name="Id" type="String"/>
+            <property name="Value" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}structure"/>
+          </type>
+        </property>
+        <property name="aggregationLevel">
+          <type name="RandedValue">
+            <property name="Id" type="String"/>
+            <property name="Value" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}aggregationlevel"/>
+          </type>
+        </property>
+      </type>
+    </property>
+
+    <property name="Technical">
+      <type name="Technical">
+        <property name="Format" multiple="true">
+          <type name="Format">
+            <property name="MetadataType" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}format"/>
+            <property name="Type" type="String" mapping="{http://www.campuscontent.de/model/1.0}ccressourcetype"/>
+            <property name="Subtypes" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}ccresourcesubtype"/>
+            <property name="Version" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}ccressourceversion"/>
+            <property name="Content" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}ccresourcecontent"/>
+          </type>
+        </property>
+        <property name="Size" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}size"/>
+        <property name="Location" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}location"/>
+        <property name="Filename" type="String"/>
+        <property name="InstallationRemarks" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}installationremarks"/>
+        <property name="OtherPlatformRequirements" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}otherplatformrequirements"/>
+        <property name="LocationHttpsStatus" type="String" mapping="{http://www.campuscontent.de/model/1.0}location_status"/>
+        <property name="Duration" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}duration"/>
+        <property name="Dimension">
+          <type name="Dimension">
+            <property name="Width" type="Double" mapping="{http://www.campuscontent.de/model/1.0}width"/>
+            <property name="Height" type="Double" mapping="{http://www.campuscontent.de/model/1.0}height"/>
+          </type>
+        </property>
+      </type>
+    </property>
+  </properties>
+</model>

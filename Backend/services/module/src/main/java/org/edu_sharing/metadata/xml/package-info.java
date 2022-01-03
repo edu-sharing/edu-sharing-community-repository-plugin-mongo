@@ -1,0 +1,2 @@
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.edu-sharing.com/model/dictionary/1.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package org.edu_sharing.metadata.xml;

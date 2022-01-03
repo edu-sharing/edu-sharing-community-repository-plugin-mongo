@@ -4,6 +4,22 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-
+    <bean id="archiveService" class="org.edu_sharing.service.archive.MongoArchiveServiceImpl" lazy-init="true"/>
     <bean id="nodeServiceImpl" class="org.edu_sharing.service.nodeservice.MongoNodeServiceImpl"/>
+    <bean id="documentFactory" class="org.edu_sharing.metadata.MongoDocumentFactory"/>
+
+
+
+    <bean id="mongoModelBootstrap" class="org.edu_sharing.metadata.MongoModelBootstrap" init-method="bootstrap" abstract="true"/>
+    <bean id="mongoBootstrap" parent="mongoModelBootstrap">
+        <property name="models">
+            <list>
+                <value>org/edu_sharing/model/metadata-model.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mongoClient" class="org.edu_sharing.mongo.MongoClientFactoryBean"/>
+
+
 </beans>

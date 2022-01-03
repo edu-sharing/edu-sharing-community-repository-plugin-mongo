@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.edu-sharing.com/model/dictionary/1.0"
+           xmlns:dd="http://www.edu-sharing.com/model/dictionary/1.0"
+           elementFormDefault="qualified"
+           version="0.1">
+
+    <xs:annotation>
+        <xs:documentation>edu-Sharing Data Dictionary Schema for edu-sharing M2Model</xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="model">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="author" type="xs:string" minOccurs="0"/>
+                <xs:element name="published" type="xs:date" minOccurs="0"/>
+                <xs:element name="version" type="xs:string" minOccurs="0"/>
+
+                <xs:element name="properties" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="property" type="dd:property" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+
+            <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:complexType name="type">
+        <xs:sequence>
+            <xs:element name="property" type="dd:property" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="property">
+        <xs:sequence>
+            <xs:choice minOccurs="0">
+                <xs:element name="type" type="dd:type" maxOccurs="unbounded"/>
+<!--                <xs:element name="string" type="dd:string"/>-->
+<!--                <xs:element name="integer" type="dd:integer"/>-->
+<!--                <xs:element name="double" type="dd:double"/>-->
+<!--                <xs:element name="boolean" type="dd:boolean"/>-->
+<!--                <xs:element name="date" type="dd:date"/>-->
+<!--                <xs:element name="time" type="dd:time"/>-->
+<!--                <xs:element name="dateTime" type="dd:dateTime"/>-->
+<!--                <xs:element name="rangedValue" type="dd:rangedValue"/>-->
+            </xs:choice>
+            <xs:element name="mappings" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="map" type="dd:map" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="multiple" type="xs:boolean"/>
+        <xs:attribute name="type" type="dd:nativeTypes"/>
+        <xs:attribute name="mapping" type="xs:string"/>
+    </xs:complexType>
+
+
+    <xs:simpleType name="nativeTypes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="String"/>
+            <xs:enumeration value="Integer"/>
+            <xs:enumeration value="Long"/>
+            <xs:enumeration value="Double"/>
+            <xs:enumeration value="Boolean"/>
+            <xs:enumeration value="Date"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="string"/>
+    <xs:complexType name="integer"/>
+    <xs:complexType name="double"/>
+    <xs:complexType name="boolean"/>
+    <xs:complexType name="date"/>
+    <xs:complexType name="time"/>
+    <xs:complexType name="dateTime"/>
+    <xs:complexType name="rangedValue">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="value" type="xs:anyType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="map">
+        <xs:attribute name="name" use="required"/>
+        <xs:attribute name="converter" type="dd:nativeConverter"/>
+    </xs:complexType>
+
+    <xs:simpleType name="nativeConverter">
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
