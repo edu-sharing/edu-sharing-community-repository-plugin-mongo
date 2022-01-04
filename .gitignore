@@ -12,6 +12,14 @@ buildNumber.properties
 # IntelliJ
 .idea/
 *.iml
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
 # 3rd party licenses
 THIRD-PARTY*.txt
 # Dotenv
