@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   repository-mongo:
-    image: "${docker.registry}/${docker.repository}/edusharing-mongo:${docker.tag}"
+    image: "${docker.registry}/${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
 
   repository-mongo-express:
-    image: "${docker.registry}/${docker.repository}/edusharing-mongo_express:${docker.tag}"
+    image: "${docker.registry}/${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"

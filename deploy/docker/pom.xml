@@ -22,6 +22,8 @@
     <docker.from.mongo.db>docker.io/mongo:5.0.5</docker.from.mongo.db>
     <docker.from.mongo.express>docker.io/mongo-express:0.54.0</docker.from.mongo.express>
 
+    <docker.repository>docker</docker.repository>
+
   </properties>
 
   <modules>

@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   repository-mongo:
-    image: "${docker.repository}/edusharing-mongo:${docker.tag}"
+    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
       MONGO_INITDB_ROOT_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
@@ -13,7 +13,7 @@ services:
       - "repository-mongo-volume:/data/db"
 
   repository-mongo-express:
-    image: "${docker.repository}/edusharing-mongo_express:${docker.tag}"
+    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
     environment:
       ME_CONFIG_MONGODB_SERVER: "repository-mongo"
       ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_USER:-repository}"
