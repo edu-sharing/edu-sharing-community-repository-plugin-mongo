@@ -19,37 +19,11 @@ import java.util.stream.Collectors;
 @Data
 @XmlRootElement(name = "model", namespace = "http://www.edu-sharing.com/model/dictionary/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ModelDefinition {
+public class ModelDefinition extends StructDefinition {
     private String name;
     private String description;
     private String author;
     private String version;
-
-    @XmlElementWrapper(name = "properties")
-    @XmlElement(name = "property", type = PropertyDefinition.class)
-    private List<PropertyDefinition> properties = new ArrayList<>();
-
-
-    @XmlTransient
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Map<String, PropertyDefinition> mappedProperties;
-
-    public Map<String, PropertyDefinition> getMappedProperties() {
-        if (mappedProperties == null) {
-            mappedProperties = properties.stream().collect(Collectors.toMap(PropertyDefinition::getName, x -> x));
-        }
-
-        return mappedProperties;
-    }
-
-    public PropertyDefinition getPropertyDefinition(String name) {
-        PropertyDefinition propertyDefinition = getMappedProperties().get(name);
-        if (propertyDefinition == null) {
-            throw new MongoUnknownMappingException("PropertyDefinition: '" + name + "' not found");
-        }
-        return propertyDefinition;
-    }
 
     public static ModelDefinition createModel(InputStream xmlStream) {
         try {

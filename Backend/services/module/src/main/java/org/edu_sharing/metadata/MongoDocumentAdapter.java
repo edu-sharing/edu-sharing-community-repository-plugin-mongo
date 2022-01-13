@@ -6,6 +6,8 @@ import java.util.*;
 
 public class MongoDocumentAdapter implements Document {
 
+    public  static final String ID_KEY = "_id";
+
     @Getter
     private final org.bson.Document rootDocument;
 

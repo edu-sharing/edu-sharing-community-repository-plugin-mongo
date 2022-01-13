@@ -5,7 +5,7 @@
 
   <properties>
     <property name="General">
-      <type name="General">
+      <struct>
         <property name="Title" type="String" mapping="{http://www.alfresco.org/model/content/1.0}title"/>
         <property name="ShortTitle" type="String"/>
         <property name="Language" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}general_language"/>
@@ -14,30 +14,30 @@
         <property name="Keyword" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}general_keyword"/>
         <property name="Coverage" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}coverage"/>
         <property name="Structure">
-          <type name="RangedValue">
+          <struct>
             <property name="Id" type="String"/>
             <property name="Value" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}structure"/>
-          </type>
+          </struct>
         </property>
         <property name="aggregationLevel">
-          <type name="RandedValue">
+          <struct>
             <property name="Id" type="String"/>
             <property name="Value" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}aggregationlevel"/>
-          </type>
+          </struct>
         </property>
-      </type>
+      </struct>
     </property>
 
     <property name="Technical">
-      <type name="Technical">
+      <struct>
         <property name="Format" multiple="true">
-          <type name="Format">
+          <struct>
             <property name="MetadataType" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}format"/>
             <property name="Type" type="String" mapping="{http://www.campuscontent.de/model/1.0}ccressourcetype"/>
             <property name="Subtypes" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}ccresourcesubtype"/>
             <property name="Version" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}ccressourceversion"/>
             <property name="Content" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}ccresourcecontent"/>
-          </type>
+          </struct>
         </property>
         <property name="Size" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}size"/>
         <property name="Location" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}location"/>
@@ -47,12 +47,12 @@
         <property name="LocationHttpsStatus" type="String" mapping="{http://www.campuscontent.de/model/1.0}location_status"/>
         <property name="Duration" type="String" mapping="{http://www.campuscontent.de/model/lom/1.0}duration"/>
         <property name="Dimension">
-          <type name="Dimension">
+          <struct>
             <property name="Width" type="Double" mapping="{http://www.campuscontent.de/model/1.0}width"/>
             <property name="Height" type="Double" mapping="{http://www.campuscontent.de/model/1.0}height"/>
-          </type>
+          </struct>
         </property>
-      </type>
+      </struct>
     </property>
   </properties>
 </model>

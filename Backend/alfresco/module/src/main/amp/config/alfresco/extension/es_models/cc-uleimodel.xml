@@ -1,0 +1,15 @@
+<model name="cculei:campuscontentunileipzigmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+  <description>Campus Content Uni Leipzig Model Extension</description>
+  <author>Daniel Rudolph</author>
+  <version>1.0</version>
+  <imports>
+    <!-- Import Alfresco Dictionary Definitions -->
+    <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    <!-- Import Alfresco Content Domain Model Definitions -->
+    <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+  </imports>
+  <namespaces>
+    <!-- Define a Namespace for my new definitions -->
+    <namespace uri="http://www.campuscontent.de/model/ulei/1.0" prefix="cculei" />
+  </namespaces>
+</model>

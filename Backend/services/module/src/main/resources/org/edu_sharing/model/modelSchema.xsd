@@ -32,18 +32,17 @@
     </xs:element>
 
 
-    <xs:complexType name="type">
+    <xs:complexType name="struct">
         <xs:sequence>
             <xs:element name="property" type="dd:property" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:complexType>
 
 
     <xs:complexType name="property">
         <xs:sequence>
             <xs:choice minOccurs="0">
-                <xs:element name="type" type="dd:type" maxOccurs="unbounded"/>
+                <xs:element name="struct" type="dd:struct" maxOccurs="unbounded"/>
 <!--                <xs:element name="string" type="dd:string"/>-->
 <!--                <xs:element name="integer" type="dd:integer"/>-->
 <!--                <xs:element name="double" type="dd:double"/>-->

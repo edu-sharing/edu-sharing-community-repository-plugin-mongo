@@ -8,8 +8,6 @@ import com.typesafe.config.ConfigBeanFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.edu_sharing.alfresco.lightbend.LightbendConfigLoader;
-import org.edu_sharing.metadata.Document;
-import org.edu_sharing.metadata.MongoDocumentAdapter;
 
 public class MongoConnectionServiceImpl {
 

@@ -4,13 +4,20 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="archiveService" class="org.edu_sharing.service.archive.MongoArchiveServiceImpl" lazy-init="true"/>
-    <bean id="nodeServiceImpl" class="org.edu_sharing.service.nodeservice.MongoNodeServiceImpl"/>
-    <bean id="documentFactory" class="org.edu_sharing.metadata.MongoDocumentFactory"/>
+
+    <!-- MongoDB config -->
+    <bean id="mongoClient" class="org.edu_sharing.mongo.MongoClientFactoryBean"/>
+    <bean id="eduMongoDb" class="org.edu_sharing.mongo.MongoClientFactoryBean">
+        <constructor-arg name="mongoClient" ref="mongoClient"/>
+    </bean>
 
 
+    <!-- model config -->
+    <bean id="mongoModelDictionary" class="org.edu_sharing.MongoModelDictionaryImpl"/>
+    <bean id="mongoModelBootstrap" class="org.edu_sharing.metadata.MongoModelBootstrap" init-method="bootstrap" abstract="true">
+        <property name="modelDictionary" ref="mongoModelDictionary"/>
+    </bean>
 
-    <bean id="mongoModelBootstrap" class="org.edu_sharing.metadata.MongoModelBootstrap" init-method="bootstrap" abstract="true"/>
     <bean id="mongoBootstrap" parent="mongoModelBootstrap">
         <property name="models">
             <list>
@@ -19,7 +26,17 @@
         </property>
     </bean>
 
-    <bean id="mongoClient" class="org.edu_sharing.mongo.MongoClientFactoryBean"/>
+    <bean id="lomMapping" class="org.edu_sharing.mongo.AlfrescoMappingService">
+        <constructor-arg name="model" value="lom"/>
+        <constructor-arg name="modelDictionary" ref="mongoModelDictionary"/>
+    </bean>
 
 
+    <!-- services -->
+    <bean id="archiveService" class="org.edu_sharing.service.archive.MongoArchiveServiceImpl" lazy-init="true"/>
+    <bean id="nodeServiceImpl" class="org.edu_sharing.service.nodeservice.MongoNodeServiceImpl">
+        <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="mappingService" ref="lom"/>
+    </bean>
+    <bean id="documentFactory" class="org.edu_sharing.metadata.MongoDocumentFactory"/>
 </beans>

@@ -1,7 +1,5 @@
 package org.edu_sharing.metadata;
 
-import java.util.Map;
-
 public class MongoDocumentFactory implements DocumentFactory {
     @Override
     public Document createDocument() {

@@ -8,13 +8,13 @@ import org.edu_sharing.metadata.xml.*;
 
 import java.util.*;
 
-public class DataValidationServiceImpl {
+public class DataValidationServiceImpl implements DataValidationService {
 
     private MongoModelDictionary modelDictionary;
 
     private final static String ID_KEY = "_id";
 
-    private final static Map<NativeTypeDefinition, Class<?>> nativeTypeMap = new HashMap<NativeTypeDefinition, Class<?>>(){{
+    private final static Map<NativeTypeDefinition, Class<?>> nativeTypeMap = new HashMap<NativeTypeDefinition, Class<?>>() {{
         put(NativeTypeDefinition.String, String.class);
         put(NativeTypeDefinition.Integer, Integer.class);
         put(NativeTypeDefinition.Date, Date.class);
@@ -24,6 +24,7 @@ public class DataValidationServiceImpl {
     }};
 
 
+    @Override
     public void validate(String modelName, MongoDocumentAdapter mongoDocumentAdapter) throws MongoUnknownMappingException {
         ModelDefinition model = modelDictionary.getModelDefinition(modelName);
 
@@ -53,11 +54,11 @@ public class DataValidationServiceImpl {
                 throw new MongoInvalidTypeException("Property '" + propertyDefinition.getName() + "' does not expect a list");
             }
 
-
+            // TODO
         }
 
-        Map<String, BaseTypeDefinition> types = propertyDefinition.getTypes();
-        if(types == null){
+        List<StructDefinition> structs = propertyDefinition.getStructs();
+        if(structs == null){
             Class<?> nativeType = nativeTypeMap.get(propertyDefinition.getNativeType());
             if(nativeType == null){
                 throw new NotImplementedException();

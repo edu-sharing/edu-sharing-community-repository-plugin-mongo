@@ -14,10 +14,7 @@ import java.util.stream.Collectors;
 @Data
 @XmlRootElement(name="type")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TypeDefinition extends BaseTypeDefinition {
-
-    @XmlAttribute(required = true)
-    private String name;
+public class StructDefinition {
 
     @XmlElement(name = "property")
     private List<PropertyDefinition> properties = new ArrayList<>();
@@ -27,14 +24,6 @@ public class TypeDefinition extends BaseTypeDefinition {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Map<String, PropertyDefinition> mappedProperties;
-    public Map<String, PropertyDefinition> getProperties(){
-        if(mappedProperties == null){
-            mappedProperties = properties.stream().collect(Collectors.toMap(PropertyDefinition::getName, x->x));
-        }
-
-        return mappedProperties;
-    }
-
 
     public Map<String, PropertyDefinition> getMappedProperties() {
         if (mappedProperties == null) {
