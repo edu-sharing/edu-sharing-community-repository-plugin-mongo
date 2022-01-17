@@ -6,9 +6,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco</artifactId>
     <groupId>org.edu_sharing</groupId>
-    <version>maven-develop-SNAPSHOT</version>
+    <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco</artifactId>
+    <version>git</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
