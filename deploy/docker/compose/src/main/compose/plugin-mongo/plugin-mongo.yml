@@ -10,7 +10,7 @@ services:
     expose:
       - "27017"
     volumes:
-      - "repository-mongo-volume:/data/db"
+      - "repository-mongo-volume-data:/data/db"
 
   repository-mongo-express:
     image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
@@ -34,4 +34,4 @@ services:
       - repository-mongo
 
 volumes:
-  repository-mongo-volume:
+  repository-mongo-volume-data:
