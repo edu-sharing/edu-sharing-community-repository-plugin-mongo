@@ -2,8 +2,10 @@ version: '3.7'
 
 services:
 
-  repository-service:
-    volumes:
-      - "${COMMUNITY_PATH}/repository-mongo/Backend/alfresco/module/target/edu_sharing-community-repository-plugin-mongo-backend-alfresco-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-alfresco-module:amp.version}.amp:/opt/alfresco/amps/alfresco/1/edu_sharing-community-repository-plugin-mongo-backend-alfresco-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-alfresco-module:amp.version}.amp"
-      - "${COMMUNITY_PATH}/repository-mongo/Backend/services/module/target/edu_sharing-community-repository-plugin-mongo-backend-services-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-services-module:amp.version}.amp:/opt/alfresco/amps/edu-sharing/1/edu_sharing-community-repository-plugin-mongo-backend-services-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-services-module:amp.version}.amp"
-      - "${COMMUNITY_PATH}/repository-mongo/config/defaults/target/classes/plugin-mongo:/opt/alfresco/tomcat/shared/classes/config/plugins/plugin-mongo"
+  repository-mongo:
+    ports:
+      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_PORT:-8500}:27017"
+
+  repository-mongo-express:
+    ports:
+      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_EXPRESS_PORT:-8501}:8081"
