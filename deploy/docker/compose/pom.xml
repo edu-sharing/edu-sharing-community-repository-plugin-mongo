@@ -53,7 +53,7 @@
             <goals>
               <goal>jar</goal>
             </goals>
-            <phase>verify</phase>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
@@ -63,6 +63,13 @@
   </build>
 
   <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco-module</artifactId>
+      <type>amp</type>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>

@@ -75,7 +75,7 @@
             <goals>
               <goal>jar</goal>
             </goals>
-            <phase>verify</phase>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
@@ -175,6 +175,12 @@
     <dependency>
       <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>edu_sharing-community-repository-backend-alfresco-common</artifactId>
       <scope>provided</scope>
     </dependency>
 

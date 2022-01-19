@@ -6,8 +6,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco</artifactId>
     <groupId>org.edu_sharing</groupId>
+    <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco</artifactId>
     <version>git</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -29,7 +29,7 @@
             <goals>
               <goal>jar</goal>
             </goals>
-            <phase>verify</phase>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
@@ -94,6 +94,12 @@
   </build>
 
   <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>edu_sharing-community-repository-backend-alfresco-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
