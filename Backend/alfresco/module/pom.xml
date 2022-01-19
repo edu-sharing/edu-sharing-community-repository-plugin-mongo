@@ -8,7 +8,7 @@
   <parent>
     <artifactId>edu_sharing-community-repository-plugin-mongo-backend-alfresco</artifactId>
     <groupId>org.edu_sharing</groupId>
-    <version>maven-develop-SNAPSHOT</version>
+    <version>git</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

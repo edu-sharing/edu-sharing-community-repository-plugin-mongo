@@ -37,7 +37,12 @@ public class DataValidationServiceImpl implements DataValidationService {
                 continue;
             }
 
-            PropertyDefinition propertyDefinition = model.getPropertyDefinition(key);
+            PropertyDefinition propertyDefinition = model.getProperties()
+                    .stream()
+                    .filter(x->x.getName() == key)
+                    .findFirst()
+                    .orElse(null);
+
             InvestigateProperty(propertyDefinition, entry.getValue());
         }
     }

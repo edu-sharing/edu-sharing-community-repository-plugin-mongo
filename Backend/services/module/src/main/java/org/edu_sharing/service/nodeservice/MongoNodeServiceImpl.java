@@ -4,11 +4,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionHistory;
 import org.alfresco.service.cmr.version.VersionService;
+import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.edu_sharing.alfrescocontext.gate.AlfAppContextGate;
@@ -16,8 +18,10 @@ import org.edu_sharing.metadata.MongoDocumentAdapter;
 import org.edu_sharing.mongo.AlfrescoMappingService;
 import org.edu_sharing.mongo.DataValidationService;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.repository.server.tools.cache.RepositoryCache;
 import org.springframework.context.ApplicationContext;
 
+import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,8 +119,8 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
                 .projection(Projections.include("aspects"))
                 .first();
 
-        List<String> aspects = document.getList("aspects", String.class);
-        return Optional.ofNullable(aspects)
+        return Optional.ofNullable(document).
+                map(x->x.getList("aspects", String.class))
                 .map(x -> x.toArray(new String[0]))
                 .orElse(null);
     }
@@ -133,6 +137,10 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         Document document = workspaceCollection
                 .find(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId))
                 .first();
+
+        if(document == null){
+            return result;
+        }
 
         Map<String, Object> props = mappingService.getProperties(document);
         result.putAll(props);
@@ -173,6 +181,45 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         workspaceCollection.replaceOne(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId), document, options);
     }
 
+
+    @Override
+    public String createNodeBasic(StoreRef store, String parentID, String nodeTypeString, String childAssociation, HashMap<String, ?> _props) {
+        String nodeId = super.createNodeBasic(store, parentID, nodeTypeString, childAssociation, _props);
+
+        if(!isSupported(getType(nodeId))){
+            return nodeId;
+        }
+
+
+        //TODO copyChildren?
+        Document document = new Document(MongoDocumentAdapter.ID_KEY, nodeId);
+        mappingService.setProperties(document, (HashMap<String, Object>) _props);
+
+        ReplaceOptions options = new ReplaceOptions().upsert(true);
+        workspaceCollection.replaceOne(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId), document, options);
+
+        return nodeId;
+    }
+
+    @Override
+    public void updateNodeNative(StoreRef store, String nodeId, HashMap<String, ?> _props) {
+        super.updateNodeNative(store, nodeId, _props);
+
+        if(!isSupported(getType(nodeId))){
+            return;
+        }
+
+        Document document = workspaceCollection.find(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId)).first();
+        if(document == null) {
+            document = new Document(MongoDocumentAdapter.ID_KEY, nodeId);
+        }
+
+        mappingService.setProperties(document, (HashMap<String, Object>) _props);
+
+        ReplaceOptions options = new ReplaceOptions().upsert(true);
+        workspaceCollection.replaceOne(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId), document, options);
+    }
+
     @Override
     public NodeRef copyNode(String nodeId, String toNodeId, boolean copyChildren) throws Throwable {
         NodeRef nodeRef = super.copyNode(nodeId, toNodeId, copyChildren);
@@ -182,6 +229,10 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
         //TODO copyChildren
         Document document = workspaceCollection.find(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId)).first();
+        if(document == null){
+            return nodeRef;
+        }
+
         document.replace(MongoDocumentAdapter.ID_KEY, toNodeId);
         ReplaceOptions options = new ReplaceOptions().upsert(true);
         workspaceCollection.replaceOne(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId), document, options);
@@ -201,6 +252,9 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         String version = super.getProperty(store.getProtocol(), store.getIdentifier(), nodeId, "{http://www.alfresco.org/model/content/1.0}versionLabel");
 
         Document document = workspaceCollection.findOneAndUpdate(Filters.eq(MongoDocumentAdapter.ID_KEY, nodeId), Updates.set("version", version));
+        if(document == null) {
+            return;
+        }
 
         String key = document.getString(MongoDocumentAdapter.ID_KEY) + "_" + document.getString("version");
         document.replace(MongoDocumentAdapter.ID_KEY, key);
@@ -220,6 +274,10 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         String key = nodeId + "_" + verLbl;
 
         Document document = versionCollection.find(Filters.eq(MongoDocumentAdapter.ID_KEY, key)).first();
+        if(document == null) {
+            return;
+        }
+
         document.replace(MongoDocumentAdapter.ID_KEY, nodeId);
 
         ReplaceOptions options = new ReplaceOptions().upsert(true);

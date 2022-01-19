@@ -1,8 +1,11 @@
 package org.edu_sharing.metadata.xml;
 
 import lombok.Data;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
 
 @Data
@@ -14,7 +17,8 @@ public class PropertyDefinition {
     private List<StructDefinition> structs;
 
     @XmlElementWrapper(name = "mappings")
-    private List<MappingDefinition> mappings;
+    @XmlElement(name="map")
+    private List<MappingDefinition> mappings = new ArrayList<>();
 
     @XmlAttribute(name = "type")
     private NativeTypeDefinition nativeType;
@@ -25,6 +29,18 @@ public class PropertyDefinition {
     @XmlAttribute
     private boolean multiple;
 
+    @XmlTransient
+    private MappingDefinition nativeMapping;
+
     @XmlAttribute(name = "mapping")
-    private String nativeMapping;
+    @XmlJavaTypeAdapter(NativeMappingDefinitionAdapter.class)
+    public void setNativeMapping(MappingDefinition mappingDefinition){
+        if(nativeMapping != null){
+            mappings.remove(nativeMapping);
+        }
+
+        nativeMapping = mappingDefinition;
+        mappings.add(0, mappingDefinition);
+    }
 }
+

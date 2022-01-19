@@ -15,6 +15,7 @@ public class MongoModelBootstrap {
 
     //The list of models to bootsrap with
     @Getter
+    @Setter
     private List<String> models = new ArrayList<>();
 
     @Setter

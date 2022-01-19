@@ -19,11 +19,16 @@ import java.util.stream.Collectors;
 @Data
 @XmlRootElement(name = "model", namespace = "http://www.edu-sharing.com/model/dictionary/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ModelDefinition extends StructDefinition {
+public class ModelDefinition {
+    @XmlAttribute(name = "name")
     private String name;
     private String description;
     private String author;
     private String version;
+
+    @XmlElementWrapper(name = "properties")
+    @XmlElement(name = "property")
+    private List<PropertyDefinition> properties = new ArrayList<>();
 
     public static ModelDefinition createModel(InputStream xmlStream) {
         try {

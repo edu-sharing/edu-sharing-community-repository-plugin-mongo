@@ -4,9 +4,21 @@
   <version>0.1</version>
 
   <properties>
+    <property name="Test">
+      <mappings>
+        <map name="{http://www.campuscontent.de/model/lom/1.0}title"/>
+        <map name="{http://www.alfresco.org/model/content/1.0}title" converter="org.edu_sharing.metadata.ManyToOnStringConverter"/>
+      </mappings>
+    </property>
+
     <property name="General">
       <struct>
-        <property name="Title" type="String" mapping="{http://www.alfresco.org/model/content/1.0}title"/>
+        <property name="Title" type="String">
+          <mappings>
+            <map name="{http://www.campuscontent.de/model/lom/1.0}title"/>
+            <map name="{http://www.alfresco.org/model/content/1.0}title" converter="org.edu_sharing.metadata.ManyToOnStringConverter"/>
+          </mappings>
+        </property>
         <property name="ShortTitle" type="String"/>
         <property name="Language" type="String" multiple="true" mapping="{http://www.campuscontent.de/model/lom/1.0}general_language"/>
         <property name="Description" type="String" mapping="{http://www.alfresco.org/model/content/1.0}description"/>

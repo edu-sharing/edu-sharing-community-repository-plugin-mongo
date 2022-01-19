@@ -62,12 +62,12 @@ public class ModelRunner {
                 if (removeIfEmpty && childDocument.isEmpty()) {
                     deleteList.add(childDocument);
                 }
+            }
 
-                if (removeIfEmpty) {
-                    childDocuments.removeAll(deleteList);
-                    if (childDocuments.isEmpty()) {
-                        document.remove(name);
-                    }
+            if (removeIfEmpty) {
+                childDocuments.removeAll(deleteList);
+                if (childDocuments.isEmpty()) {
+                    document.remove(name);
                 }
             }
 
