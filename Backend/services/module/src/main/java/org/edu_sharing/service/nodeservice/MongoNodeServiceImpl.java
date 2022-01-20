@@ -42,7 +42,7 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
     private static final List<String> supportedNodeTypes = Arrays.asList(
             CCConstants.CCM_TYPE_IO,
             CCConstants.CCM_TYPE_MAP,
-            CCConstants.CCM_TYPE_COLLECTION_PROPOSAL,
+            //CCConstants.CCM_TYPE_COLLECTION_PROPOSAL,
             CCConstants.CCM_TYPE_REMOTEOBJECT,
             CCConstants.CCM_TYPE_SHARE
     );
