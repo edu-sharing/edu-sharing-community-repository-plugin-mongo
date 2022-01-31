@@ -27,11 +27,6 @@
 
   </properties>
 
-  <modules>
-    <module>compose</module>
-    <module>build</module>
-  </modules>
-
   <build>
 
     <pluginManagement>
@@ -51,5 +46,10 @@
     </pluginManagement>
 
   </build>
+
+  <modules>
+    <module>compose</module>
+    <module>build</module>
+  </modules>
 
 </project>

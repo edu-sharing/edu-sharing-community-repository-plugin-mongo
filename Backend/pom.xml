@@ -18,11 +18,6 @@
 
   <name>edu_sharing-community-repository-plugin-mongo-backend</name>
 
-  <modules>
-    <module>services</module>
-    <module>alfresco</module>
-  </modules>
-
   <build>
 
     <plugins>
@@ -52,5 +47,10 @@
     </plugins>
 
   </build>
+
+  <modules>
+    <module>services</module>
+    <module>alfresco</module>
+  </modules>
 
 </project>
