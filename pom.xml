@@ -33,7 +33,7 @@
 
   <properties>
 
-    <community.platform>${project.version}</community.platform>
+    <repository.version>${project.version}</repository.version>
 
   </properties>
 
@@ -46,6 +46,7 @@
         <artifactId>bom-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>community-repository</id>
             <goals>
               <goal>import-properties</goal>
             </goals>
@@ -54,8 +55,8 @@
               <artifacts>
                 <dependency>
                   <groupId>${project.groupId}</groupId>
-                  <artifactId>edu_sharing-community-bom</artifactId>
-                  <version>${community.platform}</version>
+                  <artifactId>edu_sharing-community-repository</artifactId>
+                  <version>${repository.version}</version>
                   <type>pom</type>
                 </dependency>
               </artifacts>
@@ -74,8 +75,8 @@
 
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>edu_sharing-community-bom</artifactId>
-        <version>${community.platform}</version>
+        <artifactId>edu_sharing-community-repository</artifactId>
+        <version>${repository.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -98,6 +99,25 @@
         <artifactId>edu_sharing-community-repository-plugin-mongo-backend-services-module</artifactId>
         <version>${project.version}</version>
         <type>amp</type>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-config-defaults</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-build-service</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-docker-compose</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
     </dependencies>
