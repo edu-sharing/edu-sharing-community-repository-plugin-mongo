@@ -4,39 +4,49 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+    <bean class="org.edu_sharing.plugin_mongo.Initialization"/>
 
     <!-- MongoDB config -->
-    <bean id="mongoClient" class="org.edu_sharing.mongo.MongoClientFactoryBean"/>
+    <bean id="mongoClient" class="org.edu_sharing.plugin_mongo.mongo.MongoClientFactoryBean"/>
     <bean id="eduMongoDb" class="org.edu_sharing.mongo.MongoDatabaseFactoryBean">
         <constructor-arg name="client" ref="mongoClient"/>
     </bean>
 
 
-    <!-- model config -->
-    <bean id="mongoModelDictionary" class="org.edu_sharing.metadata.MongoModelDictionaryImpl"/>
-    <bean id="mongoModelBootstrap" class="org.edu_sharing.metadata.MongoModelBootstrap" init-method="bootstrap" abstract="true">
+    <!-- bootstrap meta data-->
+    <bean id="mongoModelDictionary" class="org.edu_sharing.plugin_mongo.datamodel.MongoModelDictionaryImpl"/>
+    <bean id="mongoMetaDataBootstrap" class="org.edu_sharing.plugin_mongo.datamodel.MongoMetaDataBootstrap" init-method="bootstrap" abstract="true">
         <property name="modelDictionary" ref="mongoModelDictionary"/>
     </bean>
 
-    <bean id="mongoBootstrap" parent="mongoModelBootstrap">
-        <property name="models">
+    <!-- model config -->
+    <bean id="mongoMappingBootstrap" parent="mongoMetaDataBootstrap">
+        <property name="modelInfos">
             <list>
-                <value>org/edu_sharing/model/metadata-model.xml</value>
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="lom"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2lom.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/lom2alf.json"/>
+                    <constructor-arg name="merger">
+                        <bean class="org.edu_sharing.plugin_mongo.datamodel.mering.LomMerger"/>
+                    </constructor-arg>
+                    <constructor-arg name="remover">
+                        <bean class="org.edu_sharing.plugin_mongo.datamodel.remover.LomRemover"/>
+                    </constructor-arg>
+                </bean>
             </list>
         </property>
     </bean>
 
-    <bean id="lomMapping" class="org.edu_sharing.mongo.AlfrescoMappingService" depends-on="mongoBootstrap">
-        <constructor-arg name="model" value="lom"/>
+    <bean id="alfMapping" class="org.edu_sharing.plugin_mongo.service.nodeservice.AlfrescoMappingService">
         <constructor-arg name="modelDictionary" ref="mongoModelDictionary"/>
     </bean>
 
-
     <!-- services -->
     <bean id="archiveService" class="org.edu_sharing.service.archive.MongoArchiveServiceImpl" lazy-init="true"/>
-    <bean id="nodeServiceImpl" class="org.edu_sharing.service.nodeservice.MongoNodeServiceImpl">
+    <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.service.nodeservice.MongoNodeServiceImpl">
         <constructor-arg name="database" ref="eduMongoDb"/>
-        <constructor-arg name="mappingService" ref="lomMapping"/>
+        <constructor-arg name="mappingService" ref="alfMapping"/>
     </bean>
     <bean id="documentFactory" class="org.edu_sharing.metadata.MongoDocumentFactory"/>
 </beans>

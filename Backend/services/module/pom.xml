@@ -21,52 +21,6 @@
   <build>
 
     <plugins>
-      <!--<plugin>-->
-      <!--    <groupId>org.codehaus.mojo</groupId>-->
-      <!--    <artifactId>jaxb2-maven-plugin</artifactId>-->
-      <!--    <version>2.5.0</version>-->
-      <!--    <executions>-->
-      <!--        <execution>-->
-      <!--            <id>schemagen</id>-->
-      <!--            <goals>-->
-      <!--                <goal>schemagen</goal>-->
-      <!--            </goals>-->
-      <!--        </execution>-->
-      <!--    </executions>-->
-      <!--    <configuration>-->
-      <!--        <sources>-->
-      <!--            <source>src/main/java/org/edu_sharing/metadata/xml</source>-->
-      <!--        </sources>-->
-      <!--        <outputDirectory>src/main/resources/metadata</outputDirectory>-->
-      <!--        <clearOutputDir>false</clearOutputDir>-->
-      <!--        <transformSchemas>-->
-      <!--            <transformSchema>-->
-      <!--                <uri>http://www.edu-sharing.com/model/dictionary/1.0</uri>-->
-      <!--                <toFile>modelSchema.xsd</toFile>-->
-      <!--            </transformSchema>-->
-      <!--        </transformSchemas>-->
-      <!--    </configuration>-->
-      <!--</plugin>-->
-      <!--            <plugin>-->
-      <!--                <groupId>org.jibx</groupId>-->
-      <!--                <artifactId>maven-jibx-plugin</artifactId>-->
-      <!--                <version>1.3.1</version>-->
-      <!--                <configuration>-->
-      <!--                    <load>true</load>-->
-      <!--                    <schemaBindingDirectory>${project.build.sourceDirectory}/org/edu_sharing/metadata/xml</schemaBindingDirectory>-->
-      <!--                    <includeSchemaBindings>-->
-      <!--                        <includeSchemaBindings>m2binding.xml</includeSchemaBindings>-->
-      <!--                    </includeSchemaBindings>-->
-      <!--                </configuration>-->
-      <!--                <executions>-->
-      <!--                    <execution>-->
-      <!--                        <id>bind-sources</id>-->
-      <!--                        <goals>-->
-      <!--                            <goal>bind</goal>-->
-      <!--                        </goals>-->
-      <!--                    </execution>-->
-      <!--                </executions>-->
-      <!--            </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -122,31 +76,32 @@
   </build>
 
   <dependencies>
-    <!-- TODO -->
-    <!--        <dependency>-->
-    <!--            <groupId>${project.groupId}</groupId>-->
-    <!--            <artifactId>edu_sharing-community-repository-backend-services-core</artifactId>-->
-    <!--            <scope>provided</scope>-->
-    <!--        </dependency>-->
-
-    <!-- TODO -->
-<!--    <dependency>-->
-<!--      <groupId>org.jibx</groupId>-->
-<!--      <artifactId>jibx-run</artifactId>-->
-<!--      <version>1.3.3</version>-->
-<!--    </dependency>-->
 
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.2.11</version> <!-- TODO -->
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.bazaarvoice.jolt</groupId>
+      <artifactId>jolt-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.bazaarvoice.jolt</groupId>
+      <artifactId>json-utils</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+
+    <!-- optional -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -154,19 +109,8 @@
       <optional>true</optional>
     </dependency>
 
-    <dependency>
-      <groupId>org.mongodb</groupId>
-      <artifactId>mongodb-driver-sync</artifactId>
-      <version>4.3.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.8.6</version>
-    </dependency>
-
     <!-- provided -->
+
     <dependency>
       <groupId>org.alfresco</groupId>
       <artifactId>alfresco-remote-api</artifactId>
@@ -213,25 +157,25 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>mongodb</artifactId>
-      <version>1.16.0</version>
+      <version>1.16.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-      <version>1.16.0</version>
+      <version>1.16.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>1.16.0</version>
+      <version>1.16.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.7.2</version>
+      <version>5.8.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
