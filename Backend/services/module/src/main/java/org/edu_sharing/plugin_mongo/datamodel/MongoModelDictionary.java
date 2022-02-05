@@ -5,7 +5,7 @@ import java.util.Collection;
 public interface MongoModelDictionary {
     void putModel(MongoModelInfo model);
 
-    Collection<String> getModels();
+    Collection<MongoModelInfo> getModelInfos();
 
     MongoModelInfo getModelInfo(String modelName);
 }

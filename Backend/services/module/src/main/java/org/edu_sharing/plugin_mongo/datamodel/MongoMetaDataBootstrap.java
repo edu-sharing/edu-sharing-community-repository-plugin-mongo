@@ -23,7 +23,7 @@ public class MongoMetaDataBootstrap {
     public void bootstrap() {
         long startTime = System.currentTimeMillis();
 
-        Collection<String> modelsBefore = modelDictionary.getModels(); // note: on first bootstrap will init empty dictionary
+        Collection<MongoModelInfo> modelsBefore = modelDictionary.getModelInfos(); // note: on first bootstrap will init empty dictionary
         int modelsBeforeCnt = modelsBefore != null ? modelsBefore.size() : 0;
 
         if (logger.isTraceEnabled()) {
@@ -37,7 +37,7 @@ public class MongoMetaDataBootstrap {
             modelDictionary.putModel(modelInfo);
         }
 
-        Collection<String> modelsAfter = modelDictionary.getModels();
+        Collection<MongoModelInfo> modelsAfter = modelDictionary.getModelInfos();
         int modelsAfterCnt = modelsAfter != null ? modelsAfter.size() : 0;
         if (logger.isDebugEnabled()) {
             logger.debug("Model count: before=" + modelsBeforeCnt + ", load=" + modelInfos.size() + ", after=" + modelsAfterCnt + " in " + (System.currentTimeMillis() - startTime) + " msecs [" + Thread.currentThread() + "]");

@@ -14,8 +14,8 @@ public class MongoModelDictionaryImpl implements MongoModelDictionary {
     }
 
     @Override
-    public Collection<String> getModels() {
-        return models.keySet();
+    public Collection<MongoModelInfo> getModelInfos() {
+        return models.values();
     }
 
     @Override

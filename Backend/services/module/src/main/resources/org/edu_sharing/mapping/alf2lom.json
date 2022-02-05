@@ -39,7 +39,7 @@
       "{http://www.campuscontent.de/model/lom/1.0}general_keyword": "general.keyword",
       "{http://www.campuscontent.de/model/lom/1.0}coverage": "general.coverage",
       "{http://www.campuscontent.de/model/lom/1.0}structure": "general.structure.value",
-      "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel": "general.aggregationLevel",
+      "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel": "general.aggregationLevel.value",
 
       "{http://www.campuscontent.de/model/1.0}lifecyclecontributer_*": {
         "$(0,1)": "lifecycle.contribute[#2].role",

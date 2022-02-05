@@ -40,21 +40,20 @@ public class AlfrescoMappingService {
     }
 
     public void setProperties(Document rootDocument, HashMap<String, Object> properties) {
-        for (Map.Entry<String, Object> entry : rootDocument.entrySet()){
-            String modelName = entry.getKey();
-            Map model  = (Map)entry.getValue();
-            if(Objects.equals(modelName, "_id")){
-                continue;
-            }
-
-            MongoModelInfo modelInfo = modelDictionary.getModelInfo(modelName);
-            if(modelInfo == null){
-                continue;
-            }
+        for (MongoModelInfo modelInfo : modelDictionary.getModelInfos()){
 
             Chainr chainr = modelInfo.getAlf2mongoChainr();
             Object updateValues = chainr.transform(properties);
-            modelInfo.getMerger().merge(updateValues, model);
+            if(updateValues == null){
+                continue;
+            }
+
+            Object modelDocument = rootDocument.getString(modelInfo.getName());
+            if(modelDocument != null) {
+                modelInfo.getMerger().merge(updateValues, modelDocument);
+            }else {
+                rootDocument.put(modelInfo.getName(), updateValues);
+            }
         }
     }
 
@@ -62,8 +61,12 @@ public class AlfrescoMappingService {
         final Map<String, Object> properties = props.stream().collect(Collectors.toMap(x->x, x-> Remover.RemoveToken));
         for (Map.Entry<String, Object> entry : rootDocument.entrySet()) {
             String modelName = entry.getKey();
-            Map model = (Map) entry.getValue();
             if (Objects.equals(modelName, "_id")) {
+                continue;
+            }
+
+            Object model = entry.getValue();
+            if(!(model instanceof Map)) {
                 continue;
             }
 

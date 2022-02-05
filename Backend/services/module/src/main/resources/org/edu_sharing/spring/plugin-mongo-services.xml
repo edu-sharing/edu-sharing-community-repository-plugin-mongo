@@ -8,7 +8,7 @@
 
     <!-- MongoDB config -->
     <bean id="mongoClient" class="org.edu_sharing.plugin_mongo.mongo.MongoClientFactoryBean"/>
-    <bean id="eduMongoDb" class="org.edu_sharing.mongo.MongoDatabaseFactoryBean">
+    <bean id="eduMongoDb" class="org.edu_sharing.plugin_mongo.mongo.MongoDatabaseFactoryBean">
         <constructor-arg name="client" ref="mongoClient"/>
     </bean>
 
@@ -48,5 +48,4 @@
         <constructor-arg name="database" ref="eduMongoDb"/>
         <constructor-arg name="mappingService" ref="alfMapping"/>
     </bean>
-    <bean id="documentFactory" class="org.edu_sharing.metadata.MongoDocumentFactory"/>
 </beans>
