@@ -13,17 +13,17 @@ repository_mongo_database="${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
 eduSConf="tomcat/shared/classes/config/cluster/edu-sharing.deployment.conf"
 
 
-### Enable Debug Logs ##################################################################################################
-if [[ "${debug_repository_plugin_mongo}" = 'true' ]] ; then
-  echo "Enable log level debug for repository-plugin-mongo"
-
-  xmlstarlet ed -L \
-  --subnode '/Configuration/Loggers' --type elem -n Logger -v "" \
-  --var node '$prev' \
-  -i '$node' -t attr -n 'name' -v 'org.edu-sharing.plugin_mongo' \
-  -i '$node' -t attr -n 'level' -v 'debug' \
-  'tomcat/webapps/edu-sharing/WEB-INF/log4j2.xml'
-fi
+#### Enable Debug Logs ##################################################################################################
+#if [[ "${debug_repository_plugin_mongo}" = 'true' ]] ; then
+#  echo "Enable log level debug for repository-plugin-mongo"
+#
+#  xmlstarlet ed -L \
+#  --subnode '/Configuration/Loggers' --type elem -n Logger -v "" \
+#  --var node '$prev' \
+#  -i '$node' -t attr -n 'name' -v 'org.edu-sharing.plugin_mongo' \
+#  -i '$node' -t attr -n 'level' -v 'debug' \
+#  'tomcat/webapps/edu-sharing/WEB-INF/log4j2.xml'
+#fi
 
 ### Wait ###############################################################################################################
 
