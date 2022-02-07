@@ -1,0 +1,23 @@
+{
+  "mapping" : "org/edu_sharing/mapping/alf2lom.json",
+
+  "input": {
+    // General
+    "{http://www.alfresco.org/model/content/1.0}title" : "My fallback title",
+    "{http://www.alfresco.org/model/content/1.0}description" : "Fall back description",
+
+    // Rights
+    "{http://www.campuscontent.de/model/1.0}customlicense_key" : [ "Omega-Licensetype:license_open", "other license" ]
+  },
+
+  "expected" : {
+    "general" : {
+      "title" : "My fallback title",
+      "description" : "Fall back description"
+    },
+
+    "rights" : {
+      "description" : "Omega-Licensetype:license_open, other license"
+    }
+  }
+}

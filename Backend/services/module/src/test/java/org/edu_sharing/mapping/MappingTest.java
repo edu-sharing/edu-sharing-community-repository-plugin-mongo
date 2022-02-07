@@ -17,7 +17,11 @@ import java.util.Map;
 class MappingTest {
 
     public static List<String> getTestCaseUnits() {
-        return Arrays.asList("lom2AlfMappingTest");
+        return Arrays.asList(
+                "alf2LomFallbackMappingTest",
+                "alf2LomMappingTest",
+                "lom2AlfMappingTest"
+        );
     }
 
     @ParameterizedTest
@@ -32,16 +36,13 @@ class MappingTest {
         Map<String, Object> testUnit = JsonUtils.jsonToMap(classLoader.getResourceAsStream(testPath));
 
         Object input = testUnit.get("input");
-        String model = (String)testUnit.get("model");
+        String model = (String)testUnit.get("mapping");
         Object expected = testUnit.get("expected");
-
 
         Chainr chainr = Chainr.fromSpec(JsonUtils.jsonToList(classLoader.getResourceAsStream(model)));
         Object actual = chainr.transform(input);
 
         runDiffy("failed case " + testPath, expected, actual);
-
-        InputStream stream2 = classLoader.getResourceAsStream("org/edu_sharing/mapping/alf2lom.json");
     }
 
     private static final Diffy diffy = new Diffy();
@@ -49,7 +50,7 @@ class MappingTest {
     void runDiffy(String failureMessage, Object expected, Object actual) {
         Diffy.Result result = diffy.diff(expected, actual);
         if(!result.isEmpty()) {
-            Assert.fail(failureMessage + ".\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\nactual: " + JsonUtils.toJsonString(result.actual));
+            Assert.fail(failureMessage + ".\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }
 }

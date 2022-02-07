@@ -8,10 +8,16 @@
         "language": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_language",
         "keyword": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_keyword",
         "coverage": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}coverage",
-        "structure": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}structure",
-        "aggregationLevel": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}aggregationlevel"
+        "structure": {
+          "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}structure"
+        },
+        "aggregationLevel": {
+          "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}aggregationlevel"
+        }
       },
       "lifecycle": {
+        "version" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}version",
+        "status" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}status",
         "contribute": {
           "*": {
             "role": {
@@ -37,9 +43,9 @@
       "technical": {
         "format": {
           "0" : {
-            "metadataType" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}format",
+            "mimetype" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}format",
             "type": "{http://www\\.campuscontent\\.de/model/1\\.0}ccressourcetype",
-            "subtypes": "{http://www\\.campuscontent\\.de/model/1\\.0}ccresourcesubtype",
+            "subtype": "{http://www\\.campuscontent\\.de/model/1\\.0}ccresourcesubtype",
             "version": "{http://www\\.campuscontent\\.de/model/1\\.0}ccressourceversion",
             "content": "{http://www\\.campuscontent\\.de/model/1\\.0}ccresourcecontent"
           }
@@ -48,11 +54,11 @@
         "location": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}location",
         "installationRemarks": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}installationremarks",
         "otherPlatformRequirements": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}otherplatformrequirements",
-        "locationHttpsStatus": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}location_status",
+        "locationHttpsStatus": "{http://www\\.campuscontent\\.de/model/1\\.0}location_status",
         "duration": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}duration",
         "dimension": {
-          "width": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}width",
-          "height": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}height"
+          "width": "{http://www\\.campuscontent\\.de/model/1\\.0}width",
+          "height": "{http://www\\.campuscontent\\.de/model/1\\.0}height"
         }
       },
       "educational": {
@@ -62,24 +68,25 @@
               "value": "{http://www\\.campuscontent\\.de/model/1\\.0}educationalcontext[]"
             }
           },
-          "intendedEndUserRoles" : {
+          "intendedEndUserRole" : {
             "*": {
               "value": "{http://www\\.campuscontent\\.de/model/1\\.0}educationalintendedenduserrole[]"
             }
           },
-          "learningResourceTypes" : {
+          "learningResourceType" : {
             "*": {
               "value": "{http://www\\.campuscontent\\.de/model/1\\.0}educationallearningresourcetype[]"
             }
           },
           "curriculum" : {
             "*": {
-              "value": "{http://www\\.campuscontent\\.de/model/1\\.0}curriculum[]"
+              "value" : "{http://www\\.campuscontent\\.de/model/1\\.0}curriculum[]"
             }
           },
-          "typicalLearningTime" : {
-            "*": {
-              "value": "{http://www\\.campuscontent\\.de/model/1\\.0}typicallearningtime[]"
+          "typicalLearningTime" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}typicallearningtime",
+          "typicalAgeRange" : {
+            "*" : {
+              "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}educationaltypicalagerange[]"
             }
           },
           "interactivityType" : {
@@ -90,12 +97,21 @@
           "typicalAgeRangeNominal" : {
             "from":  "{http://www\\.campuscontent\\.de/model/1\\.0}educationaltypicalagerange_from",
             "to":  "{http://www\\.campuscontent\\.de/model/1\\.0}educationaltypicalagerange_to"
+          },
+          "language" : {
+            "*" : {
+              "value" : "{http://www\\.campuscontent\\.de/model/1\\.0}educationallanguage[]"
+            }
           }
         }
       },
       "rights": {
-        "cost": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}cost",
-        "copyrightAndOtherRestrictions": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}copyright_and_other_restrictions",
+        "cost": {
+          "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}cost"
+        },
+        "copyrightAndOtherRestrictions": {
+          "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}copyright_and_other_restrictions"
+        },
         "description": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}rights_description",
         "author": "{http://www\\.campuscontent\\.de/model/1\\.0}author_freetext",
         "version": "{http://www\\.campuscontent\\.de/model/1\\.0}commonlicense_cc_version",
@@ -109,11 +125,11 @@
       "classification": {
         "*": {
           "purpose": {
-            "LearningGoal": {
+            "learningGoal": {
               "@(2,description)": "{http://www\\.campuscontent\\.de/model/1\\.0}learninggoal",
               "@(2,taxon)": {
-                "0": {
-                  "value": "{http://www\\.campuscontent\\.de/model/1\\.0}taxonid"
+                "*": {
+                  "value": "{http://www\\.campuscontent\\.de/model/1\\.0}taxonid[]"
                 }
               }
             }
@@ -121,8 +137,15 @@
         }
       },
       "editorial" : {
-        "*": {
-          "value" : "{http://www\\.campuscontent\\.de/model/1\\.0}editorial_checklist[]"
+        "0" : {
+          "state": {
+            "value": "{http://www\\.campuscontent\\.de/model/1\\.0}editorial_state"
+          },
+          "checklist": {
+            "*": {
+              "value": "{http://www\\.campuscontent\\.de/model/1\\.0}editorial_checklist[]"
+            }
+          }
         }
       }
     }
