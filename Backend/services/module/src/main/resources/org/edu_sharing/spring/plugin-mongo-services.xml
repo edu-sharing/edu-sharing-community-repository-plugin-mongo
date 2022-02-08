@@ -4,6 +4,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-
-    <bean id="nodeServiceImpl" class="org.edu_sharing.service.nodeservice.MongoNodeServiceImpl"/>
+    <!-- MongoDB config -->
+    <bean id="mongoClient" class="org.edu_sharing.plugin_mongo.mongo.MongoClientFactoryBean"/>
+    <bean id="eduMongoDb" class="org.edu_sharing.plugin_mongo.mongo.MongoDatabaseFactoryBean">
+        <constructor-arg name="client" ref="mongoClient"/>
+    </bean>
 </beans>
