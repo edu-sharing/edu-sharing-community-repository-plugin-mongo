@@ -30,10 +30,6 @@
         <directory>src/main/build</directory>
         <filtering>true</filtering>
       </resource>
-      <resource>
-        <directory>src/main/scripts</directory>
-        <filtering>true</filtering>
-      </resource>
     </resources>
 
     <plugins>
@@ -44,24 +40,6 @@
         <configuration>
           <outputDirectory>${project.build.directory}/build</outputDirectory>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <descriptors>
-                <descriptor>src/main/assembly/bin.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -88,6 +66,19 @@
               <goal>push</goal>
             </goals>
             <phase>deploy</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>

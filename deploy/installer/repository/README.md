@@ -11,7 +11,7 @@ Prerequisites
 - Apache Maven 3.6.3 or later
 - Apache-Tomcat 8.5.73
 - Apache2 (Optional)
-- Elasticsearch 7 (Optional)
+- MongoDb 5.0 (Optional)
 - xmlstarlet
 - ruby-hocon
 - systemd
