@@ -19,6 +19,8 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_USER:-repository}"
       ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
       ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@repository-mongo:27017/"
+      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USER:-admin}"
+      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASS:-admin}"
     expose:
       - "8081"
     depends_on:
