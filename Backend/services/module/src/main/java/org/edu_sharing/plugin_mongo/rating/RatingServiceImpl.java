@@ -4,41 +4,27 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
-import org.edu_sharing.alfresco.policy.GuestCagePolicy;
 import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
-import org.edu_sharing.repository.client.rpc.User;
-import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.InsufficientPermissionException;
-import org.edu_sharing.service.authority.AuthorityService;
-import org.edu_sharing.service.authority.AuthorityServiceFactory;
-import org.edu_sharing.service.nodeservice.NodeServiceHelper;
-import org.edu_sharing.service.permission.PermissionService;
-import org.edu_sharing.service.permission.PermissionServiceFactory;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
 import org.edu_sharing.service.rating.RatingService;
-import org.edu_sharing.service.toolpermission.ToolPermissionHelper;
 
 import java.util.*;
 
 public class RatingServiceImpl implements RatingService {
 
 
-    private final AuthorityService authorityService;
-    private final PermissionService permissionService;
+    private final RatingIntegrityService ratingIntegrityService;
     private final MongoDatabase database;
 
-    public RatingServiceImpl(MongoDatabase database) {
+    public RatingServiceImpl(MongoDatabase database, RatingIntegrityService ratingIntegrityService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("text")).readName(RatingConstants.REASON_KEY);
@@ -60,8 +46,7 @@ public class RatingServiceImpl implements RatingService {
                 CodecRegistries.fromProviders(pojoCodecProvider));
 
         this.database = database.withCodecRegistry(pojoCodecRegistry);
-        this.authorityService = AuthorityServiceFactory.getLocalService();  // TODO can this be used on unit tests?
-        this.permissionService = PermissionServiceFactory.getLocalService(); // TODO can this be used on unit tests?
+        this.ratingIntegrityService = ratingIntegrityService;
     }
 
     /**
@@ -71,25 +56,25 @@ public class RatingServiceImpl implements RatingService {
      */
     @Override
     public void addOrUpdateRating(String nodeId, Double rating, String text) throws Exception {
-        checkPreconditions(nodeId);
-        String user = AuthenticationUtil.getFullyAuthenticatedUser(); // TODO can this be used on unit tests?
-        User userInfo = authorityService.getUser(user);
-        String role = (String) userInfo.getProfileSettings().get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
+        ratingIntegrityService.checkPermissions(nodeId);
+
+        String authority = ratingIntegrityService.getAuthority();
+        String affiliation = ratingIntegrityService.getAffiliation();
 
         Document ratingObj = new Document();
         ratingObj.put(RatingConstants.NODEID_KEY, nodeId);
-        ratingObj.put(RatingConstants.RATINGS_COLLECTION_KEY, rating);
+        ratingObj.put(RatingConstants.RATING_KEY, rating);
         ratingObj.put(RatingConstants.REASON_KEY, text);
         ratingObj.put(RatingConstants.TIMESTAMP_KEY, new Date());
-        ratingObj.put(RatingConstants.AUTHORITY_KEY, user);
-        ratingObj.put(RatingConstants.AFFILIATION_KEY, role);
+        ratingObj.put(RatingConstants.AUTHORITY_KEY, authority);
+        ratingObj.put(RatingConstants.AFFILIATION_KEY, affiliation);
 
         createIndexes();
 
         ReplaceOptions options = new ReplaceOptions();
         options.upsert(true);
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, user)), ratingObj, options);
+        ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
     }
 
     /**
@@ -98,11 +83,11 @@ public class RatingServiceImpl implements RatingService {
      */
     @Override
     public void deleteRating(String nodeId) throws Exception {
-        checkPreconditions(nodeId);
-        String user = AuthenticationUtil.getFullyAuthenticatedUser(); // TODO can this be used on unit tests?
+        ratingIntegrityService.checkPermissions(nodeId);
+        String authority = ratingIntegrityService.getAuthority();
 
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, user)));
+        ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
     }
 
     /**
@@ -223,7 +208,6 @@ public class RatingServiceImpl implements RatingService {
     ]
     */
 
-
     public void changeUserData(String oldAuthority, String newAuthority) {
         // TODO do we need to update the timestamp as well? - No
         // TODO permission check? - No
@@ -237,22 +221,5 @@ public class RatingServiceImpl implements RatingService {
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.AUTHORITY_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY, RatingConstants.AUTHORITY_KEY));
-    }
-
-
-    private void checkPreconditions(String nodeId) throws Exception {
-        if(authorityService.isGuest()){
-            throw new GuestCagePolicy.GuestPermissionDeniedException("guests can not use ratings");
-        }
-
-        ToolPermissionHelper.throwIfToolpermissionMissing(CCConstants.CCM_VALUE_TOOLPERMISSION_RATE); // TODO can this be used on unit tests?
-        if(!NodeServiceHelper.getType(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, nodeId)).equals(CCConstants.CCM_TYPE_IO)){ // TODO can this be used on unit tests?
-            throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
-        }
-
-        List<String> permissions = permissionService.getPermissionsForAuthority(nodeId, AuthenticationUtil.getFullyAuthenticatedUser());
-        if (!permissions.contains(CCConstants.PERMISSION_RATE)) {
-            throw new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId);
-        }
     }
 }
