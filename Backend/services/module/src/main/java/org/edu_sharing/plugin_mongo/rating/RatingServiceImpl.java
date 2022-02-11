@@ -11,11 +11,14 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
+import org.eclipse.jetty.util.StringUtil;
 import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
 import org.edu_sharing.service.rating.RatingService;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -56,7 +59,8 @@ public class RatingServiceImpl implements RatingService {
      * @param text   --- the rating text
      */
     @Override
-    public void addOrUpdateRating(String nodeId, Double rating, String text) throws Exception {
+    public void addOrUpdateRating(@NotNull String nodeId, Double rating, String text) throws Exception {
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
         ratingIntegrityService.checkPermissions(nodeId);
 
         String authority = ratingIntegrityService.getAuthority();
@@ -83,7 +87,9 @@ public class RatingServiceImpl implements RatingService {
      * @param nodeId --- the uuid of the node of the related rating to be deleted
      */
     @Override
-    public void deleteRating(String nodeId) throws Exception {
+    public void deleteRating(@NotNull String nodeId) throws Exception {
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
+
         ratingIntegrityService.checkPermissions(nodeId);
         String authority = ratingIntegrityService.getAuthority();
 
@@ -98,7 +104,9 @@ public class RatingServiceImpl implements RatingService {
      * @return all ratings of the desired node
      */
     @Override
-    public List<Rating> getRatings(String nodeId, Date after) {
+    public List<Rating> getRatings(@NotNull String nodeId, @Nullable Date after) {
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
+
         List<Rating> ratings = new ArrayList<>();
 
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
@@ -111,14 +119,32 @@ public class RatingServiceImpl implements RatingService {
         return ratings;
     }
 
+
+    /**
+     *  Get a list of unique node id's of ratings which are altered after the specified date
+     * @param after --- the date which the ratings should have at least.
+     * @return a list of unique node id's
+     */
+    public List<String> getAlteredNodeIds(@NotNull Date after) {
+        Objects.requireNonNull(after, "after must not be null");
+
+        Bson filter = Filters.gte(RatingConstants.TIMESTAMP_KEY, after);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        List<String> nodeIds = new ArrayList<>();
+        ratingCollection.distinct(RatingConstants.NODEID_KEY, filter, String.class).into(nodeIds);
+        return nodeIds;
+    }
+
     /**
      * Get the accumulated ratings data
      * @param nodeId --- the uuid of the node of the related ratings
-     * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
+     * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times
      * @return An accumulated RatingDetails of the desired node
      */
     @Override
-    public RatingDetails getAccumulatedRatings(String nodeId, Date after){
+    public RatingDetails getAccumulatedRatings(@NotNull String nodeId, @Nullable Date after){
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
+
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
         if(after != null){
@@ -158,7 +184,10 @@ public class RatingServiceImpl implements RatingService {
      * @param oldAuthority --- The actual authority name
      * @param newAuthority --- The new authority name
      */
-    public void changeUserData(String oldAuthority, String newAuthority) {
+    public void changeUserData(@NotNull String oldAuthority, @NotNull String newAuthority) {
+        Objects.requireNonNull(oldAuthority, "oldAuthority must not be null");
+        Objects.requireNonNull(newAuthority, "newAuthority must not be null");
+
         // TODO do we need to update the timestamp as well? - No
         // TODO permission check? - No
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
@@ -172,4 +201,7 @@ public class RatingServiceImpl implements RatingService {
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.AUTHORITY_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY, RatingConstants.AUTHORITY_KEY));
     }
+
+
+
 }
