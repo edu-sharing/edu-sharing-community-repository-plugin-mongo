@@ -2,28 +2,22 @@ package org.edu_sharing.plugin_mongo.rating;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.StoreRef;
+
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
-import org.edu_sharing.repository.client.rpc.User;
-import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.authority.AuthorityService;
-import org.edu_sharing.service.nodeservice.NodeServiceHelper;
-import org.edu_sharing.service.permission.PermissionService;
 import org.edu_sharing.service.rating.Rating;
-import org.edu_sharing.service.toolpermission.ToolPermissionHelper;
-import org.junit.Assert;
+import org.edu_sharing.service.rating.RatingBase;
+import org.edu_sharing.service.rating.RatingDetails;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -42,9 +36,9 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("1", "Müller", "teacher", "good content", 4d, new Date()),
                 createRatingObject("1", "Meier", "teacher", "i'm pretty good ;)", 5d, new Date()),
                 createRatingObject("1", "Schmidt", "student", "well described", 5d, new Date()),
-                createRatingObject("1", "Schmidt", "student", "missing some content", 3d, new Date()),
+                createRatingObject("2", "Schiller", "student", "bad poetry", 3d, new Date()),
                 createRatingObject("1", "Schulz", "student", "the content isn't visible to me", 1d, new Date()),
-                createRatingObject("2", "Schiller", "", "bad poetry", 2d, new Date()),
+                createRatingObject("1", "Schmidt", "", "missing some content", 2d, new Date()),
                 createRatingObject("2", "Bach", "", "good bead", 5d, new Date())
         ));
 
@@ -139,7 +133,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     void deleteRating() throws Exception {
         // given
         String authority = "Müller";
-        String affiliation = "teacher";
         String nodeId = "1";
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
@@ -158,39 +151,91 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
-        Assertions.assertEquals(beforeCount-1, afterCount);
+        Assertions.assertEquals(beforeCount - 1, afterCount);
         Assertions.assertNull(result);
     }
 
     @Test
-    @Disabled
     void getRatingsWithoutDate() {
         // given
         String nodeId = "1";
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
-
 
         // when
         List<Rating> ratings = underTest.getRatings(nodeId, null);
 
         // then
-        List<Document> results = new ArrayList<>();
-        collection.find( Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(results);
+        List<Document> expected = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
 
-        Assertions.assertEquals(results.size(), ratings.size());
-        //Assertions.assertArrayEquals();
-        //TODO assertions
+        Assertions.assertEquals(expected.size(), ratings.size());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), ratings.stream().map(x -> x.getRef().getId()).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), ratings.stream().map(Rating::getRating).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), ratings.stream().map(Rating::getText).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AUTHORITY_KEY)).toArray(), ratings.stream().map(Rating::getAuthority).toArray());
     }
 
     @Test
-    @Disabled
-    void getAccumulatedRatings() {
+    void getAccumulatedRatingsWithoutDate() {
+        // given
+        String nodeId = "1";
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+
+        // when
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+
+        // then
+        List<Document> expected = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
+
+        Assertions.assertNotNull(ratingDetails);
+        Assertions.assertNotNull(ratingDetails.getOverall());
+        Assertions.assertNotNull(ratingDetails.getAffiliation());
+
+        Assertions.assertEquals( expected.stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum),ratingDetails.getOverall().getSum());
+        Assertions.assertEquals( expected.size(), ratingDetails.getOverall().getCount());
+
+        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> x.getString(RatingConstants.AFFILIATION_KEY)));
+        Map<String, RatingBase.RatingData>  actualAffiliations = ratingDetails.getAffiliation();
+
+        Assertions.assertEquals(expectedAffiliations.size(),actualAffiliations.size());
+        for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
+            RatingBase.RatingData actualRatingData = actualAffiliations.get(expectedAffiliation.getKey());
+
+            Assertions.assertNotNull(actualRatingData);
+            Assertions.assertEquals( expectedAffiliation.getValue().stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum());
+            Assertions.assertEquals( expectedAffiliation.getValue().size(), actualRatingData.getCount());
+        }
     }
 
     @Test
-    @Disabled
     void changeUserData() {
+        // given
+        String oldAuthority = "Schmidt";
+        String newAuthority = "Hummels";
+        List<Document> expected = new ArrayList<>();
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority))
+                .into(expected);
+
+        // when
+        underTest.changeUserData(oldAuthority, newAuthority);
+
+        // then
+        List<Document> actual = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, newAuthority))
+                .into(actual);
+
+
+        Assertions.assertEquals(expected.size(), actual.size());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray());
+
     }
 }

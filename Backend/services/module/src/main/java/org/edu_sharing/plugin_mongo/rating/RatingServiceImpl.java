@@ -10,6 +10,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
+import org.bson.json.JsonWriterSettings;
 import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
@@ -27,8 +28,8 @@ public class RatingServiceImpl implements RatingService {
     public RatingServiceImpl(MongoDatabase database, RatingIntegrityService ratingIntegrityService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
-        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("text")).readName(RatingConstants.REASON_KEY);
-        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("ref")).readName(RatingConstants.NODEID_KEY);
+        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
+        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("ref")).writeName(RatingConstants.NODEID_KEY);
 
         ClassModelBuilder<RatingDetails> ratingDetailsClassModelBuilder = ClassModel.builder(RatingDetails.class);
         ClassModelBuilder<RatingBase.RatingData> ratingDataClassModelBuilder = ClassModel.builder(RatingDetails.RatingData.class);
@@ -50,9 +51,9 @@ public class RatingServiceImpl implements RatingService {
     }
 
     /**
-     * @param nodeId     ---  the uuid of the node of the related rating to be added or updated
-     * @param rating     ---  the rating value
-     * @param text       ---  the rating text
+     * @param nodeId --- the uuid of the node of the related rating to be added or updated
+     * @param rating --- the rating value
+     * @param text   --- the rating text
      */
     @Override
     public void addOrUpdateRating(String nodeId, Double rating, String text) throws Exception {
@@ -79,7 +80,7 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Deletes the rating of the user for the specified node
-     * @param nodeId  ---  the uuid of the node of the related rating to be deleted
+     * @param nodeId --- the uuid of the node of the related rating to be deleted
      */
     @Override
     public void deleteRating(String nodeId) throws Exception {
@@ -92,9 +93,9 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Returns all ratings of the specified node that are newer or equals to the specified date
-     * @param nodeId  ---  the uuid of the node of the related ratings
-     * @param after   ---  the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
-     * @return
+     * @param nodeId --- the uuid of the node of the related ratings
+     * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
+     * @return all ratings of the desired node
      */
     @Override
     public List<Rating> getRatings(String nodeId, Date after) {
@@ -112,9 +113,9 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Get the accumulated ratings data
-     * @param nodeId   ---  the uuid of the node of the related ratings
-     * @param after    ---  the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
-     * @return
+     * @param nodeId --- the uuid of the node of the related ratings
+     * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
+     * @return An accumulated RatingDetails of the desired node
      */
     @Override
     public RatingDetails getAccumulatedRatings(String nodeId, Date after){
@@ -125,94 +126,43 @@ public class RatingServiceImpl implements RatingService {
         }
 
         MongoCollection<RatingDetails> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, RatingDetails.class);
-        RatingDetails ratingDetails = ratingCollection.aggregate(Arrays.asList(
+        List<Bson> aggregation = Arrays.asList(
                 Aggregates.match(filter),
 
-                Aggregates.group("affiliation",
+                Aggregates.group("$affiliation",
                         Accumulators.sum("count", 1),
                         Accumulators.sum("sum", "$rating")),
 
-                Projections.computed("doc", Projections.fields(
-                        Projections.computed("k",  new Document("$ifNull",  new Document("$_id", "null"))),
+                Aggregates.project(Projections.computed("doc", Projections.fields(
+                        Projections.computed("k",  new Document("$ifNull",  Arrays.asList("$_id", "null"))),
                         Projections.computed("v", Projections.fields(
                                 Projections.computed("count", "$count"),
-                                Projections.computed("sum", "$sum"))))),
+                                Projections.computed("sum", "$sum")))))),
 
                 Aggregates.group(null,
                         Accumulators.sum("count", "$doc.v.count"),
                         Accumulators.sum("sum", "$doc.v.sum"),
                         Accumulators.push("affiliation", "$doc")),
 
-                Projections.fields(
-                        Projections.computed("global", Projections.fields(
+                Aggregates.project(Projections.fields(
+                        Projections.computed("overall", Projections.fields(
                                 Projections.computed("count", "$count"),
                                 Projections.computed("sum", "$sum"))),
-                        Projections.computed("affiliation", "$affiliation"))))
-                .first();
+                        Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation")))));
 
-        return ratingDetails;
+        return ratingCollection.aggregate(aggregation).first();
     }
 
-    /*
-    [
-        {
-            $match: {
-                node : "1"
-            }
-        }, {
-            $group: {
-                _id: "$affiliation",
-                count : {
-                    $sum: 1
-                },
-                sum : {
-                    $sum: "$rating"
-                }
-            }
-        }, {
-            $project: {
-                doc: {
-                    k: {
-                        $ifNull : [ "$_id", "null" ]
-                    },
-                    v: {
-                        count : "$count",
-                        sum : "$sum"
-                    }
-                }
-            }
-        }, {
-            $group: {
-                _id: null,
-                count: {
-                    $sum: "$doc.v.count"
-                },
-                sum:{
-                    $sum: "$doc.v.sum"
-                },
-                affiliation: {
-                    $push: "$doc"
-                }
-            }
-        }, {
-            $project: {
-                global: {
-                    count: "$count",
-                    sum: "$sum"
-                },
-                affiliation : {
-                    $arrayToObject: "$affiliation"
-                }
-            }
-        }
-    ]
-    */
-
+    /**
+     * This method replaces the authority with the new one on all nodes with the specified authority
+     * @param oldAuthority --- The actual authority name
+     * @param newAuthority --- The new authority name
+     */
     public void changeUserData(String oldAuthority, String newAuthority) {
         // TODO do we need to update the timestamp as well? - No
         // TODO permission check? - No
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority),Updates.addToSet(RatingConstants.AUTHORITY_KEY, newAuthority));
+        ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority),Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
     }
 
     private void createIndexes() {
