@@ -24,6 +24,11 @@ import java.util.*;
 
 public class RatingServiceImpl implements RatingService {
 
+    // TODO in 6.1: we need to check for TOOLPERMISSION_RATE_READ and TOOLPERMISSION_RATE_WRITE for almost all methods
+    // Für die Ausgabe von Ratings muss folgendes erfüllt sein:
+    // Permission "RateRead" (direkt am Node Objekt, z.b. über Permission Service) + TP "TOOLPERMISSION_RATE_READ" (via den ToolpermissionServiceHelper)
+    // Für das abändern/erstellen/löschen usw:
+    // Permission "Rate" (direkt am Node Objekt, z.b. über Permission Service) + TP "TOOLPERMISSION_RATE_WRITE" (via den ToolpermissionServiceHelper)
 
     private final RatingIntegrityService ratingIntegrityService;
     private final MongoDatabase database;
