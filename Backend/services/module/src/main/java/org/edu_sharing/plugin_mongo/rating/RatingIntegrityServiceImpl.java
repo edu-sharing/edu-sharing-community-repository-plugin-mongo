@@ -13,7 +13,9 @@ import org.edu_sharing.service.nodeservice.NodeServiceHelper;
 import org.edu_sharing.service.permission.PermissionService;
 import org.edu_sharing.service.toolpermission.ToolPermissionHelper;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class RatingIntegrityServiceImpl implements RatingIntegrityService {
 
@@ -29,7 +31,11 @@ public class RatingIntegrityServiceImpl implements RatingIntegrityService {
     public String getAffiliation(){
         String user = getAuthority();
         User userInfo = authorityService.getUser(user);
-        return (String) userInfo.getProfileSettings().get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
+        Map<String, Serializable> profileSettings = userInfo.getProfileSettings();
+        if(profileSettings == null) {
+            return null;
+        }
+        return (String) profileSettings.get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
     }
 
     @Override

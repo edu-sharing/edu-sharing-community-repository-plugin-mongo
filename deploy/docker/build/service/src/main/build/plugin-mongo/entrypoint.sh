@@ -3,6 +3,7 @@ set -eux
 
 
 debug_repository_plugin_mongo="${DEBUG_REPOSITORY_PLUGIN_MONGO:-}"
+
 repository_mongo_protocol="${REPOSITORY_MONGO_PROTOCOL:-mongodb}"
 repository_mongo_host="${REPOSITORY_MONGO_HOST:-repository-mongo}"
 repository_mongo_port="${REPOSITORY_MONGO_PORT:-27017}"

@@ -9,4 +9,9 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.edu_sharing.plugin_mongo.spring_config"/>
+
+    <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
+        <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="ratingIntegrityService" ref="ratingIntegrityService"/>
+    </bean>
 </beans>

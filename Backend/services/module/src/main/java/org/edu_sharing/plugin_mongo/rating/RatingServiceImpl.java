@@ -16,6 +16,7 @@ import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
+import org.edu_sharing.service.rating.RatingHistory;
 import org.edu_sharing.service.rating.RatingService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,13 +41,17 @@ public class RatingServiceImpl implements RatingService {
         ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("ref")).writeName(RatingConstants.NODEID_KEY);
 
         ClassModelBuilder<RatingDetails> ratingDetailsClassModelBuilder = ClassModel.builder(RatingDetails.class);
+        ClassModelBuilder<RatingHistory> ratingHistoryClassModelBuilder = ClassModel.builder(RatingHistory.class);
+        ((PropertyModelBuilder<String>)ratingHistoryClassModelBuilder.getProperty("timestamp")).writeName(RatingConstants.ID_KEY);
+
         ClassModelBuilder<RatingBase.RatingData> ratingDataClassModelBuilder = ClassModel.builder(RatingDetails.RatingData.class);
 
 
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder()
                 .register(ratingClassModelBuilder.build(),
                         ratingDetailsClassModelBuilder.build(),
-                        ratingDataClassModelBuilder.build())
+                        ratingDataClassModelBuilder.build(),
+                        ratingHistoryClassModelBuilder.build())
                 .build();
 
         CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(
@@ -160,9 +165,10 @@ public class RatingServiceImpl implements RatingService {
         List<Bson> aggregation = Arrays.asList(
                 Aggregates.match(filter),
 
-                Aggregates.group("$affiliation",
+                // We only need to use constants for the properties in the first stage. The following stages are fine as they are
+                Aggregates.group("$" + RatingConstants.AFFILIATION_KEY,
                         Accumulators.sum("count", 1),
-                        Accumulators.sum("sum", "$rating")),
+                        Accumulators.sum("sum", "$"+RatingConstants.RATING_KEY)),
 
                 Aggregates.project(Projections.computed("doc", Projections.fields(
                         Projections.computed("k",  new Document("$ifNull",  Arrays.asList("$_id", "null"))),
@@ -182,6 +188,80 @@ public class RatingServiceImpl implements RatingService {
                         Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation")))));
 
         return ratingCollection.aggregate(aggregation).first();
+    }
+
+    @Override
+    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after){
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
+
+        //after is optional
+        Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
+        if(after != null){
+            filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
+        }
+
+        MongoCollection<RatingHistory> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, RatingHistory.class);
+        List<Bson> aggregationTimed = Arrays.asList(
+                Aggregates.match(filter),
+
+                // We only need to use constants for the properties in the first stage. The following stages are fine as they are
+                Aggregates.group(Projections.fields(
+                        Projections.computed("timestamp",
+                                Projections.computed ("$dateToString", Projections.fields(
+                                        Projections.computed("format", "%Y-%m-%d"),
+                                        Projections.computed("date", "$"+  RatingConstants.TIMESTAMP_KEY)))),
+                        Projections.computed("affiliation", "$"+ RatingConstants.AFFILIATION_KEY)),
+                        Accumulators.sum("count", 1),
+                        Accumulators.sum("sum", "$" + RatingConstants.RATING_KEY)),
+
+                Aggregates.project(Projections.computed("doc", Projections.fields(
+                        Projections.computed("k", new Document("$ifNull",  Arrays.asList("$_id.affiliation", "null"))),
+                        Projections.computed("v", Projections.fields(
+                                Projections.computed("count", "$count"),
+                                Projections.computed("sum", "$sum")))))),
+
+                Aggregates.group("$_id.timestamp",
+                        Accumulators.sum("count", "$doc.v.count"),
+                        Accumulators.sum("sum", "$doc.v.sum"),
+                        Accumulators.push("affiliation", "$doc")),
+
+                Aggregates.project(Projections.fields(
+                        Projections.computed("overall", Projections.fields(
+                        Projections.computed("count", "$count"),
+                        Projections.computed("sum", "$sum"))),
+                        Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation"))))
+        );
+
+        List<Bson> aggregationAll = Arrays.asList(
+                Aggregates.match(filter),
+
+                Aggregates.group("$" + RatingConstants.AFFILIATION_KEY,
+                        Accumulators.sum("count", 1),
+                        Accumulators.sum("sum", "$" + RatingConstants.RATING_KEY)),
+
+                Aggregates.project(Projections.computed("doc", Projections.fields(
+                        Projections.computed("k", new Document("$ifNull",  Arrays.asList("$_id", "null"))),
+                        Projections.computed("v", Projections.fields(
+                                Projections.computed("count", "$count"),
+                                Projections.computed("sum", "$sum")))))),
+
+                Aggregates.group(null,
+                        Accumulators.sum("count", "$doc.v.count"),
+                        Accumulators.sum("sum", "$doc.v.sum"),
+                        Accumulators.push("affiliation", "$doc")),
+
+                Aggregates.project(Projections.fields(
+                        Projections.computed("overall", Projections.fields(
+                        Projections.computed("count", "$count"),
+                        Projections.computed("sum", "$sum"))),
+                        Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation"))))
+        );
+
+        List<RatingHistory> ratingHistories = new ArrayList<>();
+        ratingCollection.aggregate(aggregationAll).into(ratingHistories);
+        ratingCollection.aggregate(aggregationTimed).into(ratingHistories);
+
+        return ratingHistories;
     }
 
     /**
@@ -206,7 +286,4 @@ public class RatingServiceImpl implements RatingService {
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.AUTHORITY_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY, RatingConstants.AUTHORITY_KEY));
     }
-
-
-
 }

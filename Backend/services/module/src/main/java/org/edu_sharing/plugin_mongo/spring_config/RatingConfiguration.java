@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RatingConfiguration {
 
-    @Bean
-    public RatingService ratingService(MongoDatabase mongoDatabase, RatingIntegrityService integrityService){
-        return new RatingServiceImpl(mongoDatabase, integrityService);
-    }
+//    @Bean(name = "ratingService")
+//    public RatingService ratingService(MongoDatabase mongoDatabase, RatingIntegrityService integrityService){
+//        return new RatingServiceImpl(mongoDatabase, integrityService);
+//    }
 
     @Bean
     public RatingIntegrityService ratingIntegrityService(AuthorityService authorityService, PermissionService permissionService){

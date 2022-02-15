@@ -4,12 +4,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.poi.openxml4j.util.Nullable;
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
 
+import org.edu_sharing.service.rating.RatingHistory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -17,6 +19,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,10 +43,10 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("1", "Meier", "teacher", "i'm pretty good ;)", 5d, DateUtils.addDays(now, -5)),
                 createRatingObject("1", "Schmidt", "student", "well described", 5d, DateUtils.addDays(now, -1)),
                 createRatingObject("1", "Schulz", "student", "the content isn't visible to me", 1d, DateUtils.addDays(now, -1)),
-                createRatingObject("1", "Schmidt", "", "missing some content", 2d, DateUtils.addDays(now, -5)),
+                createRatingObject("1", "Schmidt", null, "missing some content", 2d, DateUtils.addDays(now, -5)),
 
                 createRatingObject("2", "Schiller", "student", "bad poetry", 3d, DateUtils.addDays(now, -5)),
-                createRatingObject("2", "Bach", "", "good bead", 5d, DateUtils.addDays(now, -3))
+                createRatingObject("2", "Bach", null, "good bead", 5d, DateUtils.addDays(now, -3))
         ));
 
         underTest = new RatingServiceImpl(db, ratingIntegrityService);
@@ -87,13 +90,13 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
-        Assertions.assertEquals(beforeCount + 1, afterCount);
-        Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY));
-        Assertions.assertEquals(rating, result.get(RatingConstants.RATING_KEY));
-        Assertions.assertEquals(reason, result.get(RatingConstants.REASON_KEY));
-        Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY));
-        Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY));
-        Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY)); // TODO can we do this better?
+        Assertions.assertEquals(beforeCount + 1, afterCount, "count");
+        Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY), RatingConstants.NODEID_KEY);
+        Assertions.assertEquals(rating, result.get(RatingConstants.RATING_KEY), RatingConstants.RATING_KEY);
+        Assertions.assertEquals(reason, result.get(RatingConstants.REASON_KEY), RatingConstants.REASON_KEY);
+        Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
+        Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
+        Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
     }
 
     @Test
@@ -122,13 +125,13 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
-        Assertions.assertEquals(beforeCount, afterCount);
-        Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY));
-        Assertions.assertEquals(rating, result.get(RatingConstants.RATING_KEY));
-        Assertions.assertEquals(reason, result.get(RatingConstants.REASON_KEY));
-        Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY));
-        Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY));
-        Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY)); // TODO can we do this better?
+        Assertions.assertEquals(beforeCount, afterCount, "count");
+        Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY), RatingConstants.NODEID_KEY);
+        Assertions.assertEquals(rating, result.get(RatingConstants.RATING_KEY), RatingConstants.RATING_KEY);
+        Assertions.assertEquals(reason, result.get(RatingConstants.REASON_KEY), RatingConstants.REASON_KEY);
+        Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
+        Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
+        Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
     }
 
     @Test
@@ -153,8 +156,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
-        Assertions.assertEquals(beforeCount - 1, afterCount);
-        Assertions.assertNull(result);
+        Assertions.assertEquals(beforeCount - 1, afterCount, "count");
+        Assertions.assertNull(result, "result");
     }
 
     @Test
@@ -171,11 +174,11 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
 
-        Assertions.assertEquals(expected.size(), ratings.size());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), ratings.stream().map(x -> x.getRef().getId()).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), ratings.stream().map(Rating::getRating).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), ratings.stream().map(Rating::getText).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AUTHORITY_KEY)).toArray(), ratings.stream().map(Rating::getAuthority).toArray());
+        Assertions.assertEquals(expected.size(), ratings.size(), "size");
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), ratings.stream().map(x -> x.getRef().getId()).toArray(), RatingConstants.NODEID_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), ratings.stream().map(Rating::getRating).toArray(), RatingConstants.RATING_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), ratings.stream().map(Rating::getText).toArray(), RatingConstants.REASON_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AUTHORITY_KEY)).toArray(), ratings.stream().map(Rating::getAuthority).toArray(), RatingConstants.AUTHORITY_KEY);
     }
 
     @Test
@@ -193,11 +196,11 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.gte(RatingConstants.TIMESTAMP_KEY, after))).into(expected);
 
-        Assertions.assertEquals(expected.size(), ratings.size());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), ratings.stream().map(x -> x.getRef().getId()).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), ratings.stream().map(Rating::getRating).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), ratings.stream().map(Rating::getText).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AUTHORITY_KEY)).toArray(), ratings.stream().map(Rating::getAuthority).toArray());
+        Assertions.assertEquals(expected.size(), ratings.size(), "size");
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), ratings.stream().map(x -> x.getRef().getId()).toArray(), RatingConstants.NODEID_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), ratings.stream().map(Rating::getRating).toArray(), RatingConstants.RATING_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), ratings.stream().map(Rating::getText).toArray(), RatingConstants.REASON_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AUTHORITY_KEY)).toArray(), ratings.stream().map(Rating::getAuthority).toArray(), RatingConstants.AUTHORITY_KEY);
     }
 
     @Test
@@ -213,23 +216,23 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
 
-        Assertions.assertNotNull(ratingDetails);
-        Assertions.assertNotNull(ratingDetails.getOverall());
-        Assertions.assertNotNull(ratingDetails.getAffiliation());
+        Assertions.assertNotNull(ratingDetails, String.format("no rating found for node %s", nodeId));
+        Assertions.assertNotNull(ratingDetails.getOverall(), "overall");
+        Assertions.assertNotNull(ratingDetails.getAffiliation(), "affiliation");
 
-        Assertions.assertEquals( expected.stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum),ratingDetails.getOverall().getSum());
-        Assertions.assertEquals( expected.size(), ratingDetails.getOverall().getCount());
+        Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingDetails.getOverall().getSum(), "overall sum");
+        Assertions.assertEquals(expected.size(), ratingDetails.getOverall().getCount(), "overall count");
 
-        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> x.getString(RatingConstants.AFFILIATION_KEY)));
-        Map<String, RatingBase.RatingData>  actualAffiliations = ratingDetails.getAffiliation();
+        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
+        Map<String, RatingBase.RatingData> actualAffiliations = ratingDetails.getAffiliation();
 
-        Assertions.assertEquals(expectedAffiliations.size(),actualAffiliations.size());
+        Assertions.assertEquals(expectedAffiliations.size(), actualAffiliations.size(), "number of affiliations");
         for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
             RatingBase.RatingData actualRatingData = actualAffiliations.get(expectedAffiliation.getKey());
 
-            Assertions.assertNotNull(actualRatingData);
-            Assertions.assertEquals( expectedAffiliation.getValue().stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum());
-            Assertions.assertEquals( expectedAffiliation.getValue().size(), actualRatingData.getCount());
+            Assertions.assertNotNull(actualRatingData, String.format("affiliation for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("affiliation count for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("affiliation sum for %s", expectedAffiliation.getKey()));
         }
     }
 
@@ -248,23 +251,23 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.gte(RatingConstants.TIMESTAMP_KEY, after))).into(expected);
 
-        Assertions.assertNotNull(ratingDetails);
-        Assertions.assertNotNull(ratingDetails.getOverall());
-        Assertions.assertNotNull(ratingDetails.getAffiliation());
+        Assertions.assertNotNull(ratingDetails, String.format("no rating found for node %s", nodeId));
+        Assertions.assertNotNull(ratingDetails.getOverall(), "overall");
+        Assertions.assertNotNull(ratingDetails.getAffiliation(), "affiliation");
 
-        Assertions.assertEquals( expected.stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum),ratingDetails.getOverall().getSum());
-        Assertions.assertEquals( expected.size(), ratingDetails.getOverall().getCount());
+        Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingDetails.getOverall().getSum(), "overall sum");
+        Assertions.assertEquals(expected.size(), ratingDetails.getOverall().getCount(), "overall count");
 
-        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> x.getString(RatingConstants.AFFILIATION_KEY)));
-        Map<String, RatingBase.RatingData>  actualAffiliations = ratingDetails.getAffiliation();
+        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
+        Map<String, RatingBase.RatingData> actualAffiliations = ratingDetails.getAffiliation();
 
-        Assertions.assertEquals(expectedAffiliations.size(),actualAffiliations.size());
+        Assertions.assertEquals(expectedAffiliations.size(), actualAffiliations.size(), "number of affiliations");
         for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
             RatingBase.RatingData actualRatingData = actualAffiliations.get(expectedAffiliation.getKey());
 
-            Assertions.assertNotNull(actualRatingData);
-            Assertions.assertEquals( expectedAffiliation.getValue().stream().map(x->x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum());
-            Assertions.assertEquals( expectedAffiliation.getValue().size(), actualRatingData.getCount());
+            Assertions.assertNotNull(actualRatingData, String.format("affiliation for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("affiliation count for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("affiliation sum for %s", expectedAffiliation.getKey()));
         }
     }
 
@@ -276,24 +279,22 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority))
-                .into(expected);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority)).into(expected);
 
         // when
         underTest.changeUserData(oldAuthority, newAuthority);
 
         // then
         List<Document> actual = new ArrayList<>();
-        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, newAuthority))
-                .into(actual);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, newAuthority)).into(actual);
 
         Assertions.assertEquals(expected.size(), actual.size());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray());
-        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray());
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.NODEID_KEY)).toArray(), RatingConstants.NODEID_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.RATING_KEY)).toArray(), RatingConstants.RATING_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.REASON_KEY)).toArray(), RatingConstants.REASON_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.TIMESTAMP_KEY)).toArray(), RatingConstants.TIMESTAMP_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.ID_KEY)).toArray(), RatingConstants.ID_KEY);
+        Assertions.assertArrayEquals(expected.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray(), actual.stream().map(x -> x.get(RatingConstants.AFFILIATION_KEY)).toArray(), RatingConstants.AFFILIATION_KEY);
     }
 
     @Test
@@ -315,4 +316,92 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(expected.size(), actual.size());
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
     }
+
+    @Test
+    void getAccumulatedRatingHistoryWithoutDate() {
+        // given
+        String nodeId = "1";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+
+        // when
+        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, null);
+
+        // then
+        List<Document> expectedDocuments = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expectedDocuments);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Map.Entry<String, List<Document>>> expectedSet = new ArrayList<>(expectedDocuments.stream().collect(Collectors.groupingBy(x -> dateFormat.format(x.getDate(RatingConstants.TIMESTAMP_KEY)))).entrySet());
+        expectedSet.add(0, new AbstractMap.SimpleEntry<>(null, expectedDocuments));
+
+        for (Map.Entry<String, List<Document>> entry : expectedSet) {
+            final String key = entry.getKey();
+            RatingHistory ratingHistory = ratingHistories.stream().filter(x -> Objects.equals(x.getTimestamp(), key)).findFirst().orElse(null);
+            List<Document> expected = entry.getValue();
+
+            String ratingKey = Optional.ofNullable(entry.getKey()).orElse("overall");
+            Assertions.assertNotNull(ratingHistory, String.format("%s", ratingKey));
+            Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingHistory.getOverall().getSum(), String.format("sum of %s", ratingKey));
+            Assertions.assertEquals(expected.size(), ratingHistory.getOverall().getCount(), String.format("count of %s", ratingKey));
+
+            Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
+            Map<String, RatingBase.RatingData> actualAffiliations = ratingHistory.getAffiliation();
+
+            Assertions.assertEquals(expectedAffiliations.size(), actualAffiliations.size(), String.format("affiliations of %s", ratingKey));
+            for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
+                String affiliationKey = expectedAffiliation.getKey();
+                RatingBase.RatingData actualRatingData = actualAffiliations.get(affiliationKey);
+
+                Assertions.assertNotNull(actualRatingData, String.format("affiliation %s for %s", affiliationKey, ratingKey));
+                Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("sum of affiliation %s for %s", affiliationKey, ratingKey));
+                Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("count of affiliation %s for %s", affiliationKey, ratingKey));
+            }
+        }
+    }
+
+    @Test
+    void getAccumulatedRatingHistoryWithDate() {
+        // given
+        String nodeId = "1";
+        Date after = DateUtils.addDays(now, -2);
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+
+        // when
+        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, after);
+
+        // then
+        List<Document> expectedDocuments = new ArrayList<>();
+        collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.gte(RatingConstants.TIMESTAMP_KEY, after))).into(expectedDocuments);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Map.Entry<String, List<Document>>> expectedSet = new ArrayList<>(expectedDocuments.stream().collect(Collectors.groupingBy(x -> dateFormat.format(x.getDate(RatingConstants.TIMESTAMP_KEY)))).entrySet());
+        expectedSet.add(0, new AbstractMap.SimpleEntry<>(null, expectedDocuments));
+
+        for (Map.Entry<String, List<Document>> entry : expectedSet) {
+            final String key = entry.getKey();
+            RatingHistory ratingHistory = ratingHistories.stream().filter(x -> Objects.equals(x.getTimestamp(), key)).findFirst().orElse(null);
+            List<Document> expected = entry.getValue();
+
+            String ratingKey = Optional.ofNullable(entry.getKey()).orElse("overall");
+            Assertions.assertNotNull(ratingHistory, String.format("RatingHistory for %s", ratingKey));
+            Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingHistory.getOverall().getSum(), String.format("sum of %s", ratingKey));
+            Assertions.assertEquals(expected.size(), ratingHistory.getOverall().getCount(), String.format("count of %s", ratingKey));
+
+            Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
+            Map<String, RatingBase.RatingData> actualAffiliations = ratingHistory.getAffiliation();
+
+            Assertions.assertEquals(expectedAffiliations.size(), actualAffiliations.size(), String.format("number of affiliations of %s", ratingKey));
+            for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
+                String affiliationKey = expectedAffiliation.getKey();
+                RatingBase.RatingData actualRatingData = actualAffiliations.get(affiliationKey);
+
+                Assertions.assertNotNull(actualRatingData, String.format("affiliation %s for %s", affiliationKey, ratingKey));
+                Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("sum of affiliation %s for %s", affiliationKey, ratingKey));
+                Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("count of affiliation %s for %s", affiliationKey, ratingKey));
+            }
+        }
+    }
+
 }
