@@ -58,13 +58,33 @@ class RatingIntegrityServiceImplTest {
     }
 
     @Test
-    void getAffiliation() {
+    void getAffiliationHasAffiliation() {
         // given
         String authority = "Muster";
         String affiliation = "teacher";
 
         Mockito.when(authorityService.getUser(authority)).thenReturn(user);
         Mockito.when(user.getProfileSettings()).thenReturn(Collections.singletonMap(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION, affiliation));
+
+        try (MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
+            authenticationUtilMockedStatic.when(AuthenticationUtil::getFullyAuthenticatedUser).thenReturn(authority);
+
+            // when
+            String actual = underTest.getAffiliation();
+
+            // then
+            Assertions.assertEquals(affiliation, actual);
+        }
+    }
+
+    @Test
+    void getAffiliationHasNoAffiliation() {
+        // given
+        String authority = "Muster";
+        String affiliation = null;
+
+        Mockito.when(authorityService.getUser(authority)).thenReturn(user);
+        Mockito.when(user.getProfileSettings()).thenReturn(null);
 
         try (MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
             authenticationUtilMockedStatic.when(AuthenticationUtil::getFullyAuthenticatedUser).thenReturn(authority);

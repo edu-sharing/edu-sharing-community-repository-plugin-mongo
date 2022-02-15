@@ -7,6 +7,8 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.openxml4j.util.Nullable;
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
+import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.InsufficientPermissionException;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
@@ -100,6 +102,34 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
+    void addRatingNoPermission() throws Exception {
+        // given
+        String nodeId = "1";
+        Double rating = 5d;
+        String authority = "Muster";
+        String reason = "nice video about...";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+
+        Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
+
+        // when
+        Assertions.assertThrows(InsufficientPermissionException.class, () -> underTest.addOrUpdateRating(nodeId, rating, reason));
+
+        // then
+        long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+        Document result = collection.find(Filters.and(
+                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
+                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
+
+        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
+
+        Assertions.assertEquals(beforeCount, afterCount, "count");
+        Assertions.assertNull(result, RatingConstants.NODEID_KEY);
+    }
+
+    @Test
     void updateRating() throws Exception {
         // given
         String nodeId = "1";
@@ -132,6 +162,32 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
         Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
         Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
+    }
+
+    @Test
+    void deleteRatingNoPermission() throws Exception {
+        // given
+        String authority = "Müller";
+        String nodeId = "1";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+
+        Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
+
+        // when
+        Assertions.assertThrows(InsufficientPermissionException.class, () -> underTest.deleteRating(nodeId));
+
+        // then
+        long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+        Document result = collection.find(Filters.and(
+                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
+                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
+
+        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
+
+        Assertions.assertEquals(beforeCount, afterCount, "count");
+        Assertions.assertNotNull(result, RatingConstants.NODEID_KEY);
     }
 
     @Test
@@ -223,6 +279,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingDetails.getOverall().getSum(), "overall sum");
         Assertions.assertEquals(expected.size(), ratingDetails.getOverall().getCount(), "overall count");
 
+        Assertions.assertEquals(0, ratingDetails.isUser(), "user rate");
+
         Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
         Map<String, RatingBase.RatingData> actualAffiliations = ratingDetails.getAffiliation();
 
@@ -234,6 +292,64 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
             Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("affiliation count for %s", expectedAffiliation.getKey()));
             Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("affiliation sum for %s", expectedAffiliation.getKey()));
         }
+    }
+
+    @Test
+    void getAccumulatedRatingsWithAuthority() {
+        // given
+        String nodeId = "1";
+        String authority = "Müller";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+
+        Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
+
+        // when
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+
+        // then
+        List<Document> expected = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
+        Double expectedUserRating = collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).map(doc->doc.getDouble(RatingConstants.RATING_KEY)).first();
+
+
+        Assertions.assertNotNull(ratingDetails, String.format("no rating found for node %s", nodeId));
+        Assertions.assertNotNull(ratingDetails.getOverall(), "overall");
+        Assertions.assertNotNull(ratingDetails.getAffiliation(), "affiliation");
+
+        Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingDetails.getOverall().getSum(), "overall sum");
+        Assertions.assertEquals(expected.size(), ratingDetails.getOverall().getCount(), "overall count");
+
+        Assertions.assertEquals(expectedUserRating, ratingDetails.isUser(), "user rate");
+
+        Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
+        Map<String, RatingBase.RatingData> actualAffiliations = ratingDetails.getAffiliation();
+
+        Assertions.assertEquals(expectedAffiliations.size(), actualAffiliations.size(), "number of affiliations");
+        for (Map.Entry<String, List<Document>> expectedAffiliation : expectedAffiliations.entrySet()) {
+            RatingBase.RatingData actualRatingData = actualAffiliations.get(expectedAffiliation.getKey());
+
+            Assertions.assertNotNull(actualRatingData, String.format("affiliation for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), actualRatingData.getSum(), String.format("affiliation count for %s", expectedAffiliation.getKey()));
+            Assertions.assertEquals(expectedAffiliation.getValue().size(), actualRatingData.getCount(), String.format("affiliation sum for %s", expectedAffiliation.getKey()));
+        }
+    }
+
+    @Test
+    void getAccumulatedRatingsNoRating() {
+        // given
+        String nodeId = "99999";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+
+        // when
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+
+        // then
+        List<Document> expected = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
+
+        Assertions.assertNull(ratingDetails);
     }
 
     @Test
@@ -257,6 +373,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Assertions.assertEquals(expected.stream().map(x -> x.getDouble(RatingConstants.RATING_KEY)).reduce(0d, Double::sum), ratingDetails.getOverall().getSum(), "overall sum");
         Assertions.assertEquals(expected.size(), ratingDetails.getOverall().getCount(), "overall count");
+
+        Assertions.assertEquals(0, ratingDetails.isUser(), "user rate");
 
         Map<String, List<Document>> expectedAffiliations = expected.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getString(RatingConstants.AFFILIATION_KEY)).orElse("null")));
         Map<String, RatingBase.RatingData> actualAffiliations = ratingDetails.getAffiliation();

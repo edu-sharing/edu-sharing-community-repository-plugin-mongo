@@ -37,12 +37,12 @@ public class RatingServiceImpl implements RatingService {
     public RatingServiceImpl(MongoDatabase database, RatingIntegrityService ratingIntegrityService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
-        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
-        ((PropertyModelBuilder<String>)ratingClassModelBuilder.getProperty("ref")).writeName(RatingConstants.NODEID_KEY);
+        ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
+        ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("ref")).writeName(RatingConstants.NODEID_KEY);
 
         ClassModelBuilder<RatingDetails> ratingDetailsClassModelBuilder = ClassModel.builder(RatingDetails.class);
         ClassModelBuilder<RatingHistory> ratingHistoryClassModelBuilder = ClassModel.builder(RatingHistory.class);
-        ((PropertyModelBuilder<String>)ratingHistoryClassModelBuilder.getProperty("timestamp")).writeName(RatingConstants.ID_KEY);
+        ((PropertyModelBuilder<String>) ratingHistoryClassModelBuilder.getProperty("timestamp")).writeName(RatingConstants.ID_KEY);
 
         ClassModelBuilder<RatingBase.RatingData> ratingDataClassModelBuilder = ClassModel.builder(RatingDetails.RatingData.class);
 
@@ -94,6 +94,7 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Deletes the rating of the user for the specified node
+     *
      * @param nodeId --- the uuid of the node of the related rating to be deleted
      */
     @Override
@@ -109,6 +110,7 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Returns all ratings of the specified node that are newer or equals to the specified date
+     *
      * @param nodeId --- the uuid of the node of the related ratings
      * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times and also use the cache
      * @return all ratings of the desired node
@@ -120,7 +122,7 @@ public class RatingServiceImpl implements RatingService {
         List<Rating> ratings = new ArrayList<>();
 
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
-        if(after != null){
+        if (after != null) {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
@@ -131,7 +133,8 @@ public class RatingServiceImpl implements RatingService {
 
 
     /**
-     *  Get a list of unique node id's of ratings which are altered after the specified date
+     * Get a list of unique node id's of ratings which are altered after the specified date
+     *
      * @param after --- the date which the ratings should have at least.
      * @return a list of unique node id's
      */
@@ -147,20 +150,22 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Get the accumulated ratings data
+     *
      * @param nodeId --- the uuid of the node of the related ratings
      * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times
      * @return An accumulated RatingDetails of the desired node
      */
     @Override
-    public RatingDetails getAccumulatedRatings(@NotNull String nodeId, @Nullable Date after){
+    public RatingDetails getAccumulatedRatings(@NotNull String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
-        if(after != null){
+        if (after != null) {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
+        String authority = ratingIntegrityService.getAuthority();
         MongoCollection<RatingDetails> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, RatingDetails.class);
         List<Bson> aggregation = Arrays.asList(
                 Aggregates.match(filter),
@@ -168,10 +173,10 @@ public class RatingServiceImpl implements RatingService {
                 // We only need to use constants for the properties in the first stage. The following stages are fine as they are
                 Aggregates.group("$" + RatingConstants.AFFILIATION_KEY,
                         Accumulators.sum("count", 1),
-                        Accumulators.sum("sum", "$"+RatingConstants.RATING_KEY)),
+                        Accumulators.sum("sum", "$" + RatingConstants.RATING_KEY)),
 
                 Aggregates.project(Projections.computed("doc", Projections.fields(
-                        Projections.computed("k",  new Document("$ifNull",  Arrays.asList("$_id", "null"))),
+                        Projections.computed("k", new Document("$ifNull", Arrays.asList("$_id", "null"))),
                         Projections.computed("v", Projections.fields(
                                 Projections.computed("count", "$count"),
                                 Projections.computed("sum", "$sum")))))),
@@ -187,16 +192,31 @@ public class RatingServiceImpl implements RatingService {
                                 Projections.computed("sum", "$sum"))),
                         Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation")))));
 
-        return ratingCollection.aggregate(aggregation).first();
+
+        RatingDetails ratingDetails = ratingCollection.aggregate(aggregation).first();
+        if (ratingDetails == null) {
+            return null;
+        }
+
+        filter = Filters.and(filter, Filters.gte(RatingConstants.AUTHORITY_KEY, authority));
+        Double userRating = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY).
+                find(filter)
+                .map(doc -> doc.getDouble(RatingConstants.RATING_KEY))
+                .first();
+
+        if(userRating != null) {
+            ratingDetails.setUser(userRating);
+        }
+        return ratingDetails;
     }
 
     @Override
-    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after){
+    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
-        if(after != null){
+        if (after != null) {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
@@ -206,16 +226,16 @@ public class RatingServiceImpl implements RatingService {
 
                 // We only need to use constants for the properties in the first stage. The following stages are fine as they are
                 Aggregates.group(Projections.fields(
-                        Projections.computed("timestamp",
-                                Projections.computed ("$dateToString", Projections.fields(
-                                        Projections.computed("format", "%Y-%m-%d"),
-                                        Projections.computed("date", "$"+  RatingConstants.TIMESTAMP_KEY)))),
-                        Projections.computed("affiliation", "$"+ RatingConstants.AFFILIATION_KEY)),
+                                Projections.computed("timestamp",
+                                        Projections.computed("$dateToString", Projections.fields(
+                                                Projections.computed("format", "%Y-%m-%d"),
+                                                Projections.computed("date", "$" + RatingConstants.TIMESTAMP_KEY)))),
+                                Projections.computed("affiliation", "$" + RatingConstants.AFFILIATION_KEY)),
                         Accumulators.sum("count", 1),
                         Accumulators.sum("sum", "$" + RatingConstants.RATING_KEY)),
 
                 Aggregates.project(Projections.computed("doc", Projections.fields(
-                        Projections.computed("k", new Document("$ifNull",  Arrays.asList("$_id.affiliation", "null"))),
+                        Projections.computed("k", new Document("$ifNull", Arrays.asList("$_id.affiliation", "null"))),
                         Projections.computed("v", Projections.fields(
                                 Projections.computed("count", "$count"),
                                 Projections.computed("sum", "$sum")))))),
@@ -227,8 +247,8 @@ public class RatingServiceImpl implements RatingService {
 
                 Aggregates.project(Projections.fields(
                         Projections.computed("overall", Projections.fields(
-                        Projections.computed("count", "$count"),
-                        Projections.computed("sum", "$sum"))),
+                                Projections.computed("count", "$count"),
+                                Projections.computed("sum", "$sum"))),
                         Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation"))))
         );
 
@@ -240,7 +260,7 @@ public class RatingServiceImpl implements RatingService {
                         Accumulators.sum("sum", "$" + RatingConstants.RATING_KEY)),
 
                 Aggregates.project(Projections.computed("doc", Projections.fields(
-                        Projections.computed("k", new Document("$ifNull",  Arrays.asList("$_id", "null"))),
+                        Projections.computed("k", new Document("$ifNull", Arrays.asList("$_id", "null"))),
                         Projections.computed("v", Projections.fields(
                                 Projections.computed("count", "$count"),
                                 Projections.computed("sum", "$sum")))))),
@@ -252,8 +272,8 @@ public class RatingServiceImpl implements RatingService {
 
                 Aggregates.project(Projections.fields(
                         Projections.computed("overall", Projections.fields(
-                        Projections.computed("count", "$count"),
-                        Projections.computed("sum", "$sum"))),
+                                Projections.computed("count", "$count"),
+                                Projections.computed("sum", "$sum"))),
                         Projections.computed("affiliation", new Document("$arrayToObject", "$affiliation"))))
         );
 
@@ -266,6 +286,7 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * This method replaces the authority with the new one on all nodes with the specified authority
+     *
      * @param oldAuthority --- The actual authority name
      * @param newAuthority --- The new authority name
      */
@@ -276,7 +297,7 @@ public class RatingServiceImpl implements RatingService {
         // TODO do we need to update the timestamp as well? - No
         // TODO permission check? - No
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
-        ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority),Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
+        ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority), Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
     }
 
     private void createIndexes() {
