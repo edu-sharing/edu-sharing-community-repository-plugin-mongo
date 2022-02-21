@@ -1,4 +1,4 @@
-package org.edu_sharing.plugin_mongo.service.nodeservice;
+package org.edu_sharing.plugin_mongo.metadata;
 
 import com.bazaarvoice.jolt.Chainr;
 import lombok.AllArgsConstructor;
