@@ -90,15 +90,28 @@
     <dependency>
       <groupId>com.bazaarvoice.jolt</groupId>
       <artifactId>jolt-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.inject</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.bazaarvoice.jolt</groupId>
       <artifactId>json-utils</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.inject</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- optional -->
