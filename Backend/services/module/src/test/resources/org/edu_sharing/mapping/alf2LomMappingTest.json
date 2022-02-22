@@ -1,7 +1,7 @@
 {
   "mapping" : "org/edu_sharing/mapping/alf2lom.json",
 
-  "alf": {
+  "input": {
     // General
     "{http://www.alfresco.org/model/content/1.0}title" : "My fallback title",
     "{http://www.campuscontent.de/model/lom/1.0}title" : "My title",
@@ -74,7 +74,7 @@
     "{http://www.campuscontent.de/model/1.0}editorial_checklist" : [ "some checklist", "some more checks" ]
   },
 
-  "mongo" : {
+  "expected" : {
     "general" : {
       "title" : "My title",
       "language" : [ "de" ],

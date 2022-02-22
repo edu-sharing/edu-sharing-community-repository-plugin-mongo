@@ -74,8 +74,9 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
     @Override
     public void addAspect(String nodeId, String aspect) {
+        super.addAspect(nodeId, aspect);
+
         if (!isSupported(getType(nodeId))) {
-            super.addAspect(nodeId, aspect);
             return;
         }
 
@@ -84,11 +85,11 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
     @Override
     public void removeAspect(String nodeId, String aspect) {
+        super.addAspect(nodeId, aspect);
+
         if (!isSupported(getType(nodeId))) {
-            super.addAspect(nodeId, aspect);
             return;
         }
-
         workspaceCollection.updateOne(Filters.eq(ID_KEY, nodeId), Updates.pull("aspects", aspect));
     }
 
@@ -125,6 +126,7 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
     @Override
     public HashMap<String, Object> getProperties(String storeProtocol, String storeId, String nodeId) throws Throwable {
+        // TODO handle only by mongo if supported
         HashMap<String, Object> result = super.getProperties(storeProtocol, storeId, nodeId);
 
         if (!isSupported(getType(nodeId))) {
@@ -302,6 +304,7 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
     @Override
     public HashMap<String, HashMap<String, Object>> getVersionHistory(String nodeId) throws Throwable {
+        // TODO handle only by mongo if supported
         HashMap<String, HashMap<String, Object>> result = super.getVersionHistory(nodeId);
 
         if (!isSupported(getType(nodeId))) {
@@ -346,7 +349,6 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         nodes.add(0, nodeRef);
 
         super.removeNode(nodeId, parentId, recycle);
-
         if (!isSupported(getType(nodeId))) {
             return;
         }
@@ -367,7 +369,6 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
         nodes.add(0, nodeRef);
 
         super.removeNodeForce(storeProtocol, storeId, nodeId, recycle);
-
         if (!isSupported(getType(nodeId))) {
             return;
         }

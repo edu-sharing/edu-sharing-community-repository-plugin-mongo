@@ -17,7 +17,24 @@ class MappingTest {
         return Arrays.asList(
                 "alf2LomFallbackMappingTest",
                 "alf2LomMappingTest",
-                "lom2AlfMappingTest"
+                "lom2AlfMappingTest",
+                "alf2VersionMappingTest",
+                "version2AlfMappingTest",
+                "alf2InfoMappingTest",
+                "info2AlfMappingTest",
+                "alf2DirectoryMappingTest",
+                "directory2AlfMappingTest",
+                "alf2CollectionMappingTest",
+                "collection2AlfMappingTest",
+                "alf2StoreMappingTest",
+                "store2AlfMappingTest",
+                "alf2AffiliationMappingTest",
+                "affiliation2AlfMappingTest",
+                "alf2Remote_ShadowMappingTest",
+                "remote_Shadow2AlfMappingTest",
+                "alf2Remote_ReplicationMappingTest",
+                "remote_Replication2AlfMappingTest",
+                "alfmapMappingTest"
         );
     }
 
@@ -32,8 +49,8 @@ class MappingTest {
 
         Map<String, Object> testUnit = JsonUtils.jsonToMap(classLoader.getResourceAsStream(testPath));
 
+        String model = (String) testUnit.get("mapping");
         Object input = testUnit.get("input");
-        String model = (String)testUnit.get("mapping");
         Object expected = testUnit.get("expected");
 
         Chainr chainr = Chainr.fromSpec(JsonUtils.jsonToList(classLoader.getResourceAsStream(model)));
@@ -46,7 +63,7 @@ class MappingTest {
 
     void runDiffy(String failureMessage, Object expected, Object actual) {
         Diffy.Result result = diffy.diff(expected, actual);
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             Assert.fail(failureMessage + ".\nhere is a diff:\nexpected: " + JsonUtils.toJsonString(result.expected) + "\n  actual: " + JsonUtils.toJsonString(result.actual));
         }
     }

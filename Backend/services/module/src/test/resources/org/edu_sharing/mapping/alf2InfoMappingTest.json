@@ -1,0 +1,45 @@
+{
+  "mapping": "org/edu_sharing/mapping/alf2info.json",
+
+  "input": {
+    "{http://www.alfresco.org/model/content/1.0}name": "Datenverzeichnis",
+    "{http://www.alfresco.org/model/content/1.0}modifier": "System",
+    "{http://www.alfresco.org/model/content/1.0}modified": "Aug 23, 2020 7:41:32 PM",
+    "{http://www.alfresco.org/model/content/1.0}creator": "System",
+    "{http://www.alfresco.org/model/content/1.0}created": "Aug 23, 2020 7:41:16 PM",
+    "{http://www.campuscontent.de/model/1.0}wwwurl": "tps://corona-school.de",
+    "{http://www.alfresco.org/model/content/1.0}owner": "admin",
+    "{http://www.alfresco.org/model/content/1.0}edu_forcemetadataset": false,
+    "{http://www.alfresco.org/model/content/1.0}edu_metadataset": "default",
+    "{http://www.campuscontent.de/model/1.0}importblocked": true,
+    "{http://www.campuscontent.de/model/1.0}linktype": "USER_GENERATED",
+    "{http://www.campuscontent.de/model/1.0}objecttype": "MATERIAL",
+    "{http://www.campuscontent.de/model/1.0}originally_created": "Nov 16, 2020 12:00:00 AM",
+    "{http://www.campuscontent.de/model/1.0}search_context": [ "media_center" ],
+    "{http://www.campuscontent.de/model/1.0}thumbnailurl": "https://iiif.deutsche-digitale-bibliothek.de/image/2/0dfe164d-4e39-4bca-8d3b-6044b75c174c/full/!440,330/0/default.jpg",
+    "{http://www.campuscontent.de/model/1.0}university": "${default_university}"
+  },
+
+  "expected": {
+    "filename": "Datenverzeichnis",
+    "modifier": "System",
+    "modifiedDate": "Aug 23, 2020 7:41:32 PM",
+    "creator": "System",
+    "createDate": "Aug 23, 2020 7:41:16 PM",
+    "url": "tps://corona-school.de",
+    "owner": "admin",
+    "propagateMetadataset": false,
+    "metadataset": "default",
+    "importBlocked": true,
+    "urlOrigin": "USER_GENERATED",
+    "objectType" : {
+      "value": "MATERIAL"
+    },
+    "originallyCreated": "Nov 16, 2020 12:00:00 AM",
+    "searchContext": [ "media_center" ],
+    "preview" : {
+      "url": "https://iiif.deutsche-digitale-bibliothek.de/image/2/0dfe164d-4e39-4bca-8d3b-6044b75c174c/full/!440,330/0/default.jpg"
+    },
+    "organisation": "${default_university}"
+  }
+}

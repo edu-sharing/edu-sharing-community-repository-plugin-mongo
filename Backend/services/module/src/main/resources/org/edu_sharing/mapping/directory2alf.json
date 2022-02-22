@@ -1,0 +1,9 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "type": "{http://www\\.campuscontent\\.de/model/1\\.0}maptype",
+      "hasTemplate": "{http://www\\.campuscontent\\.de/model/1\\.0}metadataPresettingStatus"
+    }
+  }
+]

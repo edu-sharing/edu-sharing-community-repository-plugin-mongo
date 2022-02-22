@@ -1,0 +1,26 @@
+{
+  "mapping": "org/edu_sharing/mapping/remote2alf.json",
+
+  "input": {
+    "id": "/unterrichtsmaterialien/18-einfuhrung-ins-coding",
+    "modified": "Jun 22, 2021 2:00:00 AM",
+    "hash": "2019-06-10T17:39:48+02:000.0.1",
+    "repository": {
+      "id": "ddb",
+      "origin": "serlo_spider"
+    },
+    "timestamp": "2021-04-15T02:05:27Z",
+    "uuid": "8e8dab98-a5f2-5bfc-a98b-0c411f3939aa",
+    "location": "REPLICATION"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}replicationmodified": "Jun 22, 2021 2:00:00 AM",
+    "{http://www.campuscontent.de/model/1.0}replicationsource": "ddb",
+    "{http://www.campuscontent.de/model/1.0}replicationsourcehash": "2019-06-10T17:39:48+02:000.0.1",
+    "{http://www.campuscontent.de/model/1.0}replicationsourceid": "/unterrichtsmaterialien/18-einfuhrung-ins-coding",
+    "{http://www.campuscontent.de/model/1.0}replicationsourceorigin": "serlo_spider",
+    "{http://www.campuscontent.de/model/1.0}replicationsourcetimestamp": "2021-04-15T02:05:27Z",
+    "{http://www.campuscontent.de/model/1.0}replicationsourceuuid": "8e8dab98-a5f2-5bfc-a98b-0c411f3939aa"
+  }
+}

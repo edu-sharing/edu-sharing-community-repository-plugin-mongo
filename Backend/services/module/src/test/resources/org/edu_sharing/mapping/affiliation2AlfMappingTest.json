@@ -1,0 +1,13 @@
+{
+  "mapping": "org/edu_sharing/mapping/affiliation2alf.json",
+
+  "input": {
+    "context":["default"],
+    "scope":"safe"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}educontextname":["default"],
+    "{http://www.campuscontent.de/model/1.0}eduscopename":"safe"
+  }
+}

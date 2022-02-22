@@ -1,0 +1,27 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "location": {
+        "REMOTE_SHADOW": {
+          "@(2,id)": "{http://www\\.campuscontent\\.de/model/1\\.0}remotenodeid",
+          "@(2,repository)":{
+            "id": "{http://www\\.campuscontent\\.de/model/1\\.0}remoterepositoryid",
+            "type": "{http://www\\.campuscontent\\.de/model/1\\.0}remoterepositorytype"
+          }
+        },
+        "REPLICATION": {
+          "@(2,modified)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationmodified",
+          "@(2,repository)":{
+            "id": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsource",
+            "origin": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceorigin"
+          },
+          "@(2,hash)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourcehash",
+          "@(2,id)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceid",
+          "@(2,timestamp)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourcetimestamp",
+          "@(2,uuid)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceuuid"
+        }
+      }
+    }
+  }
+]

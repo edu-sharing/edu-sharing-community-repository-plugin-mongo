@@ -20,6 +20,48 @@
         <property name="modelInfos">
             <list>
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="version"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2version.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/version2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="store"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2store.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/store2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="info"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2info.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/info2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="directory"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2directory.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/directory2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="collection"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2collection.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/collection2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="remote"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2remote.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/remote2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="affiliation"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2affiliation.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/affiliation2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="lom"/>
                     <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2lom.json"/>
                     <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/lom2alf.json"/>
@@ -30,14 +72,20 @@
                         <bean class="org.edu_sharing.plugin_mongo.datamodel.remover.LomRemover"/>
                     </constructor-arg>
                 </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="alfmap"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alfmap.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/alfmap.json"/>
+                </bean>
             </list>
         </property>
     </bean>
 
 
     <!-- services -->
-<!--    <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.metadata.MongoNodeServiceImpl">-->
-<!--        <constructor-arg name="database" ref="eduMongoDb"/>-->
-<!--        <constructor-arg name="mappingService" ref="alfMapping"/>-->
-<!--    </bean>-->
+    <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.metadata.MongoNodeServiceImpl">
+        <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="mappingService" ref="alfMapping"/>
+    </bean>
 </beans>

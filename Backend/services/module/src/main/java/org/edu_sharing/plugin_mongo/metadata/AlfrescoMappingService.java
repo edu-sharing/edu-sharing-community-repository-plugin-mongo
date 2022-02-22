@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AlfrescoMappingService {
 
+    public static final String MONGO_CONTENT_KEY = "content";
+    public static final String ALF_CONTENT_KEY = "{http://www.alfresco.org/model/content/1.0}content";
+
     private final MongoModelDictionary modelDictionary;
 
     @SuppressWarnings("unchecked")
@@ -22,6 +25,11 @@ public class AlfrescoMappingService {
         for (Map.Entry<String, Object> entry : rootDocument.entrySet()){
             String model = entry.getKey();
             if(Objects.equals(model, "_id")){
+                continue;
+            }
+
+            if(Objects.equals(model, MONGO_CONTENT_KEY)){
+                properties.put(ALF_CONTENT_KEY, entry.getValue().toString());
                 continue;
             }
 
@@ -40,6 +48,11 @@ public class AlfrescoMappingService {
     }
 
     public void setProperties(Document rootDocument, HashMap<String, Object> properties) {
+
+        if(properties.containsKey(ALF_CONTENT_KEY)){
+            rootDocument.put(MONGO_CONTENT_KEY, properties.get(ALF_CONTENT_KEY));
+        }
+
         for (MongoModelInfo modelInfo : modelDictionary.getModelInfos()){
 
             Chainr chainr = modelInfo.getAlf2mongoChainr();
@@ -59,9 +72,15 @@ public class AlfrescoMappingService {
 
     public void removeProperties(Document rootDocument, List<String> props) {
         final Map<String, Object> properties = props.stream().collect(Collectors.toMap(x->x, x-> Remover.RemoveToken));
+
         for (Map.Entry<String, Object> entry : rootDocument.entrySet()) {
             String modelName = entry.getKey();
             if (Objects.equals(modelName, "_id")) {
+                continue;
+            }
+
+            if (Objects.equals(modelName, MONGO_CONTENT_KEY) && props.contains(ALF_CONTENT_KEY)) {
+                properties.remove(MONGO_CONTENT_KEY);
                 continue;
             }
 

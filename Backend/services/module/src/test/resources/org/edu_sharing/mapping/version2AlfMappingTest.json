@@ -1,0 +1,17 @@
+{
+  "mapping": "org/edu_sharing/mapping/version2alf.json",
+
+  "input": {
+    "version": "1.1",
+    "type": "MAJOR",
+    "autoCreateVersion": true,
+    "comment": "METADATA_UPDATE"
+  },
+
+  "expected": {
+    "{http://www.alfresco.org/model/content/1.0}versionLabel": "1.1",
+    "{http://www.alfresco.org/model/content/1.0}versionType": "MAJOR",
+    "{http://www.campuscontent.de/model/1.0}create_version": true,
+    "{http://www.campuscontent.de/model/1.0}version_comment": "METADATA_UPDATE"
+  }
+}
