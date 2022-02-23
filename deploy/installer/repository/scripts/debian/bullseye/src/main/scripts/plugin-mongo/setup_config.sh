@@ -17,7 +17,7 @@ hocon -f "${eduSConf}" \
 	set "mongo.connectionString" '"'"${repository_mongo_protocol}://${repository_mongo_user}:${repository_mongo_pass}@${repository_mongo_host}:${repository_mongo_port}"'"'
 
 hocon -f "${eduSConf}" \
-	set "mongo.database" "${repository_mongo_database}"
+	set "mongo.database" '"'"${repository_mongo_database}"'"'
 
 
 ########################################################################################################################
