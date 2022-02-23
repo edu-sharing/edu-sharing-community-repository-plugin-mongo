@@ -1,0 +1,35 @@
+{
+  "mapping": "org/edu_sharing/mapping/workflow2alf.json",
+
+  "input": {
+    "instructions": "workflow instructions",
+    "protocol": [
+      {
+        "editor": "admin",
+        "receiver": [ "admin" ],
+        "comment": "sagf",
+        "time": 1611653311377,
+        "status": "200_tocheck"
+      },
+      {
+        "editor": "admin",
+        "receiver": [ "Person Test 0.0014156062918817547" ],
+        "comment": "test",
+        "time": 1611325326315,
+        "status": "100_unchecked"
+      }
+    ],
+    "receiver": [ "admin" ],
+    "status": "200_tocheck"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}wf_instructions": "workflow instructions",
+    "{http://www.campuscontent.de/model/1.0}.protocol": [
+      "{\"editor\":\"admin\",\"receiver\":[\"admin\"],\"comment\":\"sagf\",\"time\":1611653311377,\"status\":\"200_tocheck\"}",
+      "{\"editor\":\"admin\",\"receiver\":[\"Person Test 0.0014156062918817547\"],\"comment\":\"test\",\"time\":1611325326315,\"status\":\"100_unchecked\"}"
+    ],
+    "{http://www.campuscontent.de/model/1.0}wf_receiver": [ "admin" ],
+    "{http://www.campuscontent.de/model/1.0}wf_status": "200_tocheck"
+  }
+}

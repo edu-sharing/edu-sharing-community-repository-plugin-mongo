@@ -1,0 +1,15 @@
+{
+  "mapping": "org/edu_sharing/mapping/alf2published.json",
+
+  "input": {
+    "{http://www.campuscontent.de/model/1.0}published_date": "Jan 26, 2021 10:28:57 AM",
+    "{http://www.campuscontent.de/model/1.0}published_handle_id": "test/0.19936392027065142",
+    "{http://www.campuscontent.de/model/1.0}published_mode": "copy"
+  },
+
+  "expected": {
+    "date": "Jan 26, 2021 10:28:57 AM",
+    "handleId": "test/0.19936392027065142",
+    "mode": "copy"
+  }
+}

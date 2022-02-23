@@ -37,5 +37,11 @@
       "{http://www.alfresco.org/model/content/1.0}longitude": "{http://www\\.alfresco\\.org/model/content/1\\.0}longitude",
       "{http://www.alfresco.org/model/content/1.0}template": "{http://www\\.alfresco\\.org/model/content/1\\.0}template"
     }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.alfresco.org/model/content/1.0}template": "=nodeRefFromId(@(0))"
+    }
   }
 ]

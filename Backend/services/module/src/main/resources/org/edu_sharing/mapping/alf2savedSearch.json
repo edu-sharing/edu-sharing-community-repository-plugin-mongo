@@ -1,0 +1,11 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}saved_search_mds": "mds",
+      "{http://www.campuscontent.de/model/1.0}saved_search_parameters": "parameters",
+      "{http://www.campuscontent.de/model/1.0}saved_search_query": "query",
+      "{http://www.campuscontent.de/model/1.0}saved_search_repository": "repository"
+    }
+  }
+]

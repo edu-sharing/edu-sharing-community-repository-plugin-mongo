@@ -1,0 +1,21 @@
+{
+  "mapping": "org/edu_sharing/mapping/reference2alf.json",
+
+  "input": {
+    "title": "my title",
+    "description": "my descritption",
+    "version": "my version",
+    "videoVtt": "my videoVtt",
+    "proposalStatus": "DECLINED",
+    "collection": "29a6417a-c2d5-42bd-846f-0c4274832464"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}ref_title": "my title",
+    "{http://www.campuscontent.de/model/1.0}ref_description": "my descritption",
+    "{http://www.campuscontent.de/model/1.0}ref_version": "my version",
+    "{http://www.campuscontent.de/model/1.0}ref_video_vtt": "my videoVtt",
+    "{http://www.campuscontent.de/model/1.0}collection_proposal_status": "DECLINED",
+    "{http://www.campuscontent.de/model/1.0}collection_proposal_target": "defined in MappingTest.java!"
+  }
+}

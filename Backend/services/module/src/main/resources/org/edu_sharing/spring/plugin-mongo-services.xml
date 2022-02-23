@@ -50,15 +50,63 @@
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="permission"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2permission.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/permission2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="remote"/>
                     <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2remote.json"/>
                     <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/remote2alf.json"/>
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="reference"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2reference.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/reference2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="affiliation"/>
                     <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2affiliation.json"/>
                     <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/affiliation2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="published"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2published.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/published2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="savedSearch"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2savedSearch.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/savedSearch2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="share"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2share.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/share2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="workflow"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2workflow.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/workflow2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="importedObject"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2importedObject.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/importedObject2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="association"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2association.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/association2alf.json"/>
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
@@ -75,8 +123,8 @@
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="alfmap"/>
-                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alfmap.json"/>
-                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/alfmap.json"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2alfmap.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/alfmap2alf.json"/>
                 </bean>
             </list>
         </property>

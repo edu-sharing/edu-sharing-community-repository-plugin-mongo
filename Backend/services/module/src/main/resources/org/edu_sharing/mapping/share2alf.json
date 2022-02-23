@@ -1,0 +1,12 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "downloadCount": "{http://www\\.campuscontent\\.de/model/1\\.0}share_download_counter",
+      "password": "{http://www\\.campuscontent\\.de/model/1\\.0}share_password",
+      "expires": "{http://www\\.campuscontent\\.de/model/1\\.0}share_expirydate",
+      "mail": "{http://www\\.campuscontent\\.de/model/1\\.0}share_mail",
+      "token": "{http://www\\.campuscontent\\.de/model/1\\.0}share_token"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "mapping": "org/edu_sharing/mapping/savedSearch2alf.json",
+
+  "input": {
+    "mds": "mds",
+    "parameters": [ "some parameters" ],
+    "query": "ngsearch",
+    "repository": "local"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}saved_search_mds": "mds",
+    "{http://www.campuscontent.de/model/1.0}saved_search_parameters": [ "some parameters" ],
+    "{http://www.campuscontent.de/model/1.0}saved_search_query": "ngsearch",
+    "{http://www.campuscontent.de/model/1.0}saved_search_repository": "local"
+  }
+}

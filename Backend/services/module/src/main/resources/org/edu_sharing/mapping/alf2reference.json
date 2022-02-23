@@ -1,0 +1,19 @@
+[
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}collection_proposal_target": "=idFromNodeRef(@(0))"
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}ref_title": "title",
+      "{http://www.campuscontent.de/model/1.0}ref_description": "description",
+      "{http://www.campuscontent.de/model/1.0}ref_version": "version",
+      "{http://www.campuscontent.de/model/1.0}ref_video_vtt": "videoVtt",
+      "{http://www.campuscontent.de/model/1.0}collection_proposal_status": "proposalStatus",
+      "{http://www.campuscontent.de/model/1.0}collection_proposal_target": "collection"
+    }
+  }
+]

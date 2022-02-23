@@ -1,0 +1,17 @@
+[
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}.protocol": "=jsonfy(@(0))"
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}wf_instructions": "instructions",
+      "{http://www.campuscontent.de/model/1.0}.protocol": "protocol",
+      "{http://www.campuscontent.de/model/1.0}wf_receiver": "receiver",
+      "{http://www.campuscontent.de/model/1.0}wf_status": "status"
+    }
+  }
+]

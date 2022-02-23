@@ -5,6 +5,7 @@
       "{http://www.campuscontent.de/model/1.0}remotenodeid":"REMOTE_SHADOW.id",
       "{http://www.campuscontent.de/model/1.0}remoterepositoryid":"REMOTE_SHADOW.repository.id",
       "{http://www.campuscontent.de/model/1.0}remoterepositorytype":"REMOTE_SHADOW.repository.type",
+
       "{http://www.campuscontent.de/model/1.0}replicationmodified": "REPLICATION.modified",
       "{http://www.campuscontent.de/model/1.0}replicationsource": "REPLICATION.repository.id",
       "{http://www.campuscontent.de/model/1.0}replicationsourcehash": "REPLICATION.hash",

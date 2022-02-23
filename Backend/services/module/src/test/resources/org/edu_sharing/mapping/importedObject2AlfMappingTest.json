@@ -1,0 +1,15 @@
+{
+  "mapping": "org/edu_sharing/mapping/importedObject2alf.json",
+
+  "input": {
+    "nodeId": "cff197a46d6a08a2a0fe46591a3bf3c0",
+    "appId": "-home id-",
+    "appName": "edu-sharing"
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}imported_object_nodeid": "cff197a46d6a08a2a0fe46591a3bf3c0",
+    "{http://www.campuscontent.de/model/1.0}imported_object_appid": "-home id-",
+    "{http://www.campuscontent.de/model/1.0}imported_object_appname": "edu-sharing"
+  }
+}

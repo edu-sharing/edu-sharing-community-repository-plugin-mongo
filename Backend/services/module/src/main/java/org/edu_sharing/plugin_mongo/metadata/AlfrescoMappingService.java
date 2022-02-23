@@ -40,7 +40,9 @@ public class AlfrescoMappingService {
 
             Chainr chainr = modelInfo.getMongo2alfChainr();
             Map props = (Map)chainr.transform(rootDocument);
-            properties.putAll(props);
+            if(props != null && !props.isEmpty()) {
+                properties.putAll(props);
+            }
         }
 
 
@@ -61,7 +63,7 @@ public class AlfrescoMappingService {
                 continue;
             }
 
-            Object modelDocument = rootDocument.getString(modelInfo.getName());
+            Object modelDocument = rootDocument.get(modelInfo.getName());
             if(modelDocument != null) {
                 modelInfo.getMerger().merge(updateValues, modelDocument);
             }else {

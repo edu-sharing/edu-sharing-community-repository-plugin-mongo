@@ -1,0 +1,10 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}imported_object_nodeid": "nodeId",
+      "{http://www.campuscontent.de/model/1.0}imported_object_appid": "appId",
+      "{http://www.campuscontent.de/model/1.0}imported_object_appname": "appName"
+    }
+  }
+]

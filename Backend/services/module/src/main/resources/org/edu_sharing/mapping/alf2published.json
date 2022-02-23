@@ -1,0 +1,10 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}published_date": "date",
+      "{http://www.campuscontent.de/model/1.0}published_handle_id": "handleId",
+      "{http://www.campuscontent.de/model/1.0}published_mode": "mode"
+    }
+  }
+]

@@ -1,5 +1,5 @@
 {
-  "mapping": "org/edu_sharing/mapping/alfmap.json",
+  "mapping": "org/edu_sharing/mapping/alfmap2alf.json",
 
   "input": {
     "{http://www.alfresco.org/model/action/1.0}definitionName": "imageRenderingEngine",
@@ -21,7 +21,7 @@
     "{http://www.alfresco.org/model/content/1.0}lockOwner": "admin",
     "{http://www.alfresco.org/model/content/1.0}lockType": "NODE_LOCK",
     "{http://www.alfresco.org/model/content/1.0}longitude": 10.476772,
-    "{http://www.alfresco.org/model/content/1.0}template": "{storeRef={protocol=workspace, identifier=SpacesStore}, id=5f1aa124-6873-4fef-b776-fef0ef8b0178}",
+    "{http://www.alfresco.org/model/content/1.0}template": "5f1aa124-6873-4fef-b776-fef0ef8b0178",
     "{http://www.alfresco.org/model/exif/1.0}dateTimeOriginal": "Feb 17, 2021 10:09:40 AM",
     "{http://www.alfresco.org/model/exif/1.0}exposureTime": 0.005263157894736842,
     "{http://www.alfresco.org/model/exif/1.0}fNumber": 1.7,
@@ -64,7 +64,7 @@
     "{http://www.alfresco.org/model/content/1.0}lockOwner": "admin",
     "{http://www.alfresco.org/model/content/1.0}lockType": "NODE_LOCK",
     "{http://www.alfresco.org/model/content/1.0}longitude": 10.476772,
-    "{http://www.alfresco.org/model/content/1.0}template": "{storeRef={protocol=workspace, identifier=SpacesStore}, id=5f1aa124-6873-4fef-b776-fef0ef8b0178}",
+    "{http://www.alfresco.org/model/content/1.0}template": "defined in MappingTest.java!",
     "{http://www.alfresco.org/model/exif/1.0}dateTimeOriginal": "Feb 17, 2021 10:09:40 AM",
     "{http://www.alfresco.org/model/exif/1.0}exposureTime": 0.005263157894736842,
     "{http://www.alfresco.org/model/exif/1.0}fNumber": 1.7,
