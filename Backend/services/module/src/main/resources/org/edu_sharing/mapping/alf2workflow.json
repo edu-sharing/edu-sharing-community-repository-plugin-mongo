@@ -1,4 +1,11 @@
 [
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
   {
     "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
     "spec": {

@@ -1,47 +1,32 @@
 [
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
   {
     "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
     "spec": {
-      "{http://www.alfresco.org/model/content/1.0}template": "=idFromNodeRef(@(0))"
+      "{http://www.alfresco.org/model/content/1.0}template": "=idFromNodeRef(@(0))",
+      "{http://www.alfresco.org/model/system/1.0}locale": "=mapFromLocale(@(0))"
+    }
+  },
+  {
+    "operation": "remove",
+    "spec": {
+      "{http://www.alfresco.org/model/content/1.0}title": "",
+      "{http://www.alfresco.org/model/content/1.0}description": "",
+      "{http://www.campuscontent.de/model/1.0}customlicense_key": ""
     }
   },
   {
     "operation": "shift",
     "spec": {
-      "{http://www.alfresco.org/model/action/1.0}*": {
+      "*": {
         "@": "&"
-      },
-      "{http://www.alfresco.org/model/application/1.0}*": {
-        "@": "&"
-      },
-      "{http://www.alfresco.org/model/exif/1.0}*": {
-        "@": "&"
-      },
-      "{http://www.alfresco.org/model/solrfacet/1.0}*": {
-        "@": "&"
-      },
-      "{http://www.alfresco.org/model/system/1.0}*": {
-        "@": "&"
-      },
-      "{http://www.alfresco.org/model/webdav/1.0}*": {
-        "@": "&"
-      },
-
-      "{http://www.alfresco.org/model/content/1.0}author": "{http://www\\.alfresco\\.org/model/content/1\\.0}author",
-      "{http://www.alfresco.org/model/content/1.0}autoVersion": "{http://www\\.alfresco\\.org/model/content/1\\.0}autoVersion",
-      "{http://www.alfresco.org/model/content/1.0}autoVersionOnUpdateProps": "{http://www\\.alfresco\\.org/model/content/1\\.0}autoVersionOnUpdateProps",
-      "{http://www.alfresco.org/model/content/1.0}automaticUpdate": "{http://www\\.alfresco\\.org/model/content/1\\.0}automaticUpdate",
-      "{http://www.alfresco.org/model/content/1.0}coverage": "{http://www\\.alfresco\\.org/model/content/1\\.0}coverage",
-      "{http://www.alfresco.org/model/content/1.0}initialVersion": "{http://www\\.alfresco\\.org/model/content/1\\.0}initialVersion",
-      "{http://www.alfresco.org/model/content/1.0}isContentIndexed": "{http://www\\.alfresco\\.org/model/content/1\\.0}isContentIndexed",
-      "{http://www.alfresco.org/model/content/1.0}isIndexed": "{http://www\\.alfresco\\.org/model/content/1\\.0}isIndexed",
-      "{http://www.alfresco.org/model/content/1.0}lastThumbnailModification": "{http://www\\.alfresco\\.org/model/content/1\\.0}lastThumbnailModification",
-      "{http://www.alfresco.org/model/content/1.0}latitude": "{http://www\\.alfresco\\.org/model/content/1\\.0}latitude",
-      "{http://www.alfresco.org/model/content/1.0}lockLifetime": "{http://www\\.alfresco\\.org/model/content/1\\.0}lockLifetime",
-      "{http://www.alfresco.org/model/content/1.0}lockOwner": "{http://www\\.alfresco\\.org/model/content/1\\.0}lockOwner",
-      "{http://www.alfresco.org/model/content/1.0}lockType": "{http://www\\.alfresco\\.org/model/content/1\\.0}lockType",
-      "{http://www.alfresco.org/model/content/1.0}longitude": "{http://www\\.alfresco\\.org/model/content/1\\.0}longitude",
-      "{http://www.alfresco.org/model/content/1.0}template": "{http://www\\.alfresco\\.org/model/content/1\\.0}template"
+      }
     }
   }
 ]

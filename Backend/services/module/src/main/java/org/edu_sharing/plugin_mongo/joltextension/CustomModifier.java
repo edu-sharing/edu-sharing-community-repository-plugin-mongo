@@ -24,6 +24,8 @@ public class CustomModifier implements SpecDriven, ContextualTransform {
         STOCK_FUNCTIONS.put("jsonfy", new CustomFunction.jsonfy());
         STOCK_FUNCTIONS.put("idFromNodeRef", new CustomFunction.idFromNodeRef());
         STOCK_FUNCTIONS.put("nodeRefFromId", new CustomFunction.nodeRefFromId());
+        STOCK_FUNCTIONS.put("mapFromLocale", new CustomFunction.mapFromLocale());
+        STOCK_FUNCTIONS.put("localeFromMap", new CustomFunction.localeFromMap());
     }
 
     private final ModifierCompositeSpec rootSpec;

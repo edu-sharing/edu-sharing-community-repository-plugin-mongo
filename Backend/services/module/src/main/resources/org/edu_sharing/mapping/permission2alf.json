@@ -1,11 +1,5 @@
 [
   {
-    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
-    "spec": {
-      "history": "=stringfy(@(0))"
-    }
-  },
-  {
     "operation": "shift",
     "spec": {
       "action": "{http://www\\.campuscontent\\.de/model/1\\.0}ph_action",
@@ -13,6 +7,12 @@
       "invited": "{http://www\\.campuscontent\\.de/model/1\\.0}ph_invited",
       "modified": "{http://www\\.campuscontent\\.de/model/1\\.0}ph_modified",
       "users": "{http://www\\.campuscontent\\.de/model/1\\.0}ph_users"
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}ph_history": "=stringfy(@(0))"
     }
   }
 ]

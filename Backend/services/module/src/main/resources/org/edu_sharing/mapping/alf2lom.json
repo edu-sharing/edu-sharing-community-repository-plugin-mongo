@@ -1,5 +1,11 @@
 [
-
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
   // data conversions
   {
     "operation": "modify-overwrite-beta",
@@ -12,7 +18,6 @@
   {
     "operation": "modify-default-beta",
     "spec": {
-      "test" : "null",
       "{http://www.campuscontent.de/model/lom/1.0}title": "null",
       "{http://www.campuscontent.de/model/lom/1.0}general_description": "null",
       "{http://www.campuscontent.de/model/lom/1.0}rights_description": "null"

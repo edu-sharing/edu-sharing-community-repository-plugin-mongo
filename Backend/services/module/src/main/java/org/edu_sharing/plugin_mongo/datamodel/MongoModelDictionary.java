@@ -8,4 +8,5 @@ public interface MongoModelDictionary {
     Collection<MongoModelInfo> getModelInfos();
 
     MongoModelInfo getModelInfo(String modelName);
+
 }

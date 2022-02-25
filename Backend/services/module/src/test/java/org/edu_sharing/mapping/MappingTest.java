@@ -6,13 +6,16 @@ import com.bazaarvoice.jolt.JsonUtils;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.apache.http.util.Asserts;
+import org.bson.Document;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -81,12 +84,18 @@ class MappingTest {
                         }
                 ),
                 Arguments.of("alf2AlfmapMappingTest",
-                        (Consumer<Map>) o -> o.put("{http://www.alfresco.org/model/content/1.0}template", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "5f1aa124-6873-4fef-b776-fef0ef8b0178")),
+                        (Consumer<Map>) o -> {
+                            o.put("{http://www.alfresco.org/model/system/1.0}locale", new Locale("de", "DE"));
+                            o.put("{http://www.alfresco.org/model/content/1.0}template", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "5f1aa124-6873-4fef-b776-fef0ef8b0178"));
+                        },
                         null
                 ),
                 Arguments.of("alfmap2AlfMappingTest",
                         null,
-                        (Consumer<Map>) o -> o.put("{http://www.alfresco.org/model/content/1.0}template", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "5f1aa124-6873-4fef-b776-fef0ef8b0178"))
+                        (Consumer<Map>) o -> {
+                            o.put("{http://www.alfresco.org/model/system/1.0}locale", new Locale("de", "DE"));
+                            o.put("{http://www.alfresco.org/model/content/1.0}template", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "5f1aa124-6873-4fef-b776-fef0ef8b0178"));
+                        }
                 )
         );
     }
@@ -108,33 +117,49 @@ class MappingTest {
 
         String model = (String) testUnit.get("mapping");
         Map input = (Map) testUnit.get("input");
-        Map expected = (Map) testUnit.get("expected");
+        Map expectedOutput = (Map) testUnit.get("expected");
 
 
         Asserts.notNull(model, "model");
         Asserts.notNull(input, "input");
-        Asserts.notNull(expected, "expected");
+        Asserts.notNull(expectedOutput, "expected");
 
         if (inputHook != null) {
             inputHook.accept(input);
         }
 
         if (expectedHook != null) {
-            expectedHook.accept(expected);
+            expectedHook.accept(expectedOutput);
         }
 
+        Map expectedInput = new HashMap(input);
         InputStream modelStream = classLoader.getResourceAsStream(model);
         Asserts.notNull(modelStream, "mapping model");
 
         Chainr chainr = Chainr.fromSpec(JsonUtils.jsonToList(modelStream));
-        Object actual = chainr.transform(input);
+        Object output = chainr.transform(input);
 
-        runDiffy("failed case " + testPath, expected, actual);
+        runDiffy("input failed " + testPath, expectedInput, input);
+        runDiffy("output failed " + testPath, expectedOutput, output);
     }
 
     @Test
-    void reference2AlfMappingTest() {
+    void testTest() {
+        Document subDoc = new Document();
+        subDoc.put("{http://www.alfresco.org/model/system/1.0}store-identifier", "SpacesStore");
+        subDoc.put("{http://www.alfresco.org/model/system/1.0}store-protocol", "workspace");
+        subDoc.put("{http://www.alfresco.org/model/system/1.0}node-dbid", "919");
+        subDoc.put("{http://www.alfresco.org/model/system/1.0}node-uuid", "73248310-2a4c-423d-b3e5-fb13f31d149a");
 
+        Document doc = new Document();
+        doc.put("alfmap", subDoc);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream modelStream = classLoader.getResourceAsStream("org/edu_sharing/mapping/alfmap2alf.json");
+        Chainr chainr = Chainr.fromSpec(JsonUtils.jsonToList(modelStream));
+        Object actual = chainr.transform(doc.get("alfmap"));
+
+        runDiffy("failed case ", subDoc, actual);
     }
 
 

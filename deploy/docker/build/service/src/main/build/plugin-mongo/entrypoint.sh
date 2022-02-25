@@ -22,7 +22,7 @@ eduSConf="tomcat/shared/classes/config/cluster/edu-sharing.deployment.conf"
 #  --var node '$prev' \
 #  -i '$node' -t attr -n 'name' -v 'org.edu-sharing.plugin_mongo' \
 #  -i '$node' -t attr -n 'level' -v 'debug' \
-#  'tomcat/webapps/edu-sharing/WEB-INF/log4j2.xml'
+#  'tomcat/webapps/alfresco/WEB-INF/classes/log4j2.xml'
 #fi
 
 ### Wait ###############################################################################################################

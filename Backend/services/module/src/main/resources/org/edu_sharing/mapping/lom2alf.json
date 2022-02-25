@@ -3,8 +3,14 @@
     "operation": "shift",
     "spec": {
       "general" : {
-        "title": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}title",
-        "description": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_description",
+        "title": [
+          "{http://www\\.campuscontent\\.de/model/lom/1\\.0}title",
+          "{http://www\\.alfresco\\.org/model/content/1\\.0}title"
+        ],
+        "description": [
+          "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_description",
+          "{http://www\\.alfresco\\.org/model/content/1\\.0}description"
+        ],
         "language": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_language",
         "keyword": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}general_keyword",
         "coverage": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}coverage",
@@ -112,7 +118,10 @@
         "copyrightAndOtherRestrictions": {
           "value" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}copyright_and_other_restrictions"
         },
-        "description": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}rights_description",
+        "description": [
+          "{http://www\\.campuscontent\\.de/model/lom/1\\.0}rights_description",
+          "{http://www\\.campuscontent\\.de/model/1\\.0}customlicense_key"
+        ],
         "author": "{http://www\\.campuscontent\\.de/model/1\\.0}author_freetext",
         "version": "{http://www\\.campuscontent\\.de/model/1\\.0}commonlicense_cc_version",
         "internal": "{http://www\\.campuscontent\\.de/model/1\\.0}commonlicense_key",

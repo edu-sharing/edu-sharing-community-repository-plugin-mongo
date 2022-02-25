@@ -130,10 +130,10 @@
         </property>
     </bean>
 
-
     <!-- services -->
     <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.metadata.MongoNodeServiceImpl">
         <constructor-arg name="database" ref="eduMongoDb"/>
         <constructor-arg name="mappingService" ref="alfMapping"/>
+        <constructor-arg name="runtimePropertyService" ref="alfrescoRuntimePropertyService"/>
     </bean>
 </beans>

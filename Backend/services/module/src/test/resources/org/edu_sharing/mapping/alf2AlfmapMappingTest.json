@@ -2,6 +2,9 @@
   "mapping": "org/edu_sharing/mapping/alf2alfmap.json",
 
   "input": {
+    "{http://www.alfresco.org/model/content/1.0}title": "some title",
+    "{http://www.alfresco.org/model/content/1.0}description": "some description",
+    "{http://www.campuscontent.de/model/1.0}customlicense_key": "a custom key",
     "{http://www.alfresco.org/model/action/1.0}definitionName": "imageRenderingEngine",
     "{http://www.alfresco.org/model/action/1.0}executeAsynchronously": false,
     "{http://www.alfresco.org/model/action/1.0}executionActionStatus": "New",
@@ -40,7 +43,7 @@
     "{http://www.alfresco.org/model/solrfacet/1.0}facetOrder": ["filter_creator", "filter_mimetype", "filter_created", "filter_content_size", "filter_modifier", "filter_modified"],
     "{http://www.alfresco.org/model/system/1.0}cascadeCRC": 2.170232342E9,
     "{http://www.alfresco.org/model/system/1.0}cascadeTx": 673.0,
-    "{http://www.alfresco.org/model/system/1.0}locale": "de_DE",
+    "{http://www.alfresco.org/model/system/1.0}locale": "defined in MappingTest.java!",
     "{http://www.alfresco.org/model/webdav/1.0}deadproperties": ["{urn:schemas-microsoft-com:}Win32FileAttributes:00000010", "{urn:schemas-microsoft-com:}Win32LastAccessTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32CreationTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32LastModifiedTime:Wed, 14 Oct 2020 14:30:20 GMT"]
   },
 
@@ -83,7 +86,11 @@
     "{http://www.alfresco.org/model/solrfacet/1.0}facetOrder": ["filter_creator", "filter_mimetype", "filter_created", "filter_content_size", "filter_modifier", "filter_modified"],
     "{http://www.alfresco.org/model/system/1.0}cascadeCRC": 2.170232342E9,
     "{http://www.alfresco.org/model/system/1.0}cascadeTx": 673.0,
-    "{http://www.alfresco.org/model/system/1.0}locale": "de_DE",
-    "{http://www.alfresco.org/model/webdav/1.0}deadproperties": ["{urn:schemas-microsoft-com:}Win32FileAttributes:00000010", "{urn:schemas-microsoft-com:}Win32LastAccessTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32CreationTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32LastModifiedTime:Wed, 14 Oct 2020 14:30:20 GMT"]
+    "{http://www.alfresco.org/model/webdav/1.0}deadproperties": ["{urn:schemas-microsoft-com:}Win32FileAttributes:00000010", "{urn:schemas-microsoft-com:}Win32LastAccessTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32CreationTime:Wed, 14 Oct 2020 14:30:20 GMT", "{urn:schemas-microsoft-com:}Win32LastModifiedTime:Wed, 14 Oct 2020 14:30:20 GMT"],
+    "{http://www.alfresco.org/model/system/1.0}locale" : {
+      "language": "de",
+      "country": "DE",
+      "variant": ""
+    }
   }
 }
