@@ -31,11 +31,10 @@ public class RatingIntegrityServiceImpl implements RatingIntegrityService {
     public String getAffiliation(){
         String user = getAuthority();
         User userInfo = authorityService.getUser(user);
-        Map<String, Serializable> profileSettings = userInfo.getProfileSettings();
-        if(profileSettings == null) {
+        if(userInfo.getProperties() == null){
             return null;
         }
-        return (String) profileSettings.get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
+        return (String) userInfo.getProperties().get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
     }
 
     @Override
