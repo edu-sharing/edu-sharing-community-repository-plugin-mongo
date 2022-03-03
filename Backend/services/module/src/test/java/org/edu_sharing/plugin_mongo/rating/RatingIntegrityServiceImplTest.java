@@ -19,7 +19,10 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -61,10 +64,12 @@ class RatingIntegrityServiceImplTest {
     void getAffiliationHasAffiliation() {
         // given
         String authority = "Muster";
-        String affiliation = "teacher";
+        Serializable affiliation = "teacher";
 
         Mockito.when(authorityService.getUser(authority)).thenReturn(user);
-        Mockito.when(user.getProfileSettings()).thenReturn(Collections.singletonMap(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION, affiliation));
+        Mockito.when(user.getProperties()).thenReturn(new HashMap<String, Serializable>(){{
+            put(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION, affiliation);
+        }});
 
         try (MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
             authenticationUtilMockedStatic.when(AuthenticationUtil::getFullyAuthenticatedUser).thenReturn(authority);
@@ -81,10 +86,9 @@ class RatingIntegrityServiceImplTest {
     void getAffiliationHasNoAffiliation() {
         // given
         String authority = "Muster";
-        String affiliation = null;
 
         Mockito.when(authorityService.getUser(authority)).thenReturn(user);
-        Mockito.when(user.getProfileSettings()).thenReturn(null);
+        Mockito.when(user.getProperties()).thenReturn(null);
 
         try (MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
             authenticationUtilMockedStatic.when(AuthenticationUtil::getFullyAuthenticatedUser).thenReturn(authority);
@@ -93,7 +97,7 @@ class RatingIntegrityServiceImplTest {
             String actual = underTest.getAffiliation();
 
             // then
-            Assertions.assertEquals(affiliation, actual);
+            Assertions.assertNull(actual);
         }
     }
 

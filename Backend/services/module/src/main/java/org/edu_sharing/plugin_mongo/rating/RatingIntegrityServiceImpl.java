@@ -14,6 +14,7 @@ import org.edu_sharing.service.permission.PermissionService;
 import org.edu_sharing.service.toolpermission.ToolPermissionHelper;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +32,11 @@ public class RatingIntegrityServiceImpl implements RatingIntegrityService {
     public String getAffiliation(){
         String user = getAuthority();
         User userInfo = authorityService.getUser(user);
-        if(userInfo.getProperties() == null){
+        HashMap<String, Serializable> properties = userInfo.getProperties();
+        if(properties == null){
             return null;
         }
-        return (String) userInfo.getProperties().get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
+        return (String) properties.get(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION);
     }
 
     @Override
