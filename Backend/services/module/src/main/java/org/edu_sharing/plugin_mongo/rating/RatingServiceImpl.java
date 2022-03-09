@@ -10,8 +10,6 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
-import org.bson.json.JsonWriterSettings;
-import org.eclipse.jetty.util.StringUtil;
 import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
@@ -88,7 +86,7 @@ public class RatingServiceImpl implements RatingService {
 
         ReplaceOptions options = new ReplaceOptions();
         options.upsert(true);
-        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
     }
 
@@ -104,7 +102,7 @@ public class RatingServiceImpl implements RatingService {
         ratingIntegrityService.checkPermissions(nodeId);
         String authority = ratingIntegrityService.getAuthority();
 
-        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
     }
 
@@ -126,7 +124,7 @@ public class RatingServiceImpl implements RatingService {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
-        MongoCollection<Rating> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, Rating.class);
+        MongoCollection<Rating> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY, Rating.class);
         ratingCollection.find(filter).into(ratings);
         return ratings;
     }
@@ -142,7 +140,7 @@ public class RatingServiceImpl implements RatingService {
         Objects.requireNonNull(after, "after must not be null");
 
         Bson filter = Filters.gte(RatingConstants.TIMESTAMP_KEY, after);
-        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         List<String> nodeIds = new ArrayList<>();
         ratingCollection.distinct(RatingConstants.NODEID_KEY, filter, String.class).into(nodeIds);
         return nodeIds;
@@ -166,7 +164,7 @@ public class RatingServiceImpl implements RatingService {
         }
 
         String authority = ratingIntegrityService.getAuthority();
-        MongoCollection<RatingDetails> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, RatingDetails.class);
+        MongoCollection<RatingDetails> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY, RatingDetails.class);
         List<Bson> aggregation = Arrays.asList(
                 Aggregates.match(filter),
 
@@ -199,7 +197,7 @@ public class RatingServiceImpl implements RatingService {
         }
 
         filter = Filters.and(filter, Filters.gte(RatingConstants.AUTHORITY_KEY, authority));
-        Double userRating = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY).
+        Double userRating = database.getCollection(RatingConstants.COLLECTION_KEY).
                 find(filter)
                 .map(doc -> doc.getDouble(RatingConstants.RATING_KEY))
                 .first();
@@ -220,7 +218,7 @@ public class RatingServiceImpl implements RatingService {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
-        MongoCollection<RatingHistory> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY, RatingHistory.class);
+        MongoCollection<RatingHistory> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY, RatingHistory.class);
         List<Bson> aggregationTimed = Arrays.asList(
                 Aggregates.match(filter),
 
@@ -296,12 +294,12 @@ public class RatingServiceImpl implements RatingService {
 
         // TODO do we need to update the timestamp as well? - No
         // TODO permission check? - No
-        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority), Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
     }
 
     private void createIndexes() {
-        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.createIndex(Indexes.descending(RatingConstants.TIMESTAMP_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.AUTHORITY_KEY));

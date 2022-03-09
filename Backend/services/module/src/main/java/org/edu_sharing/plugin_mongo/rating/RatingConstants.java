@@ -3,7 +3,7 @@ package org.edu_sharing.plugin_mongo.rating;
 public class RatingConstants {
 
 
-    public final static String RATINGS_COLLECTION_KEY = "ratings";
+    public final static String COLLECTION_KEY = "ratings";
 
     public final static String ID_KEY = "_id";
     public final static String TIMESTAMP_KEY = "timestamp";

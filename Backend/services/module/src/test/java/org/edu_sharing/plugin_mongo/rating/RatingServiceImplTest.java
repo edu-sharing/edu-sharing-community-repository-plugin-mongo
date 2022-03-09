@@ -4,7 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.poi.openxml4j.util.Nullable;
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @Testcontainers
 class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     private RatingServiceImpl underTest;
-    private Date now = new Date();
+    private final Date now = new Date();
 
     @Mock
     private RatingIntegrityService ratingIntegrityService;
@@ -39,7 +38,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     @BeforeEach
     void initTestSet() {
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         collection.insertMany(Arrays.asList(
                 createRatingObject("1", "Müller", "teacher", "good content", 4d, DateUtils.addDays(now, -2)),
                 createRatingObject("1", "Meier", "teacher", "i'm pretty good ;)", 5d, DateUtils.addDays(now, -5)),
@@ -75,7 +74,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String affiliation = "teacher";
         String reason = "nice video about...";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.when(ratingIntegrityService.getAffiliation()).thenReturn(affiliation);
@@ -109,7 +108,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String authority = "Muster";
         String reason = "nice video about...";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
@@ -138,7 +137,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String affiliation = "teacher";
         String reason = "nice video about...";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.when(ratingIntegrityService.getAffiliation()).thenReturn(affiliation);
@@ -170,7 +169,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String authority = "Müller";
         String nodeId = "1";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
@@ -196,7 +195,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String authority = "Müller";
         String nodeId = "1";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
@@ -221,7 +220,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // given
         String nodeId = "1";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         List<Rating> ratings = underTest.getRatings(nodeId, null);
@@ -243,7 +242,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String nodeId = "1";
         Date after = DateUtils.addDays(now, -2);
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         List<Rating> ratings = underTest.getRatings(nodeId, after);
@@ -263,7 +262,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     void getAccumulatedRatingsWithoutDate() {
         // given
         String nodeId = "1";
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
@@ -300,7 +299,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String nodeId = "1";
         String authority = "Müller";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
 
@@ -340,7 +339,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // given
         String nodeId = "99999";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
@@ -358,7 +357,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String nodeId = "1";
         Date after = DateUtils.addDays(now, -2);
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, after);
@@ -396,7 +395,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String newAuthority = "Hummels";
         List<Document> expected = new ArrayList<>();
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority)).into(expected);
 
         // when
@@ -420,7 +419,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // given
         Date after = DateUtils.addDays(now, -2);
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         List<String> actual = underTest.getAlteredNodeIds(after);
@@ -440,7 +439,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // given
         String nodeId = "1";
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, null);
@@ -484,7 +483,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         String nodeId = "1";
         Date after = DateUtils.addDays(now, -2);
 
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.RATINGS_COLLECTION_KEY);
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
         List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, after);
