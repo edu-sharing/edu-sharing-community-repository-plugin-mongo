@@ -6,9 +6,11 @@ services:
     image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
-      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+#      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
+#      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+#      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      MONGODB_ROOT_USER: "${REPOSITORY_MONGO_USER:-repository}"
+      MONGODB_ROOT_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
     expose:
       - "27017"
     volumes:
@@ -18,10 +20,15 @@ services:
     image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
     environment:
       ME_CONFIG_MONGODB_SERVER: "repository-mongo"
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"
-      ME_CONFIG_MONGODB_AUTH_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      ME_CONFIG_MONGODB_AUTH_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-      ME_CONFIG_MONGODB_AUTH_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+#      ME_CONFIG_MONGODB_AUTH_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
+#      ME_CONFIG_MONGODB_AUTH_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+#      ME_CONFIG_MONGODB_AUTH_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@repository-mongo:27017/"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USER:-admin}"
+      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASS:-admin}"
     expose:
       - "8081"
     depends_on:
