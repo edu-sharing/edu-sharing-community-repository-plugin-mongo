@@ -50,18 +50,20 @@ RUN set -eux \
 
 ########################################################################################################################
 
-ENV MONGO_MAJOR 5.0
+ENV MONGO_VERSION ${mongodb.version.major}.${mongodb.version.minor}
 
 RUN set -eux \
-    && wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - \
-    && curl -sSL https://www.mongodb.org/static/pgp/server-5.0.asc  -o mongoserver.asc \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-$MONGO_VERSION.asc | apt-key add - \
+    && curl -sSL https://www.mongodb.org/static/pgp/server-$MONGO_VERSION.asc  -o mongoserver.asc \
     && gpg --no-default-keyring --keyring ./mongo_key_temp.gpg --import ./mongoserver.asc \
     && gpg --no-default-keyring --keyring ./mongo_key_temp.gpg --export > ./mongoserver_key.gpg \
     && mv mongoserver_key.gpg /etc/apt/trusted.gpg.d/ \
-    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee /etc/apt/sources.list.d/mongodb-org-$MONGO_MAJOR.list \
+    && echo "deb https://artifacts.edu-sharing.com/repository/mongodb buster/mongodb-org/$MONGO_VERSION main" | tee /etc/apt/sources.list.d/mongodb.list \
     && apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        mongodb-org
+        mongodb-org=$MONGO_VERSION.${mongodb.version.patch}* \
+    && apt-get clean \
+    && rm -r /var/lib/apt/lists/*
 
 COPY assets/dbInit.js .
 COPY assets/config/mongod.conf /etc/mongod.conf

@@ -33,9 +33,37 @@
 
   <properties>
 
+    <!-- release-2 -->
     <bom.repository.version>${project.version}</bom.repository.version>
 
+    <mongodb.version.major>5</mongodb.version.major>
+    <mongodb.version.minor>0</mongodb.version.minor>
+    <mongodb.version.patch>6</mongodb.version.patch>
+    <mongodb.version>${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}</mongodb.version>
+
   </properties>
+
+  <profiles>
+
+    <profile>
+
+      <id>dev</id>
+
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <property>
+          <name>env.DEV</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <properties>
+        <bom.repository.version>${project.version}</bom.repository.version>
+      </properties>
+
+    </profile>
+
+  </profiles>
 
   <build>
 
