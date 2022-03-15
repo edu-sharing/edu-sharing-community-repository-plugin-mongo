@@ -140,6 +140,10 @@ public class RelationServiceImpl implements RelationService {
         fromNode = nodeService.getOriginalNode(fromNode).getId();
         toNode = nodeService.getOriginalNode(toNode).getId();
 
+        if(Objects.equals(fromNode, toNode)){
+            throw new NodeRelationException("Relation cannot point to itself");
+        }
+
         if(!Objects.equals(nodeService.getType(fromNode), CCConstants.CCM_TYPE_IO)) {
             throw new NodeRelationException("Relation can only set from nodes of type "+CCConstants.CCM_TYPE_IO);
         }

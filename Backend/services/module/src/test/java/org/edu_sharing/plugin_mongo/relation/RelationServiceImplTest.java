@@ -264,6 +264,17 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
+    void createRelation_ThrowNodeRelationException_SelfReferencingRelationTest() {
+        // given
+        String from = "Node E";
+        String to = from;
+        InputRelationType type = InputRelationType.references;
+
+        // when
+        Assertions.assertThrows(NodeRelationException.class, () -> underTest.createRelation(from, to, type));
+    }
+
+    @Test
     void deleteRelationTest() throws NodeRelationException, InsufficientPermissionException {
         // given
         String from = "Node A";
