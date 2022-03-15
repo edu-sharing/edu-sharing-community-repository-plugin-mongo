@@ -11,6 +11,10 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
 import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
+import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.permission.annotation.NodePermission;
+import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
@@ -29,10 +33,11 @@ public class RatingServiceImpl implements RatingService {
     // Für das abändern/erstellen/löschen usw:
     // Permission "Rate" (direkt am Node Objekt, z.b. über Permission Service) + TP "TOOLPERMISSION_RATE_WRITE" (via den ToolpermissionServiceHelper)
 
-    private final RatingIntegrityService ratingIntegrityService;
+    private final IntegrityService integrityService;
     private final MongoDatabase database;
+    private final NodeService nodeService;
 
-    public RatingServiceImpl(MongoDatabase database, RatingIntegrityService ratingIntegrityService) {
+    public RatingServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
@@ -58,7 +63,8 @@ public class RatingServiceImpl implements RatingService {
                 CodecRegistries.fromProviders(pojoCodecProvider));
 
         this.database = database.withCodecRegistry(pojoCodecRegistry);
-        this.ratingIntegrityService = ratingIntegrityService;
+        this.integrityService = integrityService;
+        this.nodeService = nodeService;
     }
 
     /**
@@ -67,12 +73,19 @@ public class RatingServiceImpl implements RatingService {
      * @param text   --- the rating text
      */
     @Override
-    public void addOrUpdateRating(@NotNull String nodeId, Double rating, String text) throws Exception {
-        Objects.requireNonNull(nodeId, "nodeId must not be null");
-        ratingIntegrityService.checkPermissions(nodeId);
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_WRITE}, requiresUser = true)
+    public void addOrUpdateRating(
+            @NotNull @NodePermission({CCConstants.PERMISSION_RATE}) String nodeId,
+            Double rating, String text) throws Exception {
 
-        String authority = ratingIntegrityService.getAuthority();
-        String affiliation = ratingIntegrityService.getAffiliation();
+        Objects.requireNonNull(nodeId, "nodeId must not be null");
+
+        if(!Objects.equals(nodeService.getType(nodeId), CCConstants.CCM_TYPE_IO)) {
+            throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
+        }
+
+        String authority = integrityService.getAuthority();
+        String affiliation = integrityService.getAffiliation();
 
         Document ratingObj = new Document();
         ratingObj.put(RatingConstants.NODEID_KEY, nodeId);
@@ -96,11 +109,11 @@ public class RatingServiceImpl implements RatingService {
      * @param nodeId --- the uuid of the node of the related rating to be deleted
      */
     @Override
-    public void deleteRating(@NotNull String nodeId) throws Exception {
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_WRITE}, requiresUser = true)
+    public void deleteRating(@NotNull @NodePermission({CCConstants.PERMISSION_RATE}) String nodeId) throws Exception {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
-        ratingIntegrityService.checkPermissions(nodeId);
-        String authority = ratingIntegrityService.getAuthority();
+        String authority = integrityService.getAuthority();
 
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
@@ -114,7 +127,8 @@ public class RatingServiceImpl implements RatingService {
      * @return all ratings of the desired node
      */
     @Override
-    public List<Rating> getRatings(@NotNull String nodeId, @Nullable Date after) {
+    @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_READ})
+    public List<Rating> getRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
         List<Rating> ratings = new ArrayList<>();
@@ -154,7 +168,8 @@ public class RatingServiceImpl implements RatingService {
      * @return An accumulated RatingDetails of the desired node
      */
     @Override
-    public RatingDetails getAccumulatedRatings(@NotNull String nodeId, @Nullable Date after) {
+    @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_READ})
+    public RatingDetails getAccumulatedRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
         //after is optional
@@ -163,7 +178,7 @@ public class RatingServiceImpl implements RatingService {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }
 
-        String authority = ratingIntegrityService.getAuthority();
+        String authority = integrityService.getAuthority();
         MongoCollection<RatingDetails> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY, RatingDetails.class);
         List<Bson> aggregation = Arrays.asList(
                 Aggregates.match(filter),

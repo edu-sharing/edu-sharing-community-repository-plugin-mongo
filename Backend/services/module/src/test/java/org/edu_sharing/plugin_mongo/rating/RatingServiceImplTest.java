@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.InsufficientPermissionException;
+import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
@@ -32,7 +33,10 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     private final Date now = new Date();
 
     @Mock
-    private RatingIntegrityService ratingIntegrityService;
+    private IntegrityService integrityService;
+
+    @Mock
+    private NodeService nodeService;
 
 
     @BeforeEach
@@ -50,7 +54,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("2", "Bach", null, "good bead", 5d, DateUtils.addDays(now, -3))
         ));
 
-        underTest = new RatingServiceImpl(db, ratingIntegrityService);
+        underTest = new RatingServiceImpl(db, nodeService, integrityService);
     }
 
 
@@ -77,8 +81,9 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
-        Mockito.when(ratingIntegrityService.getAffiliation()).thenReturn(affiliation);
-        Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(integrityService.getAffiliation()).thenReturn(affiliation);
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(nodeId)).thenReturn(CCConstants.CCM_TYPE_IO);
 
         // when
         underTest.addOrUpdateRating(nodeId, rating, reason);
@@ -89,7 +94,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 Filters.eq(RatingConstants.NODEID_KEY, nodeId),
                 Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
 
-        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
         Assertions.assertEquals(beforeCount + 1, afterCount, "count");
         Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY), RatingConstants.NODEID_KEY);
@@ -98,34 +102,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
         Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
         Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
-    }
-
-    @Test
-    void addRatingNoPermission() throws Exception {
-        // given
-        String nodeId = "1";
-        Double rating = 5d;
-        String authority = "Muster";
-        String reason = "nice video about...";
-
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
-        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
-
-        Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
-
-        // when
-        Assertions.assertThrows(InsufficientPermissionException.class, () -> underTest.addOrUpdateRating(nodeId, rating, reason));
-
-        // then
-        long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
-        Document result = collection.find(Filters.and(
-                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
-                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
-
-        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
-
-        Assertions.assertEquals(beforeCount, afterCount, "count");
-        Assertions.assertNull(result, RatingConstants.NODEID_KEY);
     }
 
     @Test
@@ -140,8 +116,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
-        Mockito.when(ratingIntegrityService.getAffiliation()).thenReturn(affiliation);
-        Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(integrityService.getAffiliation()).thenReturn(affiliation);
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
         underTest.addOrUpdateRating(nodeId, rating, reason);
@@ -151,8 +127,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Document result = collection.find(Filters.and(
                 Filters.eq(RatingConstants.NODEID_KEY, nodeId),
                 Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
-
-        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
         Assertions.assertEquals(beforeCount, afterCount, "count");
         Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY), RatingConstants.NODEID_KEY);
@@ -164,32 +138,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
-    void deleteRatingNoPermission() throws Exception {
-        // given
-        String authority = "Müller";
-        String nodeId = "1";
-
-        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
-        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
-
-        Mockito.doThrow(new InsufficientPermissionException("No permission '" + CCConstants.PERMISSION_RATE + "' to add ratings to node " + nodeId)).when(ratingIntegrityService).checkPermissions(nodeId);
-
-        // when
-        Assertions.assertThrows(InsufficientPermissionException.class, () -> underTest.deleteRating(nodeId));
-
-        // then
-        long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
-        Document result = collection.find(Filters.and(
-                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
-                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
-
-        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
-
-        Assertions.assertEquals(beforeCount, afterCount, "count");
-        Assertions.assertNotNull(result, RatingConstants.NODEID_KEY);
-    }
-
-    @Test
     void deleteRating() throws Exception {
         // given
         String authority = "Müller";
@@ -198,7 +146,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
-        Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
         underTest.deleteRating(nodeId);
@@ -208,8 +156,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Document result = collection.find(Filters.and(
                 Filters.eq(RatingConstants.NODEID_KEY, nodeId),
                 Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
-
-        Mockito.verify(ratingIntegrityService).checkPermissions(nodeId);
 
         Assertions.assertEquals(beforeCount - 1, afterCount, "count");
         Assertions.assertNull(result, "result");
@@ -301,7 +247,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
-        Mockito.when(ratingIntegrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
         RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);

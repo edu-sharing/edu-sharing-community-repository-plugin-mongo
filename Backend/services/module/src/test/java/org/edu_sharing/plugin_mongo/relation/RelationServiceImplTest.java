@@ -7,10 +7,16 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.ClassModel;
+import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.edu_sharing.plugin_mongo.rating.RatingConstants;
-import org.edu_sharing.plugin_mongo.rating.RatingIntegrityService;
+import org.edu_sharing.plugin_mongo.rating.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
+import org.edu_sharing.service.InsufficientPermissionException;
+import org.edu_sharing.service.relations.InputRelationType;
+import org.edu_sharing.service.relations.NodeRelation;
+import org.edu_sharing.service.relations.NodeRelationException;
+import org.edu_sharing.service.relations.RelationTypeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -32,36 +38,25 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
     private RelationServiceImpl underTest;
     private Date now = new Date();
     @Mock
-    private RatingIntegrityService integrityService;
+    private IntegrityService integrityService;
 
     @BeforeEach
     void setUp() {
 
-        /*
-         * 0
-         *     ---> 3
-         *   /    /
-         * 1 ---> 2
-         *   \    \
-         *     ---> 4 <---> 5
-         */
-
         MongoCollection<Document> collection = db.getCollection(RelationConstants.COLLECTION_KEY);
         collection.insertMany(Arrays.asList(
-                createNodeRelation("2",
-                        createRelation("1", "", now, RelationType.isBasedOn)
+                createNodeRelation("Node A",
+                        createRelation("Node C", "Müller", now, InputRelationType.isPartOf),
+                        createRelation("Node B", "Müller", now, InputRelationType.isPartOf),
+                        createRelation("Node B", "Schulz", now, InputRelationType.isBasedOn)
                 ),
-                createNodeRelation("3",
-                        createRelation("1", "", now, RelationType.isPartOf),
-                        createRelation("2", "", now, RelationType.isBasedOn)
+                createNodeRelation("Node B"),
+                //createNodeRelation("Node C"),
+                createNodeRelation("Node D",
+                        createRelation("Node A", "Maier", now, InputRelationType.isPartOf)
                 ),
-                createNodeRelation("4",
-                        createRelation("1", "", now, RelationType.isPartOf),
-                        createRelation("2", "", now, RelationType.isBasedOn),
-                        createRelation("3", "", now, RelationType.isPartOf)
-                ),
-                createNodeRelation("5",
-                        createRelation("4", "", now, RelationType.references)
+                createNodeRelation("Node E",
+                        createRelation("Node C", "Müller", now, InputRelationType.references)
                 )
         ));
 
@@ -73,7 +68,7 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
                 .append(RelationConstants.RELATION_KEY, Arrays.asList(relations));
     }
 
-    private Document createRelation(String node, String creator, Date date, RelationType type) {
+    private Document createRelation(String node, String creator, Date date, InputRelationType type) {
         return new Document(RelationConstants.RELATION_NODE_KEY, node)
                 .append(RelationConstants.RELATION_CREATOR_KEY, creator)
                 .append(RelationConstants.RELATION_TIMESTAMP_KEY, date)
@@ -82,7 +77,12 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
 
     @NotNull
     private CodecRegistry getCodecRegistry() {
+
+        ClassModelBuilder<NodeRelation> nodeRelationClassModelBuilder = ClassModel.builder(NodeRelation.class)
+                .idPropertyName("node");
+
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder()
+                .register(nodeRelationClassModelBuilder.build())
                 .automatic(true)
                 .build();
 
@@ -92,98 +92,18 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
         return pojoCodecRegistry;
     }
 
-
-    @Test
-    void getRelations_UnknownNodeWithoutRelationsTest() {
-        // given
-        String nodeId = "0";
-
-        // when
-        NodeRelation nodeRelation = underTest.getRelations(nodeId);
-
-        // then
-        Assertions.assertNotNull(nodeRelation, "nodeRelation");
-        Assertions.assertEquals(nodeRelation.getNode(), nodeId, "node");
-        Assertions.assertNotNull(nodeRelation.getRelations(), "relations");
-        Assertions.assertEquals(nodeRelation.getRelations().size(), 0, "relations");
-    }
-
-    @Test
-    void getRelations_UnknownNodeWithRelationsTest() {
-        // given
-        String nodeId = "1";
-        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
-
-
-        // when
-        NodeRelation nodeRelation = underTest.getRelations(nodeId);
-
-        // then
-        List<RelationData> expected = collection.find(Filters.eq(
-                        String.join(".",
-                                RelationConstants.RELATION_KEY,
-                                RelationConstants.RELATION_NODE_KEY),
-                        nodeId))
-                .into(new ArrayList<>())
-                .stream().flatMap(x ->
-                        x.getRelations()
-                                .stream()
-                                .filter(y -> Objects.equals(y.getNode(), nodeId))
-                                .peek(y -> {
-                                    y.setType(RelationTypeUtil.invert(y.getType()));
-                                    y.setNode(x.getNode());
-                                }))
-                .collect(Collectors.toList());
-
-        Assertions.assertNotNull(nodeRelation, "nodeRelation");
-        Assertions.assertEquals(nodeRelation.getNode(), nodeId, "node");
-        Assertions.assertNotNull(nodeRelation.getRelations(), "relations");
-        Assertions.assertArrayEquals(nodeRelation.getRelations().toArray(), expected.toArray(), "relations");
-    }
-
-    @Test
-    void getRelations_KnownNodeWithoutForeignRelationsTest() {
-        // given
-        String nodeId = "4";
-        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
-
-        // when
-        NodeRelation nodeRelation = underTest.getRelations(nodeId);
-
-        // then
-        NodeRelation expected = collection.find(Filters.eq(nodeId)).first();
-        expected.getRelations().addAll(
-                collection.find(Filters.eq(
-                        String.join(".",
-                                RelationConstants.RELATION_KEY,
-                                RelationConstants.RELATION_NODE_KEY),
-                        nodeId))
-                .into(new ArrayList<>())
-                .stream().flatMap(x ->
-                        x.getRelations()
-                                .stream()
-                                .filter(y -> Objects.equals(y.getNode(), nodeId))
-                                .peek(y -> {
-                                    y.setType(RelationTypeUtil.invert(y.getType()));
-                                    y.setNode(x.getNode());
-                                }))
-                .collect(Collectors.toList()));
-
-        Assertions.assertEquals(nodeRelation, expected);
-    }
-
     @ParameterizedTest
     @CsvSource(value = {
-            "0:unknown node without relations",
-            "1:unknown node with relations",
-            "2:node no foreign relations",
-            "3:node with foreign relations",
-            "4:node with foreign relations",
-            "5:node with relations (reference)" },
-            delimiter = ':')
-    void getRelations_KnownNodeWithForeignRelationsTest(String nodeId, String info) {
+            "Node A;isPartOf: B,C isBasedOn: B hasPart: D",
+            "Node B;hasPart: A isBaseFor: A",
+            "Node C;hasPart: A references: E",
+            "Node D;isPartOf: A",
+            "Node E;references: C",
+            "Node F;nothing"
+    },
+            delimiter = ';')
+    void getRelationsTest(String nodeId, String info) {
         // given
-        //String nodeId = "4";
         MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
 
         // when
@@ -216,31 +136,128 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(nodeRelation, expected);
     }
 
-
     @Test
-    void createRelationTest() {
+    void createRelationTest() throws NodeRelationException, InsufficientPermissionException {
         // given
+        String from = "Node E";
+        String to = "Node B";
+        String authority = "Muster";
+        InputRelationType type = InputRelationType.isPartOf;
+
+        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
+        int beforeCount = collection.find(Filters.eq(from)).first().getRelations().size();
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
+        underTest.createRelation(from, to, type);
 
         // then
+        NodeRelation result = collection.find(Filters.eq(from)).first();
+
+        Assertions.assertNotNull(result, "NodeRelation");
+        Assertions.assertEquals(from, result.getNode(), "NodeRelation node");
+        Assertions.assertNotNull(result.getRelations(), "relations");
+        Assertions.assertEquals(beforeCount + 1, result.getRelations().size(), "size of relations");
+        Assertions.assertEquals(to, result.getRelations().get(beforeCount).getNode(), "relation node");
+        Assertions.assertEquals(authority, result.getRelations().get(beforeCount).getCreator(), "relation creator");
+        Assertions.assertNotNull(result.getRelations().get(beforeCount).getTimestamp(), "relation timestamp");
+        Assertions.assertEquals(RelationTypeUtil.toOutputType(type), result.getRelations().get(beforeCount).getType(), "relation type");
     }
 
     @Test
-    void deleteRelationTest() {
+    void createRelation_ToExistingNodeRelationTest() throws NodeRelationException, InsufficientPermissionException {
         // given
+        String from = "Node E";
+        String to = "Node B";
+        String authority = "Muster";
+        InputRelationType type = InputRelationType.isPartOf;
+
+        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
+        int beforeCount = collection.find(Filters.eq(from)).first().getRelations().size();
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
+        underTest.createRelation(from, to, type);
 
         // then
+        NodeRelation result = collection.find(Filters.eq(from)).first();
+
+        Assertions.assertNotNull(result, "NodeRelation");
+        Assertions.assertEquals(from, result.getNode(), "NodeRelation node");
+        Assertions.assertNotNull(result.getRelations(), "relations");
+        Assertions.assertEquals(beforeCount + 1, result.getRelations().size(), "size of relations");
+        Assertions.assertEquals(to, result.getRelations().get(beforeCount).getNode(), "relation node");
+        Assertions.assertEquals(authority, result.getRelations().get(beforeCount).getCreator(), "relation creator");
+        Assertions.assertNotNull(result.getRelations().get(beforeCount).getTimestamp(), "relation timestamp");
+        Assertions.assertEquals(RelationTypeUtil.toOutputType(type), result.getRelations().get(beforeCount).getType(), "relation type");
+    }
+
+    @Test
+    void createRelation_ThrowNodeRelationExceptionTest() {
+        // given
+        String from = "Node E";
+        String to = "Node C";
+        String authority = "Muster";
+        InputRelationType type = InputRelationType.references;
+
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+
+        // when
+        Assertions.assertThrows(NodeRelationException.class, () -> underTest.createRelation(from, to, type));
+    }
+
+    @Test
+    void deleteRelationTest() throws NodeRelationException, InsufficientPermissionException {
+        // given
+        String from = "Node A";
+        String to = "Node B";
+        InputRelationType type = InputRelationType.isBasedOn;
+
+        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
+
+        // when
+        underTest.deleteRelation(from, to, type);
+
+        // then
+        NodeRelation result = collection.find(Filters.eq(from)).first();
+
+        Assertions.assertNotNull(result, "NodeRelation");
+        Assertions.assertEquals(from, result.getNode(), "NodeRelation node");
+        Assertions.assertNotNull(result.getRelations(), "relations");
+        Assertions.assertFalse(result.getRelations().stream().anyMatch(x -> Objects.equals(x.getNode(), to) && x.getType() == RelationTypeUtil.toOutputType(type)), "contains relation");
+
+    }
+
+    @Test
+    void deleteRelation_ThrowNodeRelationExceptionTest() {
+        // given
+        String from = "Node E";
+        String to = "Node Z";
+        InputRelationType type = InputRelationType.references;
+
+        // when
+        Assertions.assertThrows(NodeRelationException.class, () -> underTest.deleteRelation(from, to, type));
     }
 
     @Test
     void changeAuthorityTest() {
         // given
+        String from = "Müller";
+        String to = "Muster";
+
+        MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
+        long expected = collection.countDocuments(Filters.elemMatch(RelationConstants.RELATION_KEY,
+                Filters.eq(RelationConstants.RELATION_CREATOR_KEY, from)));
 
         // when
+        underTest.changeAuthority(from, to);
 
         // then
+        long actual = collection.countDocuments(Filters.elemMatch(RelationConstants.RELATION_KEY,
+                Filters.eq(RelationConstants.RELATION_CREATOR_KEY, to)));
+
+        Assertions.assertEquals(0, collection.countDocuments(Filters.elemMatch(RelationConstants.RELATION_KEY,
+                Filters.eq(RelationConstants.RELATION_CREATOR_KEY, from))), from);
+        Assertions.assertEquals(expected, actual, to);
     }
 }
