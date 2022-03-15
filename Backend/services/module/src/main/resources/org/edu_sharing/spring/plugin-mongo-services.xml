@@ -12,6 +12,7 @@
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
         <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
 </beans>

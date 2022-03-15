@@ -4,13 +4,15 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
-import org.edu_sharing.plugin_mongo.codec.NodeRefCodec;
+import org.edu_sharing.plugin_mongo.mongo.codec.NodeRefCodec;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.permission.annotation.NodePermission;
@@ -79,6 +81,7 @@ public class RatingServiceImpl implements RatingService {
             Double rating, String text) throws Exception {
 
         Objects.requireNonNull(nodeId, "nodeId must not be null");
+        nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         if(!Objects.equals(nodeService.getType(nodeId), CCConstants.CCM_TYPE_IO)) {
             throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
@@ -114,6 +117,7 @@ public class RatingServiceImpl implements RatingService {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
         String authority = integrityService.getAuthority();
+        nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
@@ -128,11 +132,14 @@ public class RatingServiceImpl implements RatingService {
      */
     @Override
     @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_READ})
-    public List<Rating> getRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
+    public List<Rating> getRatings(
+            @NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId,
+            @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
-        List<Rating> ratings = new ArrayList<>();
+        nodeId = nodeService.getOriginalNode(nodeId).getId();
 
+        List<Rating> ratings = new ArrayList<>();
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
         if (after != null) {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
@@ -172,6 +179,7 @@ public class RatingServiceImpl implements RatingService {
     public RatingDetails getAccumulatedRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
+        nodeId = nodeService.getOriginalNode(nodeId).getId();
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
         if (after != null) {
@@ -226,9 +234,10 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after) {
         Objects.requireNonNull(nodeId, "nodeId must not be null");
+        NodeRef node = nodeService.getOriginalNode(nodeId);
 
         //after is optional
-        Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
+        Bson filter = Filters.eq(RatingConstants.NODEID_KEY, node.getId());
         if (after != null) {
             filter = Filters.and(filter, Filters.gte(RatingConstants.TIMESTAMP_KEY, after));
         }

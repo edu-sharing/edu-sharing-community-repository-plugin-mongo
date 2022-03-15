@@ -1,27 +1,19 @@
 package org.edu_sharing.plugin_mongo.rating;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.edu_sharing.alfresco.policy.GuestCagePolicy;
-import org.edu_sharing.alfresco.service.toolpermission.ToolPermissionException;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityServiceImpl;
 import org.edu_sharing.repository.client.rpc.User;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.InsufficientPermissionException;
 import org.edu_sharing.service.authority.AuthorityService;
-import org.edu_sharing.service.nodeservice.NodeServiceHelper;
-import org.edu_sharing.service.permission.PermissionService;
-import org.edu_sharing.service.toolpermission.ToolPermissionHelper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 
 

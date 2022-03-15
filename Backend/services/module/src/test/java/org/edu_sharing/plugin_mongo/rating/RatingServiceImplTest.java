@@ -3,11 +3,13 @@ package org.edu_sharing.plugin_mongo.rating;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.apache.commons.lang.time.DateUtils;
 import org.bson.Document;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.InsufficientPermissionException;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
@@ -19,11 +21,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.anyString;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +60,10 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         ));
 
         underTest = new RatingServiceImpl(db, nodeService, integrityService);
+
+        Mockito.lenient()
+                .when(nodeService.getOriginalNode(anyString()))
+                .thenAnswer((Answer<NodeRef>) invocationOnMock -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, invocationOnMock.getArgument(0)));
     }
 
 
@@ -73,6 +82,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     void addRating() throws Exception {
         // given
         String nodeId = "1";
+        String nodeType = CCConstants.CCM_TYPE_IO;
         Double rating = 5d;
         String authority = "Muster";
         String affiliation = "teacher";
@@ -83,7 +93,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.when(integrityService.getAffiliation()).thenReturn(affiliation);
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
-        Mockito.when(nodeService.getType(nodeId)).thenReturn(CCConstants.CCM_TYPE_IO);
+        Mockito.when(nodeService.getType(nodeId)).thenReturn(nodeType);
 
         // when
         underTest.addOrUpdateRating(nodeId, rating, reason);
@@ -108,6 +118,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     void updateRating() throws Exception {
         // given
         String nodeId = "1";
+        String nodeType = CCConstants.CCM_TYPE_IO;
         Double rating = 5d;
         String authority = "Müller";
         String affiliation = "teacher";
@@ -118,6 +129,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.when(integrityService.getAffiliation()).thenReturn(affiliation);
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(nodeId)).thenReturn(nodeType);
 
         // when
         underTest.addOrUpdateRating(nodeId, rating, reason);
@@ -135,6 +147,36 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
         Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
         Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
+    }
+
+    @Test
+    void addRating_InvalidNodeType() throws Exception {
+        // given
+        String nodeId = "1";
+        String nodeType = "Some other node type";
+        Double rating = 5d;
+        String authority = "Müller";
+        String reason = "nice video about...";
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
+        long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+        Document expected = collection.find(Filters.and(
+                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
+                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
+
+        Mockito.when(nodeService.getType(nodeId)).thenReturn(nodeType);
+
+        // when
+        Assertions.assertThrows(IllegalArgumentException.class, ()-> underTest.addOrUpdateRating(nodeId, rating, reason));
+
+        // then
+        long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
+        Document result = collection.find(Filters.and(
+                Filters.eq(RatingConstants.NODEID_KEY, nodeId),
+                Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
+
+        Assertions.assertEquals(beforeCount, afterCount, "count");
+        Assertions.assertEquals(expected, result, RatingConstants.NODEID_KEY);
     }
 
     @Test

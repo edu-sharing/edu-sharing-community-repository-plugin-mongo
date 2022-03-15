@@ -1,4 +1,4 @@
-package org.edu_sharing.plugin_mongo.rating;
+package org.edu_sharing.plugin_mongo.integrity;
 
 public interface IntegrityService {
     String getAffiliation();

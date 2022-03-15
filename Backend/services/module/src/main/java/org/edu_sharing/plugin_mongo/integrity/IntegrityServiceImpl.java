@@ -1,4 +1,4 @@
-package org.edu_sharing.plugin_mongo.rating;
+package org.edu_sharing.plugin_mongo.integrity;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.edu_sharing.repository.client.rpc.User;

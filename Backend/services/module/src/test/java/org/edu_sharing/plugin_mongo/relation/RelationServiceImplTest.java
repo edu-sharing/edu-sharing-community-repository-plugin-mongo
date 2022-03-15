@@ -3,6 +3,8 @@ package org.edu_sharing.plugin_mongo.relation;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -10,9 +12,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.edu_sharing.plugin_mongo.rating.IntegrityService;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
+import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.InsufficientPermissionException;
+import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.relations.InputRelationType;
 import org.edu_sharing.service.relations.NodeRelation;
 import org.edu_sharing.service.relations.NodeRelationException;
@@ -26,11 +30,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 @Testcontainers
@@ -39,6 +47,9 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
     private Date now = new Date();
     @Mock
     private IntegrityService integrityService;
+
+    @Mock
+    private NodeService nodeService;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +71,10 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
                 )
         ));
 
-        underTest = new RelationServiceImpl(db, integrityService);
+        underTest = new RelationServiceImpl(db, nodeService, integrityService);
+        Mockito.lenient()
+                .when(nodeService.getOriginalNode(anyString()))
+                .thenAnswer((Answer<NodeRef>) invocationOnMock -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, invocationOnMock.getArgument(0)));
     }
 
     private Document createNodeRelation(String node, final Document... relations) {
@@ -143,10 +157,14 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
         String to = "Node B";
         String authority = "Muster";
         InputRelationType type = InputRelationType.isPartOf;
+        String nodeType = CCConstants.CCM_TYPE_IO;
 
         MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
         int beforeCount = collection.find(Filters.eq(from)).first().getRelations().size();
+
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(from)).thenReturn(nodeType);
+        Mockito.when(nodeService.getType(to)).thenReturn(nodeType);
 
         // when
         underTest.createRelation(from, to, type);
@@ -171,10 +189,15 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
         String to = "Node B";
         String authority = "Muster";
         InputRelationType type = InputRelationType.isPartOf;
+        String nodeType = CCConstants.CCM_TYPE_IO;
 
         MongoCollection<NodeRelation> collection = db.withCodecRegistry(getCodecRegistry()).getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
         int beforeCount = collection.find(Filters.eq(from)).first().getRelations().size();
+
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(from)).thenReturn(nodeType);
+        Mockito.when(nodeService.getType(to)).thenReturn(nodeType);
 
         // when
         underTest.createRelation(from, to, type);
@@ -193,14 +216,48 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
-    void createRelation_ThrowNodeRelationExceptionTest() {
+    void createRelation_ThrowNodeRelationException_ExistingRelationTest() {
         // given
         String from = "Node E";
         String to = "Node C";
         String authority = "Muster";
         InputRelationType type = InputRelationType.references;
+        String nodeType = CCConstants.CCM_TYPE_IO;
 
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(from)).thenReturn(nodeType);
+        Mockito.when(nodeService.getType(to)).thenReturn(nodeType);
+
+        // when
+        Assertions.assertThrows(NodeRelationException.class, () -> underTest.createRelation(from, to, type));
+    }
+
+
+    @Test
+    void createRelation_ThrowNodeRelationException_FromNodeInvalidTypeTest() {
+        // given
+        String from = "Node E";
+        String to = "Node C";
+        InputRelationType type = InputRelationType.references;
+        String fromNodeType = "some other type";
+
+        Mockito.when(nodeService.getType(from)).thenReturn(fromNodeType);
+
+        // when
+        Assertions.assertThrows(NodeRelationException.class, () -> underTest.createRelation(from, to, type));
+    }
+
+    @Test
+    void createRelation_ThrowNodeRelationException_ToNodeInvalidTypeTest() {
+        // given
+        String from = "Node E";
+        String to = "Node C";
+        InputRelationType type = InputRelationType.references;
+        String fromNodeType = CCConstants.CCM_TYPE_IO;
+        String toNodeType = "some other type";
+
+        Mockito.when(nodeService.getType(from)).thenReturn(fromNodeType);
+        Mockito.when(nodeService.getType(to)).thenReturn(toNodeType);
 
         // when
         Assertions.assertThrows(NodeRelationException.class, () -> underTest.createRelation(from, to, type));

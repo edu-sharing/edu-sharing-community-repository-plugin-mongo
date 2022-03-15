@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.log4j.Log4j;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -13,10 +14,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.edu_sharing.plugin_mongo.rating.IntegrityService;
+import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.MongoDbUtil;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.InsufficientPermissionException;
+import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.relations.*;
@@ -28,11 +30,12 @@ import java.util.*;
 public class RelationServiceImpl implements RelationService {
 
     private final MongoDatabase database;
+    private final NodeService nodeService;
     private final IntegrityService integrityService;
 
-    public RelationServiceImpl(MongoDatabase database, IntegrityService integrityService) {
+    public RelationServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
         this.integrityService = integrityService;
-
+        this.nodeService = nodeService;
 
         ClassModelBuilder<RelationData> relationDataClassModelBuilder = ClassModel.builder(RelationData.class);
         ClassModelBuilder<NodeRelation> nodeRelationClassModelBuilder = ClassModel.builder(NodeRelation.class)
@@ -75,6 +78,10 @@ public class RelationServiceImpl implements RelationService {
     public NodeRelation getRelations(@NotNull String node) {
         Objects.requireNonNull(node, "node must be set");
         log.debug(String.format("get relations of node %s", node));
+
+
+        node = nodeService.getOriginalNode(node).getId();
+
         MongoCollection<RelationData> relationDataCollection = database.getCollection(RelationConstants.COLLECTION_KEY, RelationData.class);
         MongoCollection<NodeRelation> nodeRelationCollection = database.getCollection(RelationConstants.COLLECTION_KEY, NodeRelation.class);
 
@@ -128,6 +135,18 @@ public class RelationServiceImpl implements RelationService {
         Objects.requireNonNull(relationType, "relationType must be set");
 
         log.debug(String.format("create relation from node %s to node %s of type %s", fromNode, toNode, relationType));
+
+
+        fromNode = nodeService.getOriginalNode(fromNode).getId();
+        toNode = nodeService.getOriginalNode(toNode).getId();
+
+        if(!Objects.equals(nodeService.getType(fromNode), CCConstants.CCM_TYPE_IO)) {
+            throw new NodeRelationException("Relation can only set from nodes of type "+CCConstants.CCM_TYPE_IO);
+        }
+
+        if(!Objects.equals(nodeService.getType(toNode), CCConstants.CCM_TYPE_IO)) {
+            throw new NodeRelationException("Relation can only set to nodes of type "+CCConstants.CCM_TYPE_IO);
+        }
 
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);
 
@@ -183,6 +202,8 @@ public class RelationServiceImpl implements RelationService {
 
         log.debug(String.format("delete relation from node %s to node %s of type %s", fromNode, toNode, relationType));
 
+        fromNode = nodeService.getOriginalNode(fromNode).getId();
+        toNode = nodeService.getOriginalNode(toNode).getId();
 
         createIndexes();
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);

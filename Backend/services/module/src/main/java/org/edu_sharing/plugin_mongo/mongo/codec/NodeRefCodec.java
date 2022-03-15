@@ -1,4 +1,4 @@
-package org.edu_sharing.plugin_mongo.codec;
+package org.edu_sharing.plugin_mongo.mongo.codec;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
