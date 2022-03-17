@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.mongo;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -7,6 +8,7 @@ import com.typesafe.config.Config;
 import lombok.Setter;
 import org.edu_sharing.alfresco.lightbend.LightbendConfigLoader;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.annotation.Configuration;
 
 public class MongoClientFactoryBean implements FactoryBean<MongoClient> {
 
