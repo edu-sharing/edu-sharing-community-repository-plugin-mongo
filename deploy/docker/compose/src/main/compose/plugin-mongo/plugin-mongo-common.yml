@@ -2,46 +2,77 @@ version: '3.7'
 
 services:
 
-  repository-mongo:
+  repository-mongo-primary:
     image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
     environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
-#      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-#      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-#      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
-      MONGODB_ROOT_USER: "${REPOSITORY_MONGO_USER:-repository}"
-      MONGODB_ROOT_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      ALLOW_EMPTY_PASSWORD: "false"
+      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-primary"
+      MONGODB_REPLICA_SET_MODE: "primary"
+      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
+      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      MONGODB_ROOT_USER: "${REPOSITORY_MONGO_ROOT_USER:-root}"
+      MONGODB_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
+      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
     expose:
       - "27017"
     volumes:
       - "repository-mongo-volume-data:/bitnami/mongodb"
 
+  repository-mongo-secondary:
+    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+    depends_on:
+      - repository-mongo-primary
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-secondary"
+      MONGODB_REPLICA_SET_MODE: "secondary"
+      MONGODB_INITIAL_PRIMARY_HOST: "repository-mongo-primary"
+      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
+      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
+    expose:
+      - "27017"
+
+  repository-mongo-arbiter:
+    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+    depends_on:
+      - repository-mongo-primary
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-arbiter"
+      MONGODB_REPLICA_SET_MODE: "arbiter"
+      MONGODB_INITIAL_PRIMARY_HOST: "repository-mongo-primary"
+      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
+      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
+    expose:
+        - "27017"
+
+
   repository-mongo-express:
     image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
     environment:
-      ME_CONFIG_MONGODB_SERVER: "repository-mongo"
+      ME_CONFIG_MONGODB_SERVER: "repository-mongo-primary"
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-#      ME_CONFIG_MONGODB_AUTH_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-#      ME_CONFIG_MONGODB_AUTH_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-#      ME_CONFIG_MONGODB_AUTH_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
-      ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@repository-mongo:27017/"
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
+      ME_CONFIG_MONGODB_AUTH_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      #      ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@repository-mongo:27017/"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_ROOT_USER:-root}"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
       ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USER:-admin}"
       ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASS:-admin}"
     expose:
       - "8081"
     depends_on:
-      - repository-mongo
+      - repository-mongo-primary
 
   repository-service:
     environment:
       REPOSITORY_MONGO_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      REPOSITORY_MONGO_HOST: "repository-mongo"
-      REPOSITORY_MONGO_USER: "${REPOSITORY_MONGO_USER:-repository}"
-      REPOSITORY_MONGO_PASS: "${REPOSITORY_MONGO_PASS:-repository}"
+      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTIONSTRING:-mongodb://repository:repository@repository-mongo-primary:27017,repository-mongo-secondary:27017/edu-sharing}"
     depends_on:
-      - repository-mongo
+      - repository-mongo-primary
+      - repository-mongo-secondary
 
 volumes:
   repository-mongo-volume-data:

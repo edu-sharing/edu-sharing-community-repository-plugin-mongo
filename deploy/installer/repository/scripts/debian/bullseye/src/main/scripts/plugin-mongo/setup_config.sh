@@ -14,7 +14,7 @@ pushd "$ALF_HOME" &> /dev/null
 
 
 hocon -f "${eduSConf}" \
-	set "mongo.connectionString" '"'"${repository_mongo_protocol}://${repository_mongo_user}:${repository_mongo_pass}@${repository_mongo_host}:${repository_mongo_port}"'"'
+	set "mongo.connectionString" '"'"${repository_mongo_db_connection_string}"'"'
 
 hocon -f "${eduSConf}" \
 	set "mongo.database" '"'"${repository_mongo_database}"'"'
