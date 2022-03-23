@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   repository-mongo:
-    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-installer-scripts-debian-bullseye:${docker.tag}"
+    image: "${docker.repository}/${docker.prefix}-deploy-installer-scripts-debian-bullseye:${docker.tag}"
     expose:
       - 27017
     depends_on:
