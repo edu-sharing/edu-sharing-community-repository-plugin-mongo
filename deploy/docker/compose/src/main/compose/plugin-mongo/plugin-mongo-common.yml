@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   repository-mongo-primary:
-    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
     environment:
       ALLOW_EMPTY_PASSWORD: "false"
       MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-primary"
@@ -20,7 +20,7 @@ services:
       - "repository-mongo-volume-data:/bitnami/mongodb"
 
   repository-mongo-secondary:
-    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
     depends_on:
       - repository-mongo-primary
     environment:
@@ -34,7 +34,7 @@ services:
       - "27017"
 
   repository-mongo-arbiter:
-    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
     depends_on:
       - repository-mongo-primary
     environment:
@@ -49,7 +49,7 @@ services:
 
 
   repository-mongo-express:
-    image: "${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
+    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo_express:${docker.tag}"
     environment:
       ME_CONFIG_MONGODB_SERVER: "repository-mongo-primary,repository-mongo-secondary"
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
