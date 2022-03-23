@@ -1,6 +1,8 @@
 #!/bin/bash
 
-repository_mongo_host="${REPOSITORY_MONGO_HOST:-"127.0.0.1"}"
-repository_mongo_port="${REPOSITORY_MONGO_PORT:-27017}"
+repository_mongo_connection_string="${REPOSITORY_MONGO_CONNECTION_STRING}"
 
-until wait-for-it "${repository_mongo_host}:${repository_mongo_port}" -t 3; do sleep 1; done
+if [[ -z $repository_mongo_connection_string ]] ; then
+  echo "connectionString not setup!"
+  exit 1;
+fi
