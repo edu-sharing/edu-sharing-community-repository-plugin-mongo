@@ -24,7 +24,7 @@
     <docker.from.mongo.express>docker.io/mongo-express:0.54.0</docker.from.mongo.express>
 
     <helm.kube.version>&gt;= 1.18.0</helm.kube.version>
-    <helm.version>3.7.2</helm.version>
+    <helm.version>3.8.1</helm.version>
 
   </properties>
 
