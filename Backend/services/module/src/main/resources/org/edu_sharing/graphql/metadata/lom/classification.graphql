@@ -1,0 +1,4 @@
+type Classification {
+    taxon: [RangedValue!]
+    description: String
+}

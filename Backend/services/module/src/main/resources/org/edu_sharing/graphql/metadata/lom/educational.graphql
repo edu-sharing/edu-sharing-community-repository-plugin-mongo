@@ -1,0 +1,11 @@
+type Educational {
+    context: [RangedValue!]
+    intendedEndUserRoles: [RangedValue!]
+    learningResourceTypes: [RangedValue!]
+    curriculum: [RangedValue!]
+    typicalLerningTime: Duration
+    typicalAgeRange: [RangedValue!]
+    interactivityType: [RangedValue!]
+    typicalAgeRangeNominal: IntRange
+    language: [String!]
+}

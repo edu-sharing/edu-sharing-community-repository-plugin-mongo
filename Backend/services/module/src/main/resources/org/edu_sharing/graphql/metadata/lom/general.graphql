@@ -1,0 +1,9 @@
+type General {
+    title: String
+    description: [String!]
+    language:[String!]
+    keyword: [String!]
+    coverage: [String!]
+    structure: [RangedValue!]
+    aggregationLevel: [RangedValue!]
+}

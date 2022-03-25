@@ -1,0 +1,10 @@
+type Lom {
+    general: General
+    lifecycle: Lifecycle
+    metaMetadata: MetaMetadata
+    technical: Technical
+    educational: [Educational!]
+    rights: Rights
+    classification: [Classification!]
+    editorial: [Editorial!]
+}

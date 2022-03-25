@@ -1,0 +1,5 @@
+type Lifecycle {
+    version: String
+    status: RangedValue
+    contribute: [Contribute!]
+}

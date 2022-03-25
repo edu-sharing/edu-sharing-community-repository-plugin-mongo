@@ -1,0 +1,9 @@
+type Technical {
+    format: [Format!]
+    size: String
+    location:[String!]
+    installationRemarks: [String!]
+    otherPlatformRequirements: [String!]
+    duration: Duration
+    dimension: Dimension
+}

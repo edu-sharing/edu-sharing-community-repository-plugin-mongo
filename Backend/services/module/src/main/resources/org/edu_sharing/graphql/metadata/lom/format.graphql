@@ -1,0 +1,7 @@
+type Format {
+    mimetype: String
+    type: String
+    subtype: [String!]
+    version: String
+    content: String
+}

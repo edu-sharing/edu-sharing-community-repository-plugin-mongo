@@ -1,0 +1,4 @@
+type Contribute {
+    role: String!
+    content:[String!]!
+}

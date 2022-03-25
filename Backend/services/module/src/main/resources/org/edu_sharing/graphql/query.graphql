@@ -1,0 +1,7 @@
+extend type Query {
+    metadata(id: ID): Metadata
+    metadatas(first: Int!, after: String): MetadataConnection @connection (for: "Metadata")
+
+    #remoteShadow: [RemoteShadow]
+    #replication: [Replication]
+}

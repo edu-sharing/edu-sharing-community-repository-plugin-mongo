@@ -1,0 +1,13 @@
+type Rights {
+    cost: RangedValue
+    copyrightAndOtherRestrictions: RangedValue
+    description: [String!]
+    author: [String!]
+    version: String
+    internal: [String!]
+    locale: Locale
+    expirationDate: DateTime
+    publicAccess: Boolean
+    negotiationPermitted: Boolean
+    restrictedAccess: Boolean
+}

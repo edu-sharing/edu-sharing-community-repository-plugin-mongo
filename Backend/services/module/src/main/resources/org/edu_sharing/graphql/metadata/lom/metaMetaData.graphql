@@ -1,0 +1,4 @@
+type MetaMetadata {
+    schema: String
+    contribute: [Contribute!]
+}

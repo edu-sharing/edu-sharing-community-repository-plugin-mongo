@@ -1,0 +1,6 @@
+type Share {
+    downloadCount: Int!
+    date: DateTime
+    mail: String
+    token: String!
+}

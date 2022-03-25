@@ -1,0 +1,31 @@
+type Info {
+    filename: String!
+    modifier: String!
+    modifiedDate: DateTime!
+    creator: String!
+    creatorDate: DateTime!
+    url: String
+    owner: String!
+    propagateMetaDataSet: Boolean
+    metadataSet: String
+    urlOrigin: String
+    objectType: RangedValue
+    originallyCreated: DateTime
+    searchContext: [String!]
+    preview: Preview
+    organisation: String
+}
+
+type Preview {
+    url: String
+    data: String
+    mimetype: String
+    type: PreviewType
+}
+
+enum PreviewType {
+    TYPE_EXTERNAL
+    TYPE_USERDEFINED
+    TYPE_GENERATED
+    TYPE_DEFAULT
+}
