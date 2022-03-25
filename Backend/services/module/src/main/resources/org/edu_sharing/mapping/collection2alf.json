@@ -11,24 +11,28 @@
       "level": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionlevel0",
       "order": {
         "references": {
-          "active": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[0]",
-          "direction": {
-            "asc": {
-              "#true": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[1]"
-            },
-            "desc": {
-              "#false": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[1]"
+          "0": {
+            "active": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[0]",
+            "direction": {
+              "asc": {
+                "#true": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[1]"
+              },
+              "desc": {
+                "#false": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionordermode[1]"
+              }
             }
           }
         },
         "collections": {
-          "active": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[0]",
-          "direction": {
-            "asc": {
-              "#true": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[1]"
-            },
-            "desc": {
-              "#false": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[1]"
+          "0": {
+            "active": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[0]",
+            "direction": {
+              "asc": {
+                "#true": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[1]"
+              },
+              "desc": {
+                "#false": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionsubcollectionordermode[1]"
+              }
             }
           }
         }
@@ -37,7 +41,9 @@
       "type": "{http://www\\.campuscontent\\.de/model/1\\.0}collectiontype",
       "viewType": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionviewtype",
       "shortTitle": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionshorttitle",
-      "remoteId": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionremoteid",
+      "remote": {
+        "id": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionremoteid"
+      },
       "remoteSource": "{http://www\\.campuscontent\\.de/model/1\\.0}collectionremotesource",
       "authorFreetext": "{http://www\\.campuscontent\\.de/model/1\\.0}collection_author_freetext"
     }

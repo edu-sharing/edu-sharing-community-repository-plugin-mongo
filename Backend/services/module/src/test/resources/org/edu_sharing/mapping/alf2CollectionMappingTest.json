@@ -27,20 +27,22 @@
     "color": "#975B5D",
     "level": true,
     "order": {
-      "references": {
+      "references": [{
         "active": "ccm:collection_ordered_position",
         "direction": "asc"
-      },
-      "collections": {
+      }],
+      "collections": [{
         "active": "ccm:collection_ordered_position",
         "direction": "desc"
-      }
+      }]
     },
     "scope": "MY",
     "type": "default",
     "viewType": "my view type",
     "shortTitle": "short title",
-    "remoteId": "remote id",
+    "remote": {
+      "id": "remote id"
+    },
     "remoteSource": "Source",
     "authorFreetext": "author freetext"
   }

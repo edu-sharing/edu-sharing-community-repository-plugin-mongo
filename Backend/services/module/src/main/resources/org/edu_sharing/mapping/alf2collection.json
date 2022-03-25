@@ -8,32 +8,32 @@
       "{http://www.campuscontent.de/model/1.0}collectioncolor": "color",
       "{http://www.campuscontent.de/model/1.0}collectionlevel0": "level",
       "{http://www.campuscontent.de/model/1.0}collectionordermode": {
-        "0": "order.references.active",
+        "0": "order.references[0].active",
         "1": {
           "true": {
-            "#asc": "order.references.direction"
+            "#asc": "order.references[0].direction"
           },
           "false": {
-            "#desc": "order.references.direction"
+            "#desc": "order.references[0].direction"
           }
         }
       },
       "{http://www.campuscontent.de/model/1.0}collectionscope": "scope",
       "{http://www.campuscontent.de/model/1.0}collectionsubcollectionordermode": {
-        "0": "order.collections.active",
+        "0": "order.collections[0].active",
         "1": {
           "true": {
-            "#asc": "order.collections.direction"
+            "#asc": "order.collections[0].direction"
           },
           "false": {
-            "#desc": "order.collections.direction"
+            "#desc": "order.collections[0].direction"
           }
         }
       },
       "{http://www.campuscontent.de/model/1.0}collectiontype": "type",
       "{http://www.campuscontent.de/model/1.0}collectionviewtype": "viewType",
       "{http://www.campuscontent.de/model/1.0}collectionshorttitle": "shortTitle",
-      "{http://www.campuscontent.de/model/1.0}collectionremoteid": "remoteId",
+      "{http://www.campuscontent.de/model/1.0}collectionremoteid": "remote.id",
       "{http://www.campuscontent.de/model/1.0}collectionremotesource": "remoteSource",
       "{http://www.campuscontent.de/model/1.0}collection_author_freetext": "authorFreetext"
     }

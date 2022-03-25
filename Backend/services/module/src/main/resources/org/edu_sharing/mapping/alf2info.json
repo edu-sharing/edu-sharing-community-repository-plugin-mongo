@@ -11,7 +11,6 @@
       "{http://www.alfresco.org/model/content/1.0}owner": "owner",
       "{http://www.alfresco.org/model/content/1.0}edu_forcemetadataset": "propagateMetadataset",
       "{http://www.alfresco.org/model/content/1.0}edu_metadataset": "metadataset",
-      "{http://www.campuscontent.de/model/1.0}importblocked": "importBlocked",
       "{http://www.campuscontent.de/model/1.0}linktype": "urlOrigin",
       "{http://www.campuscontent.de/model/1.0}objecttype": "objectType.value",
       "{http://www.campuscontent.de/model/1.0}originally_created": "originallyCreated",

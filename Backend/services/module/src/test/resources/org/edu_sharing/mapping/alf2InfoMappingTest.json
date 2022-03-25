@@ -11,7 +11,6 @@
     "{http://www.alfresco.org/model/content/1.0}owner": "admin",
     "{http://www.alfresco.org/model/content/1.0}edu_forcemetadataset": false,
     "{http://www.alfresco.org/model/content/1.0}edu_metadataset": "default",
-    "{http://www.campuscontent.de/model/1.0}importblocked": true,
     "{http://www.campuscontent.de/model/1.0}linktype": "USER_GENERATED",
     "{http://www.campuscontent.de/model/1.0}objecttype": "MATERIAL",
     "{http://www.campuscontent.de/model/1.0}originally_created": "Nov 16, 2020 12:00:00 AM",
@@ -30,7 +29,6 @@
     "owner": "admin",
     "propagateMetadataset": false,
     "metadataset": "default",
-    "importBlocked": true,
     "urlOrigin": "USER_GENERATED",
     "objectType" : {
       "value": "MATERIAL"

@@ -8,7 +8,8 @@
     "{http://www.campuscontent.de/model/1.0}replicationsourceid": "/unterrichtsmaterialien/18-einfuhrung-ins-coding",
     "{http://www.campuscontent.de/model/1.0}replicationsourceorigin": "serlo_spider",
     "{http://www.campuscontent.de/model/1.0}replicationsourcetimestamp": "2021-04-15T02:05:27Z",
-    "{http://www.campuscontent.de/model/1.0}replicationsourceuuid": "8e8dab98-a5f2-5bfc-a98b-0c411f3939aa"
+    "{http://www.campuscontent.de/model/1.0}replicationsourceuuid": "8e8dab98-a5f2-5bfc-a98b-0c411f3939aa",
+    "{http://www.campuscontent.de/model/1.0}importblocked": true
   },
 
   "expected": {
@@ -21,6 +22,7 @@
     },
     "timestamp": "2021-04-15T02:05:27Z",
     "uuid": "8e8dab98-a5f2-5bfc-a98b-0c411f3939aa",
-    "location": "REPLICATION"
+    "location": "REPLICATION",
+    "importBlocked": true
   }
 }

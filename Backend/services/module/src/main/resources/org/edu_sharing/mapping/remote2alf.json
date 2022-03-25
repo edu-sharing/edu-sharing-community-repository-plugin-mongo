@@ -19,7 +19,8 @@
           "@(2,hash)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourcehash",
           "@(2,id)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceid",
           "@(2,timestamp)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourcetimestamp",
-          "@(2,uuid)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceuuid"
+          "@(2,uuid)": "{http://www\\.campuscontent\\.de/model/1\\.0}replicationsourceuuid",
+          "@(2,importBlocked)" : "{http://www\\.campuscontent\\.de/model/1\\.0}importblocked"
         }
       }
     }
