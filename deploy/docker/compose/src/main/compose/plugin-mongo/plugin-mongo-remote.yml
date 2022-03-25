@@ -2,8 +2,14 @@ version: '3.7'
 
 services:
 
-  repository-mongo:
-    image: "${docker.registry}/${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo:${docker.tag}"
+  repository-mongo-primary:
+    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+
+  repository-mongo-secondary:
+    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+
+  repository-mongo-arbiter:
+    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
 
   repository-mongo-express:
-    image: "${docker.registry}/${docker.repository}/edu_sharing-community-repository-plugin-mongo-deploy-docker-build-mongo_express:${docker.tag}"
+    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo_express:${docker.tag}"

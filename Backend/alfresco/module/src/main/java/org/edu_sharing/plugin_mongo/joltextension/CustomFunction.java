@@ -120,7 +120,7 @@ public class CustomFunction {
     }
 
     public static class mapFromContentDataWithId extends Function.SingleFunction<Object> {
-        private static mapFromLocale mapFromLocale = new CustomFunction.mapFromLocale();
+        private static mapFromLocale mapFromLocale = new mapFromLocale();
 
         @Override
         protected Optional<Object> applySingle(Object o) {
@@ -146,7 +146,7 @@ public class CustomFunction {
     }
 
     public static class contentDataWithIdFromMap extends Function.SingleFunction<Object> {
-        private static localeFromMap localeFromMap = new CustomFunction.localeFromMap();
+        private static localeFromMap localeFromMap = new localeFromMap();
 
         @Override
         protected Optional<Object> applySingle(Object o) {

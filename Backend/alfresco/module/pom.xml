@@ -76,6 +76,19 @@
   </build>
 
   <dependencies>
+    <!-- provided -->
+
+    <dependency>
+      <groupId>org.alfresco</groupId>
+      <artifactId>alfresco-remote-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.alfresco</groupId>
+      <artifactId>alfresco-repository</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -93,6 +106,29 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>edu_sharing-community-repository-backend-alfresco-module</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.bazaarvoice.jolt</groupId>
+      <artifactId>jolt-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.bazaarvoice.jolt</groupId>
+      <artifactId>json-utils</artifactId>
+    </dependency>
+
+    <!-- runtime -->
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
   </dependencies>
