@@ -83,14 +83,14 @@ class MappingTest {
                             o.put("{http://www.campuscontent.de/model/1.0}published_original", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "108bb0ff-9d75-470d-ad49-64e4108a6b4f"));
                         }
                 ),
-                Arguments.of("alf2AlfmapMappingTest",
+                Arguments.of("alf2AlfMapMappingTest",
                         (Consumer<Map>) o -> {
                             o.put("{http://www.alfresco.org/model/system/1.0}locale", new Locale("de", "DE"));
                             o.put("{http://www.alfresco.org/model/content/1.0}template", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "5f1aa124-6873-4fef-b776-fef0ef8b0178"));
                         },
                         null
                 ),
-                Arguments.of("alfmap2AlfMappingTest",
+                Arguments.of("alfMap2AlfMappingTest",
                         null,
                         (Consumer<Map>) o -> {
                             o.put("{http://www.alfresco.org/model/system/1.0}locale", new Locale("de", "DE"));
@@ -155,7 +155,7 @@ class MappingTest {
         doc.put("alfmap", subDoc);
 
         ClassLoader classLoader = getClass().getClassLoader();
-        InputStream modelStream = classLoader.getResourceAsStream("org/edu_sharing/mapping/alfmap2alf.json");
+        InputStream modelStream = classLoader.getResourceAsStream("org/edu_sharing/mapping/alfMap2alf.json");
         Chainr chainr = Chainr.fromSpec(JsonUtils.jsonToList(modelStream));
         Object actual = chainr.transform(doc.get("alfmap"));
 

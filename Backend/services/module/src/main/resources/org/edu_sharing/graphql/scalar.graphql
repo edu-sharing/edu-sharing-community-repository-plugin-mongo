@@ -1,4 +1,4 @@
-scalar DateTime
+scalar Date
 scalar Locale
 scalar Duration
 scalar Color

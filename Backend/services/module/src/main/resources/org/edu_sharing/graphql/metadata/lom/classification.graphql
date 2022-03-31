@@ -1,4 +1,5 @@
 type Classification {
+    purpose: String!
     taxon: [RangedValue!]
     description: String
 }

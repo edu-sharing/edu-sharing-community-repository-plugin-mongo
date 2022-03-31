@@ -116,17 +116,17 @@
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
-                    <constructor-arg name="name" value="alfmap"/>
-                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2alfmap.json"/>
-                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/alfmap2alf.json"/>
+                    <constructor-arg name="name" value="alfMap"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2alfMap.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/alfMap2alf.json"/>
                 </bean>
             </list>
         </property>
     </bean>
 
     <!-- services -->
-    <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.metadata.MongoNodeServiceImpl">
-        <constructor-arg name="database" ref="eduMongoDb"/>
+    <bean id="nodeServiceImpl" class="org.edu_sharing.plugin_mongo.service.legacy.MongoNodeServiceImpl">
+        <constructor-arg name="database" ref="mongoDatabase"/>
         <constructor-arg name="mappingService" ref="alfMapping"/>
         <constructor-arg name="runtimePropertyService" ref="alfrescoRuntimePropertyService"/>
     </bean>

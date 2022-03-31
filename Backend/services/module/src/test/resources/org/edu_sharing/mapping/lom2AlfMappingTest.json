@@ -18,7 +18,9 @@
 
     "lifecycle" : {
       "version" : "1.1",
-      "status" : "final",
+      "status" : {
+        "value": "final"
+      },
       "contribute" : [
         {
           "role" : "author",
@@ -175,7 +177,9 @@
   "expected": {
     // General
     "{http://www.campuscontent.de/model/lom/1.0}title" : "My title",
-    "{http://www.campuscontent.de/model/lom/1.0}general_language" :  [ "de" ],
+    "{http://www.alfresco.org/model/content/1.0}title" : "My title",
+    "{http://www.campuscontent.de/model/lom/1.0}general_language":  [ "de" ],
+    "{http://www.alfresco.org/model/content/1.0}description" :  "User defined description",
     "{http://www.campuscontent.de/model/lom/1.0}general_description" :  "User defined description",
     "{http://www.campuscontent.de/model/lom/1.0}general_keyword" : [ "ship" , "ocean", "transport"],
     "{http://www.campuscontent.de/model/lom/1.0}coverage" :  [ "coverage" ],
@@ -224,6 +228,7 @@
     "{http://www.campuscontent.de/model/lom/1.0}cost" : "true",
     "{http://www.campuscontent.de/model/lom/1.0}copyright_and_other_restrictions" : "false",
     "{http://www.campuscontent.de/model/lom/1.0}rights_description" : "Youtube",
+    "{http://www.campuscontent.de/model/1.0}customlicense_key": [ "Youtube" ],
     "{http://www.campuscontent.de/model/1.0}author_freetext" : [ "some author" ],
     "{http://www.campuscontent.de/model/1.0}commonlicense_cc_version" : "4.0",
     "{http://www.campuscontent.de/model/1.0}commonlicense_key" : [ "CC_BY" ],

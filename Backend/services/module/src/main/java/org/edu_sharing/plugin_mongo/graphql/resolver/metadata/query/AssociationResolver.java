@@ -1,57 +1,66 @@
 package org.edu_sharing.plugin_mongo.graphql.resolver.metadata.query;
 
 import graphql.kickstart.tools.GraphQLResolver;
+import graphql.schema.DataFetchingEnvironment;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.edu_sharing.plugin_mongo.graphql.domain.metadata.Association;
-import org.edu_sharing.plugin_mongo.graphql.domain.metadata.Metadata;
-import org.edu_sharing.plugin_mongo.graphql.domain.metadata.NodeRef;
-import org.edu_sharing.plugin_mongo.graphql.domain.metadata.Version;
+import org.dataloader.DataLoader;
+import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
+import org.edu_sharing.plugin_mongo.metadata.Association;
+import org.edu_sharing.plugin_mongo.metadata.Metadata;
+import org.edu_sharing.plugin_mongo.metadata.NodeRef;
+import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
+
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AssociationResolver implements GraphQLResolver<Association> {
 
-    public Metadata symlink(Association association){
-        NodeRef nodeRef = association.getSymlinkNodeRef();
-        log.info("Requesting forked origin for reference id {}", nodeRef.getId());
+    private final MetadataRepository metadataRepository;
 
-        //TODO
-        return Metadata.builder()
-                ._id(nodeRef.getId())
-                .build();
+    public CompletableFuture<Metadata> symlink(Association association, DataFetchingEnvironment environment){
+        NodeRef nodeRef = association.getSymlinkNodeRef();
+        if(Objects.nonNull(nodeRef)) {
+            log.info("Requesting forked origin for reference id {}", nodeRef.getId());
+            DataLoader<String, Metadata> dataLoader =  environment.getDataLoader(MetadataBatchedLoader.class.getSimpleName());
+            return dataLoader.load(nodeRef.getId());
+        }
+        return null;
     }
 
     public Metadata forkedOrigin(Association association){
         NodeRef nodeRef = association.getForkedOriginNodeRef();
-        log.info("Requesting forked origin for reference id {} with version {}", nodeRef.getId(), nodeRef.getVersion());
-
-        //TODO
-        return Metadata.builder()
-                ._id(nodeRef.getId())
-                .version(Version.builder().version(nodeRef.getVersion()).build())
-                .build();
+        if(Objects.nonNull(nodeRef)) {
+            log.info("Requesting forked origin for reference id {} with version {}", nodeRef.getId(), nodeRef.getVersion());
+            return metadataRepository.getMetadata(nodeRef.getId(), nodeRef.getVersion());
+        }
+        return null;
     }
 
-    public Metadata original(Association association){
+    public CompletableFuture<Metadata>  original(Association association, DataFetchingEnvironment environment){
         NodeRef nodeRef = association.getOriginalNodeRef();
-        log.info("Requesting original for reference id {}", nodeRef.getId());
-
-        //TODO
-        return Metadata.builder()
-                ._id(nodeRef.getId())
-                .build();
+        if(Objects.nonNull(nodeRef)) {
+            log.info("Requesting original for reference id {}", nodeRef.getId());
+            DataLoader<String, Metadata> dataLoader =  environment.getDataLoader(MetadataBatchedLoader.class.getSimpleName());
+            return dataLoader.load(nodeRef.getId());
+        }
+        return null;
     }
 
-    public Metadata publishedOriginal(Association association){
+    public CompletableFuture<Metadata>  publishedOriginal(Association association, DataFetchingEnvironment environment){
         NodeRef nodeRef = association.getPublishedOriginalNodeRef();
-        log.info("Requesting published original for reference id {}", nodeRef.getId());
-
-        //TODO
-        return Metadata.builder()
-                ._id(nodeRef.getId())
-                .build();
+        if(Objects.nonNull(nodeRef)) {
+            log.info("Requesting published original for reference id {}", nodeRef.getId());
+            DataLoader<String, Metadata> dataLoader =  environment.getDataLoader(MetadataBatchedLoader.class.getSimpleName());
+            return dataLoader.load(nodeRef.getId());
+        }
+        return null;
     }
 
 }

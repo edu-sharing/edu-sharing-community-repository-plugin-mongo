@@ -13,6 +13,12 @@
       "{http://www.campuscontent.de/model/1.0}customlicense_key": "=join(', ',@(1,{http://www\\.campuscontent\\.de/model/1\\.0}customlicense_key))"
     }
   },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/lom/1.0}duration": "=unifyDurationFormat(@(0))"
+    }
+  },
 
   // add missing fields with null for fallback handling
   {
@@ -70,7 +76,7 @@
       "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel": "general.aggregationLevel.value",
 
       "{http://www.campuscontent.de/model/lom/1.0}version" : "lifecycle.version",
-      "{http://www.campuscontent.de/model/lom/1.0}status" : "lifecycle.status",
+      "{http://www.campuscontent.de/model/lom/1.0}status" : "lifecycle.status.value",
       "lifecycle" : {
         "contribute": {
           "role" : {

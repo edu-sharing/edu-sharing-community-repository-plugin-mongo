@@ -3,6 +3,7 @@ package org.edu_sharing.plugin_mongo.graphql.config;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
 import org.edu_sharing.plugin_mongo.graphql.scalars.ColorScalar;
+import org.edu_sharing.plugin_mongo.graphql.scalars.DateScalar;
 import org.edu_sharing.plugin_mongo.graphql.scalars.DurationScalar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class ScalarConfig {
     @Bean
     public GraphQLScalarType dateTime() {
-        return ExtendedScalars.DateTime;
+        return DateScalar.INSTANCE;
     }
 
     @Bean

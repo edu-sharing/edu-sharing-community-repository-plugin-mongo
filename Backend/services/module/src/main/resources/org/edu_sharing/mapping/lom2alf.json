@@ -23,7 +23,9 @@
       },
       "lifecycle": {
         "version" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}version",
-        "status" : "{http://www\\.campuscontent\\.de/model/lom/1\\.0}status",
+        "status" : {
+          "value": "{http://www\\.campuscontent\\.de/model/lom/1\\.0}status"
+        },
         "contribute": {
           "*": {
             "role": {
@@ -157,6 +159,14 @@
           }
         }
       }
+    }
+  },
+
+  // data conversions
+  {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}customlicense_key": "=split(', ',@(1,{http://www\\.campuscontent\\.de/model/1\\.0}customlicense_key))"
     }
   }
 ]

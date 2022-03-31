@@ -1,7 +1,9 @@
 extend type Query {
-    metadata(id: ID): Metadata
-    metadatas(first: Int!, after: String): MetadataConnection @connection (for: "Metadata")
+    metadata(id: ID!): Metadata
+    metadatas(input: MetadataFilter!): [Metadata]!
+    pagedMetadatas(first: Int!, after: ID): MetadataConnection @connection (for: "Metadata")
+}
 
-    #remoteShadow: [RemoteShadow]
-    #replication: [Replication]
+input MetadataFilter {
+    ids: [ID!]
 }

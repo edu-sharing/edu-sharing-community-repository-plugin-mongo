@@ -1,16 +1,16 @@
 type Info {
     filename: String!
     modifier: String!
-    modifiedDate: DateTime!
+    modifiedDate: Date!
     creator: String!
-    creatorDate: DateTime!
+    createDate: Date!
     url: String
-    owner: String!
-    propagateMetaDataSet: Boolean
+    owner: String
+    propagateMetadataSet: Boolean
     metadataSet: String
     urlOrigin: String
     objectType: RangedValue
-    originallyCreated: DateTime
+    originallyCreated: Date
     searchContext: [String!]
     preview: Preview
     organisation: String

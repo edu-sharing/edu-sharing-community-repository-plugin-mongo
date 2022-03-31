@@ -2,6 +2,6 @@ type Permission {
     action: String!
     history: [String!]
     invited: [String!]
-    modified: DateTime!
+    modified: Date!
     users: [String!]
 }

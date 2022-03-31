@@ -1,22 +1,36 @@
 package org.edu_sharing.plugin_mongo.graphql.resolver.metadata.query;
 
 import graphql.kickstart.tools.GraphQLResolver;
+import graphql.schema.DataFetchingEnvironment;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.edu_sharing.plugin_mongo.graphql.domain.metadata.*;
+import org.dataloader.DataLoader;
+import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
+import org.edu_sharing.plugin_mongo.metadata.Collection;
+import org.edu_sharing.plugin_mongo.metadata.Metadata;
+import org.edu_sharing.plugin_mongo.metadata.NodeRef;
+import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
+
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CollectionResolver implements GraphQLResolver<Collection> {
 
-    public Metadata remote(Collection collection){
-        NodeRef nodeRef = collection.getRemoteNodeRef();
-        log.info("Requesting forked origin for reference id {}", nodeRef.getId());
+    private final MetadataRepository metadataRepository;
 
-        //TODO
-        return Metadata.builder()
-                ._id(nodeRef.getId())
-                .build();
+    public CompletableFuture<Metadata> remote(Collection collection, DataFetchingEnvironment environment) {
+        NodeRef nodeRef = collection.getRemoteNodeRef();
+        if(Objects.nonNull(nodeRef)) {
+            log.info("Requesting forked origin for reference id {}", nodeRef.getId());
+            DataLoader<String, Metadata> dataLoader =  environment.getDataLoader(MetadataBatchedLoader.class.getSimpleName());
+            return dataLoader.load(nodeRef.getId());
+        }
+        return null;
     }
 }

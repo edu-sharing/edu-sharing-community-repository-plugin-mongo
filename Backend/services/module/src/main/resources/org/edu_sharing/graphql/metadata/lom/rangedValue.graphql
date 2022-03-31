@@ -1,4 +1,26 @@
-type RangedValue {
+union RangedValue = BooleanRangedValue | StringRangedValue | IntRangedValue | FloatRangedValue | DateRangedValue
+
+type BooleanRangedValue {
+    id: String
+    value: Boolean!
+}
+
+type StringRangedValue {
     id: String
     value: String!
+}
+
+type IntRangedValue {
+    id: String
+    value: Int!
+}
+
+type FloatRangedValue {
+    id: String
+    value: Float!
+}
+
+type DateRangedValue {
+    id: String
+    value: Date!
 }

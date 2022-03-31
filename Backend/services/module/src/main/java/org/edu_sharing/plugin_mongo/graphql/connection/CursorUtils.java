@@ -12,12 +12,14 @@ import java.util.List;
 @Component
 public class CursorUtils {
 
-    public ConnectionCursor createCursorWith(String id){
-        return new DefaultConnectionCursor(Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
+    public ConnectionCursor createCursorWith(String id) {
+        //return new DefaultConnectionCursor(Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
+        return new DefaultConnectionCursor(id);
     }
 
     public String decode(String cursor) {
-        return new String(Base64.getDecoder().decode(cursor));
+        //return new String(Base64.getDecoder().decode(cursor));
+        return cursor;
     }
 
     public <T> ConnectionCursor getFirstCursorFrom(List<Edge<T>> edges) {

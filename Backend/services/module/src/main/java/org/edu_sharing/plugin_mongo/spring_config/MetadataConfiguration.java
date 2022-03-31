@@ -1,10 +1,10 @@
 package org.edu_sharing.plugin_mongo.spring_config;
 
-import org.edu_sharing.plugin_mongo.Initialization;
+import org.edu_sharing.plugin_mongo.jsonpath.JsonPathStartupListener;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelDictionary;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelDictionaryImpl;
-import org.edu_sharing.plugin_mongo.metadata.AlfrescoMappingService;
-import org.edu_sharing.plugin_mongo.metadata.AlfrescoRuntimePropertyService;
+import org.edu_sharing.plugin_mongo.service.legacy.AlfrescoMappingService;
+import org.edu_sharing.plugin_mongo.service.legacy.AlfrescoRuntimePropertyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class MetadataConfiguration {
 
     @Bean
-    Initialization initialization(){
-        return new Initialization();
+    JsonPathStartupListener initialization(){
+        return new JsonPathStartupListener();
     }
 
     @Bean

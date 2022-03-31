@@ -1,5 +1,5 @@
 type Published {
-    date: DateTime
+    date: Date
     handleId: String
     mode: String
 }

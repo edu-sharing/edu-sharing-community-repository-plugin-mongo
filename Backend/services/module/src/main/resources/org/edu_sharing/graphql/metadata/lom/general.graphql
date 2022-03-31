@@ -4,6 +4,6 @@ type General {
     language:[String!]
     keyword: [String!]
     coverage: [String!]
-    structure: [RangedValue!]
-    aggregationLevel: [RangedValue!]
+    structure: RangedValue
+    aggregationLevel: RangedValue
 }

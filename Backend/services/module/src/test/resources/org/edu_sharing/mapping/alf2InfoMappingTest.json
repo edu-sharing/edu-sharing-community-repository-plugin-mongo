@@ -27,8 +27,8 @@
     "createDate": "Aug 23, 2020 7:41:16 PM",
     "url": "tps://corona-school.de",
     "owner": "admin",
-    "propagateMetadataset": false,
-    "metadataset": "default",
+    "propagateMetadataSet": false,
+    "metadataSet": "default",
     "urlOrigin": "USER_GENERATED",
     "objectType" : {
       "value": "MATERIAL"

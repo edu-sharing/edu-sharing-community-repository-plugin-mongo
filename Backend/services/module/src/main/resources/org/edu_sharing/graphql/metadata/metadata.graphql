@@ -1,5 +1,5 @@
 type Metadata {
-    _id: ID
+    id: ID
     content: String
     version: Version
     store: Store

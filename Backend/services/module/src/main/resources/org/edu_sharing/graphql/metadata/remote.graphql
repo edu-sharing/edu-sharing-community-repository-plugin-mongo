@@ -10,10 +10,10 @@ type RemoteShadow implements Remote{
 
 type Replication implements Remote {
     id: String!
-    uuid: String!
+    uuid: String
     hash: String
-    modified: DateTime
-    timestamp: DateTime
+    modified: Date
+    timestamp: Date
     repository: Repository!
     importBlocked: Boolean!
 }

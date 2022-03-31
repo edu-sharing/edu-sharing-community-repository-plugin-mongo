@@ -34,7 +34,7 @@
     "{http://www.campuscontent.de/model/lom/1.0}location" : [ "ccrep://local/6e4bd986-cd80-4cdb-befc-fb05a7312518" ],
     "{http://www.campuscontent.de/model/lom/1.0}installationremarks" : [ "some installation remarks" ],
     "{http://www.campuscontent.de/model/lom/1.0}otherplatformrequirements" : [ "some other platform requirements" ],
-    "{http://www.campuscontent.de/model/lom/1.0}duration" : "PT75S",
+    "{http://www.campuscontent.de/model/lom/1.0}duration" : "00:01:15",
     "{http://www.campuscontent.de/model/1.0}location_status" : "0",
     "{http://www.campuscontent.de/model/1.0}height" : 4021.0,
     "{http://www.campuscontent.de/model/1.0}width" : 8021.0,
@@ -91,7 +91,9 @@
 
     "lifecycle" : {
       "version" : "1.1",
-      "status" : "final",
+      "status" : {
+        "value": "final"
+      },
       "contribute" : [
         {
           "role" : "author",
@@ -130,7 +132,7 @@
       "location" : [ "ccrep://local/6e4bd986-cd80-4cdb-befc-fb05a7312518" ],
       "installationRemarks" : [ "some installation remarks" ],
       "otherPlatformRequirements" : [ "some other platform requirements" ],
-      "duration" : "PT75S",
+      "duration" : "PT1M15S",
       "locationHttpsStatus" : "0",
       "dimension" : {
         "height": 4021.0,
