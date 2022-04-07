@@ -12,10 +12,11 @@ public class SchemaParserConfig {
         return new SchemaParserDictionary()
                 .add(RemoteShadow.class)
                 .add(Replication.class)
-                .add(BooleanRangedValue.class)
-                .add(StringRangedValue.class)
-                .add(FloatRangedValue.class)
-                .add(IntRangedValue.class)
-                .add(DateRangedValue.class);
+                ;
+//                .add(BooleanRangedValue.class)
+//                .add(StringRangedValue.class)
+//                .add(FloatRangedValue.class)
+//                .add(IntRangedValue.class)
+//                .add(DateRangedValue.class);
     }
 }

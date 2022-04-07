@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Component
@@ -19,6 +21,7 @@ import java.util.Objects;
 public class ReferenceResolver implements GraphQLResolver<Reference> {
 
     private final MetadataRepository metadataRepository;
+    //private final Executor executor;
 
     public Metadata collection(Reference reference){
         NodeRef nodeRef = reference.getCollection();

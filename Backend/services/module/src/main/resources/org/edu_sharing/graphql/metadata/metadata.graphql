@@ -1,5 +1,6 @@
 type Metadata {
-    id: ID
+    id: ID!
+    nodeType: String!
     content: String
     version: Version
     store: Store

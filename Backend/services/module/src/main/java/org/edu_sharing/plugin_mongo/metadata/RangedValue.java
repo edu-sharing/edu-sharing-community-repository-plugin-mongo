@@ -10,10 +10,10 @@ import java.util.Optional;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class RangedValue<T> {
+public class RangedValue {
     String id;
 
     @NotBlank
-    T value;
+    String value;
 }
 

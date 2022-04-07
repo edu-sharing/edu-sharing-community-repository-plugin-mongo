@@ -18,7 +18,7 @@ public class Collection {
     String type;
     String viewType;
     String shortTitle;
-    NodeRef remoteNodeRef;
+    NodeRef remote;
     String remoteSource;
     String authorFreetext;
 }

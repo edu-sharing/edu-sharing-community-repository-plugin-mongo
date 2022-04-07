@@ -18,7 +18,7 @@ public class Replication implements Remote {
     String uuid;
     String hash;
     Date modified;
-    Date timestamp;
+    String timestamp;
     boolean importBlocked;
 
     @NotBlank

@@ -19,9 +19,10 @@ import java.util.stream.Collectors;
 public class MetadataBatchedLoader implements MappedBatchLoader<String, Metadata> {
 
     final MetadataRepository metadataRepository;
-    final Executor metadataExecutor;
+//    final Executor metadataExecutor;
     @Override
     public CompletionStage<Map<String, Metadata>> load(Set<String> set) {
-        return CompletableFuture.supplyAsync(()->metadataRepository.getMetadatas(set).stream().collect(Collectors.toMap(Metadata::getId, x->x)),  metadataExecutor);
+        //return CompletableFuture.supplyAsync(()->metadataRepository.getMetadatas(set).stream().collect(Collectors.toMap(Metadata::getId, x->x)),  metadataExecutor);
+        return CompletableFuture.completedFuture(metadataRepository.getMetadatas(set).stream().collect(Collectors.toMap(Metadata::getId, x->x)));
     }
 }

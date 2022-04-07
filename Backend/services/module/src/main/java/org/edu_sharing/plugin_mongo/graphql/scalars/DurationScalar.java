@@ -45,7 +45,7 @@ public class DurationScalar {
                 if(!(input instanceof StringValue)){
                     throw new CoercingParseLiteralException("Expected AST type 'StringValue' but was '" + Kit.typeName(input) + "'.");
                 }
-                return Duration.parse(input.toString());
+                return Duration.parse(((StringValue)input).getValue());
             }
         };
 

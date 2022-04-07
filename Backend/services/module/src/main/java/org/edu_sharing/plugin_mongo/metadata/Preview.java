@@ -8,7 +8,4 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Preview {
     String url;
-    String mimetype;
-    String data;
-    PreviewType type;
 }

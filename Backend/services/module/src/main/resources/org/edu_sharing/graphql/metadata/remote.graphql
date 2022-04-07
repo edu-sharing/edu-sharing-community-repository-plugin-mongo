@@ -13,7 +13,7 @@ type Replication implements Remote {
     uuid: String
     hash: String
     modified: Date
-    timestamp: Date
+    timestamp: String
     repository: Repository!
     importBlocked: Boolean!
 }

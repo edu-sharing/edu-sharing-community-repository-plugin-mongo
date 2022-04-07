@@ -1,4 +1,4 @@
-type RangedValue {
+input RangedValueInput {
     id: String
     value: String!
 }

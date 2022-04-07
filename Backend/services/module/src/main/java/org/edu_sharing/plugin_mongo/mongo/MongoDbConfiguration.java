@@ -53,12 +53,13 @@ public class MongoDbConfiguration {
         Optional.ofNullable(conventions).ifPresent(allConventions::addAll);
 
         PojoCodecProvider.Builder builder = PojoCodecProvider.builder()
-                .register(discriminatorClasses.toArray(new Class[0]))
-                // We need to add this because MongoDb will automatically convert id to _id
-                .conventions(allConventions)
-                .automatic(true);
+                .register(discriminatorClasses.toArray(new Class[0]));
 
         Optional.ofNullable(classModels).ifPresent(classModels->builder.register(classModels.toArray(new ClassModel<?>[0])));
+
+        // We need to add this because MongoDb will automatically convert id to _id
+        builder.conventions(allConventions);
+        builder.automatic(true);
 
         return builder.build();
     }

@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Share {
     int downloadCount;
-    Date date;
+    long date;
     String mail;
     @NotBlank
     String token;

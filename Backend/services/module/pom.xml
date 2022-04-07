@@ -157,6 +157,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
       <scope>provided</scope>
@@ -183,6 +189,12 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
       <scope>provided</scope>
     </dependency>
 

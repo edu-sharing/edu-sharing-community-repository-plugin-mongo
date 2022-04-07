@@ -1,5 +1,5 @@
 extend type Query {
-    metadata(id: ID!): Metadata
+    metadata(id: ID!, version: String): Metadata
     metadatas(input: MetadataFilter!): [Metadata]!
     pagedMetadatas(first: Int!, after: ID): MetadataConnection @connection (for: "Metadata")
 }

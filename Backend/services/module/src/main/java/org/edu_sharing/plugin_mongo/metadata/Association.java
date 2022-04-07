@@ -7,9 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Association {
-    NodeRef symlinkNodeRef;
-    NodeRef forkedOriginNodeRef;
-    NodeRef originalNodeRef;
-    NodeRef publishedOriginalNodeRef;
+    NodeRef symlink;
+    NodeRef forkedOrigin;
+    NodeRef original;
+    NodeRef publishedOriginal;
     LegacyAssociation legacy;
 }

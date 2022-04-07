@@ -12,7 +12,6 @@ import org.edu_sharing.plugin_mongo.metadata.NodeRef;
 import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +24,7 @@ public class CollectionResolver implements GraphQLResolver<Collection> {
     private final MetadataRepository metadataRepository;
 
     public CompletableFuture<Metadata> remote(Collection collection, DataFetchingEnvironment environment) {
-        NodeRef nodeRef = collection.getRemoteNodeRef();
+        NodeRef nodeRef = collection.getRemote();
         if(Objects.nonNull(nodeRef)) {
             log.info("Requesting forked origin for reference id {}", nodeRef.getId());
             DataLoader<String, Metadata> dataLoader =  environment.getDataLoader(MetadataBatchedLoader.class.getSimpleName());

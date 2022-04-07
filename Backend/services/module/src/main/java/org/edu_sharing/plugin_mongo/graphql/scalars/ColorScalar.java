@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.graphql.scalars;
 
 import graphql.language.StringValue;
+import graphql.scalars.datetime.DateTimeScalar;
 import graphql.scalars.util.Kit;
 import graphql.schema.*;
 
@@ -46,7 +47,7 @@ public class ColorScalar {
                 if(!(input instanceof StringValue)){
                     throw new CoercingParseLiteralException("Expected AST type 'StringValue' but was '" + Kit.typeName(input) + "'.");
                 }
-                return Color.decode(input.toString());
+                return Color.decode(((StringValue) input).getValue());
             }
         };
         INSTANCE = GraphQLScalarType.newScalar().name("Color").description("An Hex String compliant Color Scalar").coercing(coercing).build();

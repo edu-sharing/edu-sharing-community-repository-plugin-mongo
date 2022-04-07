@@ -1,4 +1,4 @@
-package org.edu_sharing.plugin_mongo.metadata;
+package org.edu_sharing.plugin_mongo.graphql.domain;
 
 public enum PreviewType {
     TYPE_EXTERNAL,

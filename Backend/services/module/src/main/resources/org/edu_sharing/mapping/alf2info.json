@@ -1,5 +1,11 @@
 [
   {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}objecttype": "=toString"
+    }
+  },
+  {
     "operation": "shift",
     "spec": {
       "{http://www.alfresco.org/model/content/1.0}creator": "creator",

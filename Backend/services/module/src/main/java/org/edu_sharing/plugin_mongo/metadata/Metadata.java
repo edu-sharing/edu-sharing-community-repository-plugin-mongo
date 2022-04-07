@@ -1,7 +1,12 @@
 package org.edu_sharing.plugin_mongo.metadata;
 
 import lombok.*;
+import org.alfresco.repo.domain.node.ContentDataWithId;
+import org.alfresco.service.cmr.repository.ContentData;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.apache.commons.lang.NotImplementedException;
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.edu_sharing.plugin_mongo.metadata.lom.Lom;
 
 import java.util.List;
@@ -15,9 +20,11 @@ import java.util.Map;
 public class Metadata {
     @BsonId
     String id;
+    @BsonIgnore
+    Storage storage;
     String nodeType;
     List<String> aspects;
-    String content;
+    ContentDataWithId content;
     Version version;
     Store store;
     Affiliation affiliation;
@@ -35,8 +42,5 @@ public class Metadata {
     Association association;
     Lom lom;
     Map<String, Object> alfMap;
-
-//    public static MetadataBuilder builder(String id){
-//        return new MetadataBuilder()._id(id);
-//    }
 }
+

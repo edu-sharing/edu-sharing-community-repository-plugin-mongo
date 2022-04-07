@@ -10,7 +10,38 @@
   {
     "operation": "modify-overwrite-beta",
     "spec": {
-      "{http://www.campuscontent.de/model/1.0}customlicense_key": "=join(', ',@(1,{http://www\\.campuscontent\\.de/model/1\\.0}customlicense_key))"
+      "{http://www.campuscontent.de/model/1.0}customlicense_key": "=join(', ',@(1,{http://www\\.campuscontent\\.de/model/1\\.0}customlicense_key))",
+      "{http://www.campuscontent.de/model/lom/1.0}structure": "=toString",
+      "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel": "=toString",
+      "{http://www.campuscontent.de/model/lom/1.0}status": "=toString",
+      "{http://www.campuscontent.de/model/1.0}educationalcontext": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/1.0}educationalintendedenduserrole": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/1.0}educationallearningresourcetype": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/1.0}curriculum": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/1.0}educationalinteractivitytype": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/lom/1.0}educationaltypicalagerange": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/1.0}educationallanguage": {
+        "*": "=toString"
+      },
+      "{http://www.campuscontent.de/model/lom/1.0}cost": "=toString",
+      "{http://www.campuscontent.de/model/lom/1.0}copyright_and_other_restrictions": "=toString",
+      "{http://www.campuscontent.de/model/1.0}taxonid": "=toString",
+      "{http://www.campuscontent.de/model/1.0}editorial_state": "=toString",
+      "{http://www.campuscontent.de/model/1.0}editorial_checklist": {
+        "*": "=toString"
+      }
     }
   },
   {
@@ -19,7 +50,6 @@
       "{http://www.campuscontent.de/model/lom/1.0}duration": "=unifyDurationFormat(@(0))"
     }
   },
-
   // add missing fields with null for fallback handling
   {
     "operation": "modify-default-beta",
@@ -29,12 +59,12 @@
       "{http://www.campuscontent.de/model/lom/1.0}rights_description": "null"
     }
   },
-
   // phase 1 - prepair contributes
   {
     "operation": "shift",
     "spec": {
-      "*": "&", // copy everything else as is
+      "*": "&",
+      // copy everything else as is
       "{http://www.campuscontent.de/model/1.0}lifecyclecontributer_*": {
         "$(0,1)": "lifecycle.contribute.role[]",
         "@": "lifecycle.contribute.content[]"
@@ -43,12 +73,10 @@
         "$(0,1)": "meta-metadata.contribute.role[]",
         "@": "meta-metadata.contribute.content[]"
       },
-
       "{http://www.campuscontent.de/model/1.0}taxonid": "classification.learningGoal.taxon",
       "{http://www.campuscontent.de/model/1.0}learninggoal": "classification.learningGoal.description"
     }
   },
-
   // phase 2 - final mapping
   {
     "operation": "shift",
@@ -74,32 +102,29 @@
       "{http://www.campuscontent.de/model/lom/1.0}coverage": "general.coverage",
       "{http://www.campuscontent.de/model/lom/1.0}structure": "general.structure.value",
       "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel": "general.aggregationLevel.value",
-
-      "{http://www.campuscontent.de/model/lom/1.0}version" : "lifecycle.version",
-      "{http://www.campuscontent.de/model/lom/1.0}status" : "lifecycle.status.value",
-      "lifecycle" : {
+      "{http://www.campuscontent.de/model/lom/1.0}version": "lifecycle.version",
+      "{http://www.campuscontent.de/model/lom/1.0}status": "lifecycle.status.value",
+      "lifecycle": {
         "contribute": {
-          "role" : {
-            "*" : "lifecycle.contribute[#1].role"
+          "role": {
+            "*": "lifecycle.contribute[#1].role"
           },
-          "content" : {
-            "*" : "lifecycle.contribute[#1].content"
+          "content": {
+            "*": "lifecycle.contribute[#1].content"
           }
         }
       },
-
       "{http://www.campuscontent.de/model/lom/1.0}metadataschema": "meta-metadata.schema",
-      "meta-metadata" : {
+      "meta-metadata": {
         "contribute": {
-          "role" : {
-            "*" : "meta-metadata.contribute[#1].role"
+          "role": {
+            "*": "meta-metadata.contribute[#1].role"
           },
-          "content" : {
-            "*" : "meta-metadata.contribute[#1].content"
+          "content": {
+            "*": "meta-metadata.contribute[#1].content"
           }
         }
       },
-
       "{http://www.campuscontent.de/model/lom/1.0}format": "technical.format[0].mimetype",
       "{http://www.campuscontent.de/model/1.0}ccressourcetype": "technical.format[0].type",
       "{http://www.campuscontent.de/model/1.0}ccresourcesubtype": "technical.format[0].subtype",
@@ -113,30 +138,29 @@
       "{http://www.campuscontent.de/model/lom/1.0}duration": "technical.duration",
       "{http://www.campuscontent.de/model/1.0}width": "technical.dimension.width",
       "{http://www.campuscontent.de/model/1.0}height": "technical.dimension.height",
-
       "{http://www.campuscontent.de/model/1.0}educationalcontext": {
-        "*" : "educational[0].context[#1].value"
+        "*": "educational[0].context[#1].value"
       },
       "{http://www.campuscontent.de/model/1.0}educationalintendedenduserrole": {
-        "*" : "educational[0].intendedEndUserRole[#1].value"
+        "*": "educational[0].intendedEndUserRole[#1].value"
       },
       "{http://www.campuscontent.de/model/1.0}educationallearningresourcetype": {
-        "*" : "educational[0].learningResourceType[#1].value"
+        "*": "educational[0].learningResourceType[#1].value"
       },
       "{http://www.campuscontent.de/model/1.0}curriculum": {
-        "*" : "educational[0].curriculum[#1].value"
+        "*": "educational[0].curriculum[#1].value"
       },
       "{http://www.campuscontent.de/model/lom/1.0}typicallearningtime": "educational[0].typicalLearningTime",
       "{http://www.campuscontent.de/model/1.0}educationalinteractivitytype": {
-        "*" : "educational[0].interactivityType[#1].value"
+        "*": "educational[0].interactivityType[#1].value"
       },
-      "{http://www.campuscontent.de/model/lom/1.0}educationaltypicalagerange" : {
-        "*" : "educational[0].typicalAgeRange[#1].value"
+      "{http://www.campuscontent.de/model/lom/1.0}educationaltypicalagerange": {
+        "*": "educational[0].typicalAgeRange[#1].value"
       },
       "{http://www.campuscontent.de/model/1.0}educationaltypicalagerange_from": "educational[0].typicalAgeRangeNominal.from",
-      "{http://www.campuscontent.de/model/1.0}educationaltypicalagerange_to":"educational[0].typicalAgeRangeNominal.to",
-      "{http://www.campuscontent.de/model/1.0}educationallanguage" : {
-        "*" : "educational[0].language[#1].value"
+      "{http://www.campuscontent.de/model/1.0}educationaltypicalagerange_to": "educational[0].typicalAgeRangeNominal.to",
+      "{http://www.campuscontent.de/model/1.0}educationallanguage": {
+        "*": "educational[0].language[#1].value"
       },
       "{http://www.campuscontent.de/model/lom/1.0}cost": "rights.cost.value",
       "{http://www.campuscontent.de/model/lom/1.0}copyright_and_other_restrictions": "rights.copyrightAndOtherRestrictions.value",
@@ -156,20 +180,18 @@
       "{http://www.campuscontent.de/model/1.0}public_access": "rights.publicAccess",
       "{http://www.campuscontent.de/model/1.0}questionsallowed": "rights.negotiationPermitted",
       "{http://www.campuscontent.de/model/1.0}restricted_access": "rights.restrictedAccess",
-
       "classification": {
         "*": {
           "$": "classification[0].purpose",
           "taxon": {
             "*": "classification[0].taxon[#1].value"
           },
-          "description":  "classification[0].description"
+          "description": "classification[0].description"
         }
       },
-
-      "{http://www.campuscontent.de/model/1.0}editorial_state" : "editorial[0].state.value",
+      "{http://www.campuscontent.de/model/1.0}editorial_state": "editorial[0].state.value",
       "{http://www.campuscontent.de/model/1.0}editorial_checklist": {
-        "*" : "editorial[0].checklist[#1].value"
+        "*": "editorial[0].checklist[#1].value"
       }
     }
   }
