@@ -17,5 +17,7 @@ type Metadata {
     workflow: Workflow
     importedObject: ImportedObject
     association: Association
+
+    #Holds the meta data of the learning object resource
     lom: Lom
 }

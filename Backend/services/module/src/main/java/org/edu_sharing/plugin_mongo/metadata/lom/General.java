@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class General {
     String title;
-    List<String> description;
+    String description;
     List<String> language;
     List<String> keyword;
     List<String> coverage;

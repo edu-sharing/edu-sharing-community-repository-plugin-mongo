@@ -180,7 +180,7 @@
     "{http://www.alfresco.org/model/content/1.0}title" : "My title",
     "{http://www.campuscontent.de/model/lom/1.0}general_language":  [ "de" ],
     "{http://www.alfresco.org/model/content/1.0}description" :  "User defined description",
-    "{http://www.campuscontent.de/model/lom/1.0}general_description" :  "User defined description",
+    "{http://www.campuscontent.de/model/lom/1.0}general_description" :  ["User defined description"],
     "{http://www.campuscontent.de/model/lom/1.0}general_keyword" : [ "ship" , "ocean", "transport"],
     "{http://www.campuscontent.de/model/lom/1.0}coverage" :  [ "coverage" ],
     "{http://www.campuscontent.de/model/lom/1.0}structure" : "atomic",
