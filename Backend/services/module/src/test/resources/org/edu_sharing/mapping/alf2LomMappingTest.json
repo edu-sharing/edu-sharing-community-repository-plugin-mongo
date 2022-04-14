@@ -132,7 +132,7 @@
       "location" : [ "ccrep://local/6e4bd986-cd80-4cdb-befc-fb05a7312518" ],
       "installationRemarks" : [ "some installation remarks" ],
       "otherPlatformRequirements" : [ "some other platform requirements" ],
-      "duration" : "PT1M15S",
+      "duration" : "PT00H01M15S",
       "locationHttpsStatus" : "0",
       "dimension" : {
         "height": 4021.0,
