@@ -3,25 +3,21 @@ package org.edu_sharing.plugin_mongo.datamodel;
 import com.bazaarvoice.jolt.Chainr;
 import com.bazaarvoice.jolt.JsonUtils;
 import lombok.Getter;
+import lombok.Value;
 import org.edu_sharing.plugin_mongo.datamodel.mering.BaseMerger;
 import org.edu_sharing.plugin_mongo.datamodel.mering.Merger;
 import org.edu_sharing.plugin_mongo.datamodel.remover.BaseRemover;
 import org.edu_sharing.plugin_mongo.datamodel.remover.Remover;
 
+@Value
 public class MongoModelInfo {
-    @Getter
-    private final String name;
-//    @Getter
-//    private String schema;
-    @Getter
-    private final Chainr alf2mongoChainr;
-    @Getter
-    private final Chainr mongo2alfChainr;
+    String name;
 
-    @Getter
-    private final Merger merger;
-    @Getter
-    private final Remover remover;
+    Chainr alf2mongoChainr;
+    Chainr mongo2alfChainr;
+
+    Merger merger;
+    Remover remover;
 
     public MongoModelInfo(String name, String alf2mongo, String mongo2alf) {
         this(name, alf2mongo, mongo2alf, new BaseMerger(), new BaseRemover());

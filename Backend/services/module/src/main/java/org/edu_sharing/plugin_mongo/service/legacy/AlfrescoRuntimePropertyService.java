@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.service.legacy;
 
+import lombok.RequiredArgsConstructor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
@@ -29,8 +30,11 @@ import org.edu_sharing.repository.server.tools.cache.UserCache;
 import org.edu_sharing.service.license.LicenseService;
 import org.edu_sharing.service.nodeservice.NodeServiceHelper;
 import org.edu_sharing.service.nodeservice.NodeServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,32 +42,25 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AlfrescoRuntimePropertyService {
 
     private final Logger logger = Logger.getLogger(NodeServiceImpl.class);
     private final DateTool dateTool = new DateTool();
 
-    private final ServiceRegistry serviceRegistry;
     private final PersonService personService;
     private final NodeService nodeService;
     private final ContentService contentService;
     private final DictionaryService dictionaryService;
 
-    private final ApplicationInfo appInfo;
-    private final String repId;
+    private ApplicationInfo appInfo;
+    private String repId;
 
-    public AlfrescoRuntimePropertyService() {
-        //TODO use spring configuration! Won't work actually because of side effects.
-
+    @PostConstruct
+    private void init(){
         appInfo = ApplicationInfoList.getHomeRepository();
         repId = appInfo.getAppId();
-
-        ApplicationContext applicationContext = AlfAppContextGate.getApplicationContext();
-        serviceRegistry = (ServiceRegistry) applicationContext.getBean(ServiceRegistry.SERVICE_REGISTRY);
-        personService = serviceRegistry.getPersonService();
-        nodeService = serviceRegistry.getNodeService();
-        contentService = serviceRegistry.getContentService();
-        dictionaryService = serviceRegistry.getDictionaryService();
     }
 
     public void addRuntimeProperties(String storeProtocol, String storeId, String nodeId, String nodeType, Map<String, Object> properties) {
