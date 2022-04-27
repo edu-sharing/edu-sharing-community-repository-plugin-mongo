@@ -6,6 +6,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.extern.slf4j.Slf4j;
 import org.edu_sharing.plugin_mongo.metadata.Info;
 import org.edu_sharing.plugin_mongo.metadata.Metadata;
+import org.edu_sharing.repository.client.tools.CCConstants;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -13,6 +14,10 @@ import java.util.Collections;
 @Slf4j
 @Component
 public class MetadataResolver implements GraphQLResolver<Metadata> {
+
+    public  String getNodeType(Metadata metadata){
+        return CCConstants.getNameSpaceMap().get(metadata.getNodeType());
+    }
 
     public DataFetcherResult<Info> info(Metadata metadata, DataFetchingEnvironment environment){
         return DataFetcherResult.<Info>newResult()
