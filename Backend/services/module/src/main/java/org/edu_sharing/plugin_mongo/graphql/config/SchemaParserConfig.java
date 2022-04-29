@@ -1,7 +1,8 @@
 package org.edu_sharing.plugin_mongo.graphql.config;
 
 import graphql.kickstart.tools.SchemaParserDictionary;
-import org.edu_sharing.plugin_mongo.metadata.*;
+import org.edu_sharing.plugin_mongo.domain.metadata.RemoteShadow;
+import org.edu_sharing.plugin_mongo.domain.metadata.Replication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

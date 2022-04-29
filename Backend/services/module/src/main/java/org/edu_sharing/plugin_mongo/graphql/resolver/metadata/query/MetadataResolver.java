@@ -4,11 +4,16 @@ import graphql.execution.DataFetcherResult;
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.extern.slf4j.Slf4j;
-import org.edu_sharing.plugin_mongo.metadata.Info;
-import org.edu_sharing.plugin_mongo.metadata.Metadata;
+import org.dataloader.DataLoader;
+import org.edu_sharing.plugin_mongo.domain.metadata.Info;
+import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
+import org.edu_sharing.plugin_mongo.domain.suggestion.Suggestion;
+import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
+import org.edu_sharing.plugin_mongo.graphql.dataloader.SuggestionBatchedLoader;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -19,6 +24,11 @@ public class MetadataResolver implements GraphQLResolver<Metadata> {
                 .data(metadata.getInfo())
                 .localContext(metadata)
                 .build();
+    }
+
+    public CompletableFuture<List<Suggestion>> generated(Metadata metadata, DataFetchingEnvironment environment){
+        DataLoader<String, List<Suggestion>> dataLoader =  environment.getDataLoader(SuggestionBatchedLoader.class.getSimpleName());
+        return dataLoader.load(metadata.getId());
     }
 
 //    public Preview preview(Metadata metadata, DataFetchingEnvironment environment) {

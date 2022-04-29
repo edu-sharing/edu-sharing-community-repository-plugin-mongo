@@ -5,7 +5,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.edu_sharing.plugin_mongo.graphql.resolver.metadata.query.input.MetadataFilter;
-import org.edu_sharing.plugin_mongo.metadata.Metadata;
+import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocumentWrapper;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
-import org.edu_sharing.plugin_mongo.metadata.Metadata;
-import org.edu_sharing.plugin_mongo.metadata.Storage;
-import org.edu_sharing.plugin_mongo.metadata.lom.Lom;
+import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
+import org.edu_sharing.plugin_mongo.domain.metadata.Storage;
+import org.edu_sharing.plugin_mongo.domain.metadata.lom.Lom;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
@@ -85,5 +85,7 @@ public class MetadataRepository {
     public Metadata updateLom(@NodePermission({CCConstants.PERMISSION_WRITE}) String id, Lom lom) {
         return mongoDatabase.getCollection(WORKSPACE_KEY, Metadata.class)
                 .findOneAndUpdate(Filters.eq(id), Updates.set("lom", BsonDocumentWrapper.asBsonDocument(lom, codecRegistry)));
+        //Update
+
     }
 }

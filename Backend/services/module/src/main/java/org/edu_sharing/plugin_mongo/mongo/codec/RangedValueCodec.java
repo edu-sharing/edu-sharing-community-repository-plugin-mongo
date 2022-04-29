@@ -7,7 +7,6 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.types.Decimal128;
-import org.edu_sharing.plugin_mongo.metadata.*;
 import org.edu_sharing.plugin_mongo.mongo.MongoTypeMappingException;
 import org.springframework.stereotype.Component;
 

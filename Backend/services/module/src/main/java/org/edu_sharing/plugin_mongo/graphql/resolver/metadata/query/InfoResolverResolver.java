@@ -2,17 +2,14 @@ package org.edu_sharing.plugin_mongo.graphql.resolver.metadata.query;
 
 import graphql.kickstart.tools.GraphQLResolver;
 import graphql.schema.DataFetchingEnvironment;
-import jdk.nashorn.internal.runtime.options.Option;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionStatus;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.apache.commons.lang.NotImplementedException;
-import org.edu_sharing.plugin_mongo.metadata.*;
+import org.edu_sharing.plugin_mongo.domain.metadata.*;
 import org.edu_sharing.plugin_mongo.graphql.domain.PreviewType;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.repository.server.tools.ActionObserver;
@@ -24,9 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
 
 @Slf4j
 @Component
