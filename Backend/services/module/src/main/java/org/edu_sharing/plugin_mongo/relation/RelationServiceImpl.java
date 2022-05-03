@@ -136,20 +136,20 @@ public class RelationServiceImpl implements RelationService {
 
         log.debug(String.format("create relation from node %s to node %s of type %s", fromNode, toNode, relationType));
 
-
-        fromNode = nodeService.getOriginalNode(fromNode).getId();
-        toNode = nodeService.getOriginalNode(toNode).getId();
-
-        if(Objects.equals(fromNode, toNode)){
-            throw new NodeRelationException("Relation cannot point to itself");
-        }
-
+        // do this before mapping original since otherwise we might get a missing exception
         if(!Objects.equals(nodeService.getType(fromNode), CCConstants.CCM_TYPE_IO)) {
             throw new NodeRelationException("Relation can only set from nodes of type "+CCConstants.CCM_TYPE_IO);
         }
 
         if(!Objects.equals(nodeService.getType(toNode), CCConstants.CCM_TYPE_IO)) {
             throw new NodeRelationException("Relation can only set to nodes of type "+CCConstants.CCM_TYPE_IO);
+        }
+
+        fromNode = nodeService.getOriginalNode(fromNode).getId();
+        toNode = nodeService.getOriginalNode(toNode).getId();
+
+        if(Objects.equals(fromNode, toNode)){
+            throw new NodeRelationException("Relation cannot point to itself");
         }
 
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);
