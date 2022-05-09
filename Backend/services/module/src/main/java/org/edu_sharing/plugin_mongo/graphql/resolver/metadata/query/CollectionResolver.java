@@ -9,8 +9,6 @@ import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
 import org.edu_sharing.plugin_mongo.domain.metadata.Collection;
 import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.domain.metadata.NodeRef;
-import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -18,10 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CollectionResolver implements GraphQLResolver<Collection> {
-
-    private final MetadataRepository metadataRepository;
 
     public CompletableFuture<Metadata> remote(Collection collection, DataFetchingEnvironment environment) {
         NodeRef nodeRef = collection.getRemote();

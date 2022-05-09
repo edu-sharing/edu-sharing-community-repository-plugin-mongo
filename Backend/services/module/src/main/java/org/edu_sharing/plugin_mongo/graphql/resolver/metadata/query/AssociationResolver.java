@@ -9,7 +9,7 @@ import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
 import org.edu_sharing.plugin_mongo.domain.metadata.Association;
 import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.domain.metadata.NodeRef;
-import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
+import org.edu_sharing.plugin_mongo.service.legacy.AlfrescoMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AssociationResolver implements GraphQLResolver<Association> {
 
-    private final MetadataRepository metadataRepository;
-    //private final Executor executor;
+    private final AlfrescoMetadataService metadataNodeService;
 
     public CompletableFuture<Metadata> symlink(Association association, DataFetchingEnvironment environment){
         NodeRef nodeRef = association.getSymlink();
@@ -38,8 +37,7 @@ public class AssociationResolver implements GraphQLResolver<Association> {
         NodeRef nodeRef = association.getForkedOrigin();
         if(Objects.nonNull(nodeRef)) {
             log.info("Requesting forked origin for reference id {} with version {}", nodeRef.getId(), nodeRef.getVersion());
-            //return CompletableFuture.supplyAsync(()-> metadataRepository.getMetadata(nodeRef.getId(), nodeRef.getVersion()), executor);
-            return metadataRepository.getMetadata(nodeRef.getId(), nodeRef.getVersion());
+            return metadataNodeService.getMetadata(nodeRef.getId(), nodeRef.getVersion());
         }
         return null;
     }

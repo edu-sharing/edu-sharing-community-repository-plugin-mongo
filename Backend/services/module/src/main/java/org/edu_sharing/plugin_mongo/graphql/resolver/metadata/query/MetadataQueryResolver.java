@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.edu_sharing.plugin_mongo.graphql.resolver.metadata.query.input.MetadataFilter;
 import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
-import org.edu_sharing.plugin_mongo.repository.MetadataRepository;
+import org.edu_sharing.plugin_mongo.service.legacy.AlfrescoMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +18,14 @@ import java.util.List;
 public class MetadataQueryResolver implements GraphQLQueryResolver {
 
     //private final CursorUtils cursorUtils;
-    private final MetadataRepository metadataRepository;
+    private final AlfrescoMetadataService metadataNodeService;
 
     public Metadata metadata(String id, String version) {
-        return metadataRepository.getMetadata(id, version);
+        return metadataNodeService.getMetadata(id, version);
     }
 
     public List<Metadata> metadatas(MetadataFilter filter, DataFetchingEnvironment environment) {
-        return metadataRepository.getMetadatas(filter.getIds());
+        return metadataNodeService.getMetadatas(filter.getIds());
     }
 
 //    public Connection<Metadata> pagedMetadatas(int first, String cursor) {

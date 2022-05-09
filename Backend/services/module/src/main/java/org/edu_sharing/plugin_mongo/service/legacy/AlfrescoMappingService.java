@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelDictionary;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo;
 import org.edu_sharing.plugin_mongo.datamodel.remover.Remover;
+import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.joltextension.CustomFunction;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.repository.server.tools.URLTool;
@@ -60,7 +61,7 @@ public class AlfrescoMappingService {
         return properties;
     }
 
-    public void setProperties(Document rootDocument, HashMap<String, Object> properties) {
+    public void setProperties(Document rootDocument, Map<String, Object> properties) {
 
         HashMap<String, Object> copyProperties = new HashMap<>(properties);
 
@@ -138,5 +139,6 @@ public class AlfrescoMappingService {
             modelInfo.getRemover().remove(toRemove, model);
         }
     }
+
 }
 
