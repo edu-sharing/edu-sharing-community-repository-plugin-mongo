@@ -71,7 +71,7 @@ public class SuggestionRepository {
                         UpdateUtil.update(MongoSerializationUtil.toDocument(suggestion, codecRegistry)),
                         new UpdateOptions().upsert(true));
 
-        return updateResult.wasAcknowledged() && updateResult.getModifiedCount() > 0;
+        return updateResult.wasAcknowledged() && (updateResult.getModifiedCount() > 0 || updateResult.getUpsertedId() != null);
     }
 
     @Permission(requiresUser = true)
