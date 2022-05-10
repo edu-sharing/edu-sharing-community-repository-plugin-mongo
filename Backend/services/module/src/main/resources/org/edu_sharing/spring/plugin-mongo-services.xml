@@ -5,13 +5,13 @@
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
-        <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="database" ref="mongoDatabase"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
-        <constructor-arg name="database" ref="eduMongoDb"/>
+        <constructor-arg name="database" ref="mongoDatabase"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>

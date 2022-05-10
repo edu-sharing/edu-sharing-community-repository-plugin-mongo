@@ -1,15 +1,11 @@
 package org.edu_sharing.plugin_mongo.mongo;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
+import org.edu_sharing.lightbend.ConfigurationProperties;
 
-import java.io.Serializable;
-import java.util.List;
-
-@Value
-@Builder
-public class MongoConfig implements Serializable {
+@Data
+@ConfigurationProperties(prefix = "mongo")
+public class MongoConfig {
     String connectionString;
     String database;
 }
