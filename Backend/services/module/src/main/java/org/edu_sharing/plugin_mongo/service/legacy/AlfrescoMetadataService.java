@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -68,7 +69,7 @@ public class AlfrescoMetadataService {
 
         Document document = new Document(ID_KEY, nodeId);
         document.put(NODE_TYPE_KEY, type);
-        document.put(ASPECTS_KEY, Collections.singletonList(aspects.stream().map(QName::toString)));
+        document.put(ASPECTS_KEY, aspects.stream().map(QName::toString).collect(Collectors.toList()));
         mappingService.setProperties(document, properties);
 
         return MongoSerializationUtil.toObject(document, codecRegistry, Metadata.class);

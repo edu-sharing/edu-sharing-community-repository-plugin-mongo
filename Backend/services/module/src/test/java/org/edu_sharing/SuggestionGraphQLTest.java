@@ -13,6 +13,7 @@ import org.edu_sharing.plugin_mongo.mongo.codec.DurationCodec;
 import org.edu_sharing.plugin_mongo.mongo.config.ClassModelConfig;
 import org.edu_sharing.plugin_mongo.mongo.convention.ClassConvention;
 import org.edu_sharing.plugin_mongo.repository.SuggestionRepository;
+import org.edu_sharing.plugin_mongo.service.legacy.AlfrescoMetadataService;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,7 @@ public class SuggestionGraphQLTest {
 
     @Configuration
     public static class TestConfig {
+
         @Bean
         @Primary
         public MongoSettings mongoSettings() {
@@ -67,7 +69,15 @@ public class SuggestionGraphQLTest {
         public NodeService nodeService(){
             return Mockito.mock(NodeService.class);
         }
+
+        @Bean
+        @Primary
+        public AlfrescoMetadataService alfrescoMetadataService(){
+            return Mockito.mock(AlfrescoMetadataService.class);
+        }
+
     }
+
 
 
     @Test
