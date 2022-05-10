@@ -53,19 +53,15 @@ RUN set -eux \
 ENV MONGO_VERSION ${mongodb.version.major}.${mongodb.version.minor}
 
 RUN set -eux \
-    && wget -qO - https://www.mongodb.org/static/pgp/server-${mongodb.version.major}.${mongodb.version.minor}.asc | apt-key add - \
-    && curl -sSL https://www.mongodb.org/static/pgp/server-${mongodb.version.major}.${mongodb.version.minor}.asc  -o mongoserver.asc \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-$MONGO_VERSION.asc | apt-key add - \
+    && curl -sSL https://www.mongodb.org/static/pgp/server-$MONGO_VERSION.asc  -o mongoserver.asc \
     && gpg --no-default-keyring --keyring ./mongo_key_temp.gpg --import ./mongoserver.asc \
     && gpg --no-default-keyring --keyring ./mongo_key_temp.gpg --export > ./mongoserver_key.gpg \
     && mv mongoserver_key.gpg /etc/apt/trusted.gpg.d/ \
-    && echo "deb https://artifacts.edu-sharing.com/repository/mongodb buster/mongodb-org/${mongodb.version.major}.${mongodb.version.minor} main" | tee /etc/apt/sources.list.d/mongodb.list \
+    && echo "deb https://artifacts.edu-sharing.com/repository/mongodb buster/mongodb-org/$MONGO_VERSION main" | tee /etc/apt/sources.list.d/mongodb.list \
     && apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        mongodb-org=${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}* \
-        mongodb-org-server=${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}* \
-        mongodb-org-shell=${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}* \
-        mongodb-org-mongos=${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}* \
-        mongodb-org-tools=${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}* \
+        mongodb-org=$MONGO_VERSION.${mongodb.version.patch}* \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
