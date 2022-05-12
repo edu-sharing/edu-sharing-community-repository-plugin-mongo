@@ -8,8 +8,8 @@ import org.dataloader.DataLoader;
 import org.edu_sharing.plugin_mongo.domain.metadata.Info;
 import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.domain.suggestion.Suggestion;
-import org.edu_sharing.plugin_mongo.graphql.dataloader.MetadataBatchedLoader;
 import org.edu_sharing.plugin_mongo.graphql.dataloader.SuggestionBatchedLoader;
+import org.edu_sharing.repository.client.tools.CCConstants;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,6 +18,10 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Component
 public class MetadataResolver implements GraphQLResolver<Metadata> {
+
+    public  String getNodeType(Metadata metadata){
+        return CCConstants.getNameSpaceMap().get(metadata.getNodeType());
+    }
 
     public DataFetcherResult<Info> info(Metadata metadata, DataFetchingEnvironment environment){
         return DataFetcherResult.<Info>newResult()
