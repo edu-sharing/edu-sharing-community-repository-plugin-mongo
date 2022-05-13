@@ -1,12 +1,10 @@
 package org.edu_sharing.plugin_mongo.mongo;
 
-import com.google.common.collect.Lists;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.typesafe.config.Config;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -16,13 +14,9 @@ import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.edu_sharing.alfresco.lightbend.LightbendConfigLoader;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import java.util.*;
@@ -38,7 +32,8 @@ public class MongoDbConfiguration {
     @Autowired(required = false) List<Convention> conventions;
     @Autowired( required = false) List<ClassModel<?>> classModels;
     @Bean
-    public CodecProvider pojoCodecProvider() throws ClassNotFoundException {
+    @DependsOn({"mongoDbConfiguration"})
+    public PojoCodecProvider pojoCodecProvider() throws ClassNotFoundException {
 
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(BsonDiscriminator.class));
@@ -68,7 +63,8 @@ public class MongoDbConfiguration {
     @Autowired(required = false) List<CodecProvider> codecProviders;
 
     @Bean
-    public CodecRegistry codecRegistry(CodecProvider pojoCodecProvider) {
+    @DependsOn({"mongoDbConfiguration"})
+    public CodecRegistry codecRegistry(PojoCodecProvider pojoCodecProvider) {
         ArrayList<CodecRegistry> codecRegistries = new ArrayList<>();
 
         Optional.ofNullable(codecs).ifPresent(codecs -> codecRegistries.add(CodecRegistries.fromCodecs(codecs)));
