@@ -14,13 +14,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class MetadataResolver implements GraphQLResolver<Metadata> {
 
     public  String getNodeType(Metadata metadata){
-        return CCConstants.getNameSpaceMap().get(metadata.getNodeType());
+        return CCConstants.getValidLocalName(metadata.getNodeType());
     }
 
     public DataFetcherResult<Info> info(Metadata metadata, DataFetchingEnvironment environment){
