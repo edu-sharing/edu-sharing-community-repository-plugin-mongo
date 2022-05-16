@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 public class MetadataResolver implements GraphQLResolver<Metadata> {
 
     public  String getNodeType(Metadata metadata){
-        return CCConstants.getNameSpaceMap().get(metadata.getNodeType());
+        return CCConstants.getValidLocalName(metadata.getNodeType());
     }
 
     public DataFetcherResult<Info> info(Metadata metadata, DataFetchingEnvironment environment){
