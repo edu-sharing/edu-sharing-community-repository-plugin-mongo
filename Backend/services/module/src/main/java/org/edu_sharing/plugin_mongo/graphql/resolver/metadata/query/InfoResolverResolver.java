@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -31,7 +32,7 @@ public class InfoResolverResolver implements GraphQLResolver<Info> {
 
     public List<String> aspects(Info info, DataFetchingEnvironment environment){
         Metadata metadata = environment.getLocalContext();
-        return metadata.getAspects();
+        return metadata.getAspects().stream().map(CCConstants::getValidLocalName).collect(Collectors.toList());
     }
 
     public org.edu_sharing.plugin_mongo.graphql.domain.Preview preview(Info info, DataFetchingEnvironment environment) {
