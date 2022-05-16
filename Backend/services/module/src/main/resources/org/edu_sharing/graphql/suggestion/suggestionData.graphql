@@ -1,28 +1,38 @@
 interface SuggestionDataInterface {
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type StringSuggestionData implements SuggestionDataInterface {
     value: String!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type RangedValueSuggestionData implements SuggestionDataInterface {
     value: RangedValue!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type LocaleSuggestionData implements SuggestionDataInterface {
     value: Locale!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type IntRangeSuggestionData implements SuggestionDataInterface {
     value: IntRange!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
@@ -30,12 +40,16 @@ type IntRangeSuggestionData implements SuggestionDataInterface {
 
 type FormatSuggestionData implements SuggestionDataInterface {
     value: Format!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type DurationSuggestionData implements SuggestionDataInterface {
     value: Duration!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
@@ -43,18 +57,24 @@ type DurationSuggestionData implements SuggestionDataInterface {
 
 type DimensionSuggestionData implements SuggestionDataInterface {
     value: Dimension!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type DateSuggestionData implements SuggestionDataInterface {
     value: Date!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
 
 type BooleanSuggestionData implements SuggestionDataInterface {
     value: Boolean!
+    description: String
+    confidence: Float
     version: [String!]
     info: SuggestionInfo!
 }
