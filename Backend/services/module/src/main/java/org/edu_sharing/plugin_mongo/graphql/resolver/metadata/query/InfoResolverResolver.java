@@ -32,7 +32,7 @@ public class InfoResolverResolver implements GraphQLResolver<Info> {
 
     public List<String> aspects(Info info, DataFetchingEnvironment environment){
         Metadata metadata = environment.getLocalContext();
-        return metadata.getAspects().stream().map(CCConstants::getValidLocalName).collect(Collectors.toList());
+        return metadata.getAspects().stream().map(CCConstants::getValidLocalName).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public org.edu_sharing.plugin_mongo.graphql.domain.Preview preview(Info info, DataFetchingEnvironment environment) {
