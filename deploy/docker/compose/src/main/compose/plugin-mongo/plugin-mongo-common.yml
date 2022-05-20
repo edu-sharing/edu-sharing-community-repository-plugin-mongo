@@ -71,7 +71,7 @@ services:
   repository-service:
     environment:
       REPOSITORY_MONGO_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTIONSTRING:-mongodb://repository:repository@repository-mongo-primary:27017,repository-mongo-secondary:27017/edu-sharing}"
+      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTION_STRING:-mongodb://repository:repository@repository-mongo-primary:27017,repository-mongo-secondary:27017/edu-sharing}"
     depends_on:
       - repository-mongo-primary
       - repository-mongo-secondary
