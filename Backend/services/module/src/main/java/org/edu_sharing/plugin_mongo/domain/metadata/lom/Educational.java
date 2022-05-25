@@ -15,7 +15,7 @@ public class Educational {
     List<RangedValue> intendedEndUserRole;
     List<RangedValue> learningResourceType;
     List<RangedValue> curriculum;
-    Duration typicalLerningTime;
+    Duration typicalLearningTime;
     List<RangedValue> typicalAgeRange;
     List<RangedValue> interactivityType;
     IntRange typicalAgeRangeNominal;
