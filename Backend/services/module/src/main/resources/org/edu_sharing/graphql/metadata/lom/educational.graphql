@@ -55,7 +55,7 @@ type Educational {
     #characterized by data elements
     #Educational.Context and
     #Educational.TypicalAgeRange.
-    typicalLerningTime: Duration
+    typicalLearningTime: Duration
 
     #Age of the typical intended user.
     #This data element shall refer to
