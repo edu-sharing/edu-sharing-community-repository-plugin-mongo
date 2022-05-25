@@ -314,7 +314,7 @@ public class MongoNodeServiceImpl extends NodeServiceImpl {
 
 
     @Override
-    public void updateNodeNative(StoreRef store, String nodeId, HashMap<String, ?> _props) {
+    public void updateNodeNative(StoreRef store, String nodeId, Map<String, ?> _props) {
         super.updateNodeNative(store, nodeId, _props);
 
         if (!isSupported(getType(nodeId))) {
