@@ -35,6 +35,11 @@ public class InfoResolverResolver implements GraphQLResolver<Info> {
         return metadata.getAspects().stream().map(CCConstants::getValidLocalName).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    public  String getNodeType(Metadata metadata){
+        return CCConstants.getNameSpaceMap().get(metadata.getNodeType());
+    }
+
+
     public org.edu_sharing.plugin_mongo.graphql.domain.Preview preview(Info info, DataFetchingEnvironment environment) {
         log.info("preview");
         return getPreview(info, environment);

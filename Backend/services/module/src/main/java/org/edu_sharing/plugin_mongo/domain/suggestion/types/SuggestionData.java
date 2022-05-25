@@ -12,6 +12,8 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SuggestionData<T> {
     T value;
+    String description;
+    Double confidence;
     List<String> version;
     SuggestionInfo info;
 }
