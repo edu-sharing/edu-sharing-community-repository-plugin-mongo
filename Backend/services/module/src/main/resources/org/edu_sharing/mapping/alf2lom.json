@@ -73,9 +73,7 @@
       "{http://www.campuscontent.de/model/1.0}metadatacontributer_*": {
         "$(0,1)": "meta-metadata.contribute.role[]",
         "@": "meta-metadata.contribute.content[]"
-      },
-      "{http://www.campuscontent.de/model/1.0}taxonid": "classification.learningGoal.taxon",
-      "{http://www.campuscontent.de/model/1.0}learninggoal": "classification.learningGoal.description"
+      }
     }
   },
   // phase 2 - final mapping
@@ -181,14 +179,12 @@
       "{http://www.campuscontent.de/model/1.0}public_access": "rights.publicAccess",
       "{http://www.campuscontent.de/model/1.0}questionsallowed": "rights.negotiationPermitted",
       "{http://www.campuscontent.de/model/1.0}restricted_access": "rights.restrictedAccess",
-      "classification": {
-        "*": {
-          "$": "classification[0].purpose",
-          "taxon": {
-            "*": "classification[0].taxon[#1].value"
-          },
-          "description": "classification[0].description"
-        }
+      "{http://www.campuscontent.de/model/1.0}taxonid": {
+        "*": "classification.taxon[#1].value"
+      },
+      "{http://www.campuscontent.de/model/1.0}learninggoal": "classification.learningGoal",
+      "{http://www.campuscontent.de/model/1.0}classification_keyword": {
+        "*": "classification.keyword[#1].value"
       },
       "{http://www.campuscontent.de/model/1.0}editorial_state": "editorial[0].state.value",
       "{http://www.campuscontent.de/model/1.0}editorial_checklist": {

@@ -111,7 +111,7 @@ class MappingTest {
 
 
         InputStream testStream = classLoader.getResourceAsStream(testPath);
-        Asserts.notNull(testStream, "test file");
+        Asserts.notNull(testStream, testPath);
 
         Map<String, Object> testUnit = JsonUtils.jsonToMap(testStream);
 

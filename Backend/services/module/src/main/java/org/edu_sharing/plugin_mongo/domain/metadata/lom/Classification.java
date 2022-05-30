@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Classification {
-    String purpose;
+    String learningGoal;
     List<RangedValue> taxon;
-    String description;
+    List<RangedValue> keyword;
 }

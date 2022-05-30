@@ -68,6 +68,7 @@
     // Classification
     "{http://www.campuscontent.de/model/1.0}taxonid" : [ "360", "512" ],
     "{http://www.campuscontent.de/model/1.0}learninggoal" : "some learning goal",
+    "{http://www.campuscontent.de/model/1.0}classification_keyword": [ "some keyword" ],
 
     // Editorial
     "{http://www.campuscontent.de/model/1.0}editorial_state" : "activated",
@@ -217,19 +218,22 @@
       "restrictedAccess" : false
     },
 
-    "classification" : [
-      {
-        "purpose" : "learningGoal",
-        "taxon" : [
-          {
-            "value" : "360"
-          }, {
-            "value" : "512"
-          }
-        ],
-        "description" : "some learning goal"
-      }
-    ],
+    "classification": {
+      "taxon": [
+        {
+          "value": "360"
+        },
+        {
+          "value": "512"
+        }
+      ],
+      "learningGoal": "some learning goal",
+      "keyword": [
+        {
+          "value": "some keyword"
+        }
+      ]
+    },
 
     "editorial" : [
       {

@@ -1,5 +1,5 @@
 input ClassificationInput {
-    purpose: String!
+    learningGoal: String
     taxon: [RangedValueInput!]
-    description: String
+    keyword: [RangedValueInput!]
 }

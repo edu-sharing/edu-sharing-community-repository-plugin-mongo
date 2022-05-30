@@ -134,16 +134,15 @@
         "restrictedAccess": "{http://www\\.campuscontent\\.de/model/1\\.0}restricted_access"
       },
       "classification": {
-        "*": {
-          "purpose": {
-            "learningGoal": {
-              "@(2,description)": "{http://www\\.campuscontent\\.de/model/1\\.0}learninggoal",
-              "@(2,taxon)": {
-                "*": {
-                  "value": "{http://www\\.campuscontent\\.de/model/1\\.0}taxonid[]"
-                }
-              }
-            }
+        "taxon": {
+          "*": {
+            "value": "{http://www\\.campuscontent\\.de/model/1\\.0}taxonid[]"
+          }
+        },
+        "learningGoal": "{http://www\\.campuscontent\\.de/model/1\\.0}learninggoal",
+        "keyword": {
+          "*": {
+            "value": "{http://www\\.campuscontent\\.de/model/1\\.0}classification_keyword[]"
           }
         }
       },

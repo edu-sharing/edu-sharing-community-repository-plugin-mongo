@@ -1,12 +1,13 @@
 #This category describes where this learning
 #object falls within a particular classification
 #system.
-#To define multiple classifications, there may
-#be multiple instances of this category.
 type Classification {
-    #The purpose of classifying this learning
-    #object.
-    purpose: String!
+
+    #Description of the learning object relative to
+    #the stated purpose of this
+    #specific classification, such as discipline,
+    #idea, skill level, educational objective, etc.
+    learningGoal: String
 
     #A particular term within a taxonomy. A
     #taxon is a node that has a defined label or
@@ -21,9 +22,6 @@ type Classification {
     #a classification.
     taxon: [RangedValue!]
 
-    #Description of the learning object relative to
-    #the stated purpose of this
-    #specific classification, such as discipline,
-    #idea, skill level, educational objective, etc.
-    description: String
+    #Keywords and phrases descriptive of the learning object
+    keyword: [RangedValue!]
 }
