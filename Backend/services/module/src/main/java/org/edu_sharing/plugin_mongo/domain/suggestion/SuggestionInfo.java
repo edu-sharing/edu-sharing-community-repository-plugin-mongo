@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.domain.suggestion;
 
 import lombok.*;
+import lombok.Builder.Default;
 
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SuggestionInfo {
-    SuggestionStatus status;
-    Date date;
-    String editor;
+  @Default SuggestionStatus status = SuggestionStatus.PENDING;
+  @Default Date date = new Date();
+  String editor;
 }

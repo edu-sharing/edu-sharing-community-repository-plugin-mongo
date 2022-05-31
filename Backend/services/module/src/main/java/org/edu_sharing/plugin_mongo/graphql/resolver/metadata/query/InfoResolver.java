@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class InfoResolverResolver implements GraphQLResolver<Info> {
+public class InfoResolver implements GraphQLResolver<Info> {
 
     final NodeService nodeService;
 

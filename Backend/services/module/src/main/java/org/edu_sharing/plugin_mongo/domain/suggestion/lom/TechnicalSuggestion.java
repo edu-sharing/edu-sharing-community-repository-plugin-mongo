@@ -10,11 +10,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TechnicalSuggestion {
+    @Singular("format")
     List<FormatSuggestionData> format;
-    StringSuggestionData size;
+
+    @Singular("location")
     List<StringSuggestionData> location;
+
+    @Singular("installationRemarks")
     List<StringSuggestionData> installationRemarks;
+
+    @Singular("otherPlatformRequirements")
     List<StringSuggestionData> otherPlatformRequirements;
+
+    StringSuggestionData size;
     DurationSuggestionData duration;
     DimensionSuggestionData dimension;
 }

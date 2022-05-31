@@ -67,9 +67,12 @@ public class SuggestionRepository {
     @Permission(requiresUser = true)
     public boolean addOrUpdate(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, String suggestionId, Suggestion suggestion) {
         UpdateResult updateResult = mongoDatabase.getCollection(SUGGESTION_KEY, Suggestion.class)
-                .updateOne(Filters.and(Filters.eq(NODE_ID, suggestion.getNodeId()), Filters.eq(SUGGESTION_ID, suggestion.getId())),
-                        UpdateUtil.update(MongoSerializationUtil.toDocument(suggestion, codecRegistry)),
-                        new UpdateOptions().upsert(true));
+                .replaceOne(Filters.and(Filters.eq(NODE_ID, suggestion.getNodeId()), Filters.eq(SUGGESTION_ID, suggestion.getId())),
+                        suggestion,
+                        new ReplaceOptions().upsert(true));
+//                .updateOne(Filters.and(Filters.eq(NODE_ID, suggestion.getNodeId()), Filters.eq(SUGGESTION_ID, suggestion.getId())),
+//                        UpdateUtil.update(MongoSerializationUtil.toDocument(suggestion, codecRegistry)),
+//                        new UpdateOptions().upsert(true));
 
         return updateResult.wasAcknowledged() && (updateResult.getModifiedCount() > 0 || updateResult.getUpsertedId() != null);
     }

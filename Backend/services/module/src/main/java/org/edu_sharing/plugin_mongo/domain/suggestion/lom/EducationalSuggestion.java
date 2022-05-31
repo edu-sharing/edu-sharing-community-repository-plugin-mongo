@@ -13,14 +13,29 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EducationalSuggestion {
+
+    @Singular("context")
     List<RangedValueSuggestionData> context;
+
+    @Singular("intendedEndUserRole")
     List<RangedValueSuggestionData> intendedEndUserRole;
+
+    @Singular("learningResourceType")
     List<RangedValueSuggestionData> learningResourceType;
+
+    @Singular("curriculum")
     List<RangedValueSuggestionData> curriculum;
-    DurationSuggestionData typicalLerningTime;
+
+    @Singular("typicalAgeRange")
     List<RangedValueSuggestionData> typicalAgeRange;
+
+    @Singular("interactivityType")
     List<RangedValueSuggestionData> interactivityType;
-    IntRangeSuggestionData typicalAgeRangeNominal;
+
+    @Singular("language")
     List<StringSuggestionData> language;
+
+    DurationSuggestionData typicalLerningTime;
+    IntRangeSuggestionData typicalAgeRangeNominal;
 
 }

@@ -10,6 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EditorialSuggestion {
-    RangedValueSuggestionData state;
+
+    @Singular("checklist")
     List<RangedValueSuggestionData> checklist;
+
+    RangedValueSuggestionData state;
 }

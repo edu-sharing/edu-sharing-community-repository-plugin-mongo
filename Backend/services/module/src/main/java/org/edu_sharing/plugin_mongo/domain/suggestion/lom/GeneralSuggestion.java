@@ -11,11 +11,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneralSuggestion {
+    @Singular("language")
+    List<StringSuggestionData> language;
+
+    @Singular("keyword")
+    List<StringSuggestionData> keyword;
+
+    @Singular("coverage")
+    List<StringSuggestionData> coverage;
+
     StringSuggestionData title;
     StringSuggestionData description;
-    List<StringSuggestionData> language;
-    List<StringSuggestionData> keyword;
-    List<StringSuggestionData> coverage;
     RangedValueSuggestionData structure;
     RangedValueSuggestionData aggregationLevel;
 }

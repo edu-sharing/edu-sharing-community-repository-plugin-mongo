@@ -10,12 +10,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RightsSuggestion {
+    @Singular("author")
+    List<StringSuggestionData> author;
+
+    @Singular("internal")
+    List<StringSuggestionData> internal;
+
     RangedValueSuggestionData cost;
     RangedValueSuggestionData copyrightAndOtherRestrictions;
     StringSuggestionData description;
-    List<StringSuggestionData> author;
     StringSuggestionData version;
-    List<StringSuggestionData> internal;
     LocaleSuggestionData locale;
     DateSuggestionData expirationDate;
     BooleanSuggestionData publicAccess;
