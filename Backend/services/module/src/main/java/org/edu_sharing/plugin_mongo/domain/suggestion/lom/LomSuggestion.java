@@ -9,10 +9,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LomSuggestion {
+
+    @Singular("editorial")
+    List<EditorialSuggestion> editorial;
+
     GeneralSuggestion general;
     TechnicalSuggestion technical;
     List<EducationalSuggestion> educational;
     RightsSuggestion rights;
-    List<ClassificationSuggestion> classification;
-    List<EditorialSuggestion> editorial;
+    ClassificationSuggestion classification;
 }

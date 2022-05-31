@@ -4,9 +4,8 @@
 #To define multiple classifications, there may
 #be multiple instances of this category.
 type ClassificationSuggestion {
-    #The purpose of classifying this learning
-    #object.
-    purpose: StringSuggestionData
+
+    learningGoal: StringSuggestionData
 
     #A particular term within a taxonomy. A
     #taxon is a node that has a defined label or
@@ -26,4 +25,8 @@ type ClassificationSuggestion {
     #specific classification, such as discipline,
     #idea, skill level, educational objective, etc.
     description: StringSuggestionData
+
+
+    #Keywords and phrases descriptive of the learning object
+    keyword: [RangedValueSuggestionData!]
 }

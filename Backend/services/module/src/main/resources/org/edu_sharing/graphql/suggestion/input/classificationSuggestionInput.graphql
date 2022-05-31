@@ -4,9 +4,8 @@
 #To define multiple classifications, there may
 #be multiple instances of this category.
 input ClassificationSuggestionInput {
-    #The purpose of classifying this learning
-    #object.
-    purpose: StringSuggestionDataInput
+
+    learningGoal: StringSuggestionDataInput
 
     #A particular term within a taxonomy. A
     #taxon is a node that has a defined label or
@@ -26,4 +25,8 @@ input ClassificationSuggestionInput {
     #specific classification, such as discipline,
     #idea, skill level, educational objective, etc.
     description: StringSuggestionDataInput
+
+
+    #Keywords and phrases descriptive of the learning object
+    keyword: [RangedValueSuggestionDataInput!]
 }

@@ -11,7 +11,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClassificationSuggestion {
-    StringSuggestionData purpose;
+
+    @Singular("taxon")
     List<RangedValueSuggestionData> taxon;
+    @Singular("keyword")
+    List<RangedValueSuggestionData> keyword;
+
+    StringSuggestionData learningGoal;
     StringSuggestionData description;
 }
