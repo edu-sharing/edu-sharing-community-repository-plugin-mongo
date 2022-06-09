@@ -14,6 +14,7 @@ import org.edu_sharing.plugin_mongo.repository.SuggestionRepository;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.repository.server.jobs.helper.NodeRunner;
 import org.edu_sharing.repository.server.jobs.quartz.AbstractJob;
+import org.edu_sharing.repository.server.jobs.quartz.AbstractJobMapAnnotationParams;
 import org.edu_sharing.repository.server.jobs.quartz.annotation.JobFieldDescription;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.nodeservice.RecurseMode;
@@ -27,7 +28,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractYovistoNodeSuggestionImportJob extends AbstractJob {
+public abstract class AbstractYovistoNodeSuggestionImportJob extends AbstractJobMapAnnotationParams {
 
   public static final String HTTPS_WLO_YOVISTO_COM = "https://wlo.yovisto.com";
 
@@ -53,10 +54,7 @@ public abstract class AbstractYovistoNodeSuggestionImportJob extends AbstractJob
   protected ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public void execute(JobExecutionContext context) throws JobExecutionException {
-
-    super.execute(context);
-
+  public void executeInternal(JobExecutionContext context) {
     lucene = prepareParam(context, "lucene", false);
     startFolder = prepareParam(context, "startFolder", true);
 
