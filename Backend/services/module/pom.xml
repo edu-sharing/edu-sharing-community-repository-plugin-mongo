@@ -118,6 +118,12 @@
     <dependency>
       <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
+      <version>provided</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.alfresco</groupId>
+      <artifactId>alfresco-repository</artifactId>
       <scope>provided</scope>
     </dependency>
 
