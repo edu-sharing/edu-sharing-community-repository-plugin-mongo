@@ -3,7 +3,6 @@ package org.edu_sharing.plugin_mongo.jobs.quarz;
 import org.alfresco.repo.domain.qname.QNameDAO;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.solr.*;
-import org.alfresco.repo.tenant.TenantService;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -15,12 +14,10 @@ import org.edu_sharing.plugin_mongo.domain.system.TransactionalSyncState;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.plugin_mongo.repository.MongoAlfrescoSyncStateRepository;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.repository.server.jobs.quartz.AbstractJob;
 import org.edu_sharing.repository.server.jobs.quartz.AbstractJobMapAnnotationParams;
 import org.edu_sharing.repository.server.jobs.quartz.annotation.JobDescription;
 import org.edu_sharing.repository.server.jobs.quartz.annotation.JobFieldDescription;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -29,7 +26,7 @@ import java.util.stream.Collectors;
 @JobDescription(
     description =
         "This will delete all MongoDB documents where the corresponding node and all its references were deleted from alfresco")
-public class ObsoleteMongoEntiesDeletionJob extends AbstractJobMapAnnotationParams {
+public class ObsoleteMongoEntriesDeletionJob extends AbstractJobMapAnnotationParams {
 
   @JobFieldDescription(
           description = "resets sync state. This will delete all data of the sync state and related collections",
@@ -38,17 +35,16 @@ public class ObsoleteMongoEntiesDeletionJob extends AbstractJobMapAnnotationPara
 
   @JobFieldDescription(
       description = "maximal transactions witch will be processed by this Job",
-      sampleValue = "500")
-  protected int maxTransactionResults = 500;
+      sampleValue = "5000")
+  protected int maxTransactionResults = 5000;
 
   @JobFieldDescription(
           description = "maximal number of checks against deleted nodes witch will be processed by this Job",
-          sampleValue = "500")
-  protected int maxDeletedNodeChecks = 500;
+          sampleValue = "5000")
+  protected int maxDeletedNodeChecks = 5000;
 
   @Autowired private SOLRTrackingComponent trackingComponent;
   @Autowired private MongoAlfrescoSyncStateRepository repository;
-  @Autowired private TenantService tenantService;
   @Autowired private QNameDAO qnameDAO;
 
   @Autowired(required = false)
