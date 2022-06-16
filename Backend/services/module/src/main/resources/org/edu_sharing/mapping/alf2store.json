@@ -1,0 +1,10 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.alfresco.org/model/system/1.0}node-dbid": "dbId",
+      "{http://www.alfresco.org/model/system/1.0}store-identifier": "id",
+      "{http://www.alfresco.org/model/system/1.0}store-protocol": "protocol"
+    }
+  }
+]

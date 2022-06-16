@@ -1,0 +1,49 @@
+{
+  "mapping": "org/edu_sharing/mapping/alf2collection.json",
+
+  "input": {
+    "{http://www.campuscontent.de/model/1.0}collection_ordered_position": 5.0,
+    "{http://www.campuscontent.de/model/1.0}collection_pinned_order": 0.0,
+    "{http://www.campuscontent.de/model/1.0}collection_pinned_status": true,
+    "{http://www.campuscontent.de/model/1.0}collectioncolor": "#975B5D",
+    "{http://www.campuscontent.de/model/1.0}collectionlevel0": true,
+    "{http://www.campuscontent.de/model/1.0}collectionordermode": ["ccm:collection_ordered_position", "true"],
+    "{http://www.campuscontent.de/model/1.0}collectionscope": "MY",
+    "{http://www.campuscontent.de/model/1.0}collectionsubcollectionordermode": ["ccm:collection_ordered_position", "false"],
+    "{http://www.campuscontent.de/model/1.0}collectiontype": "default",
+    "{http://www.campuscontent.de/model/1.0}collectionviewtype": "my view type",
+    "{http://www.campuscontent.de/model/1.0}collectionshorttitle": "short title",
+    "{http://www.campuscontent.de/model/1.0}collectionremoteid": "remote id",
+    "{http://www.campuscontent.de/model/1.0}collectionremotesource": "Source",
+    "{http://www.campuscontent.de/model/1.0}collection_author_freetext": "author freetext"
+  },
+
+  "expected": {
+    "position": 5.0,
+    "pinned" : {
+      "position": 0.0,
+      "status": true
+    },
+    "color": "#975B5D",
+    "level": true,
+    "order": {
+      "references": [{
+        "active": "ccm:collection_ordered_position",
+        "direction": "asc"
+      }],
+      "collections": [{
+        "active": "ccm:collection_ordered_position",
+        "direction": "desc"
+      }]
+    },
+    "scope": "MY",
+    "type": "default",
+    "viewType": "my view type",
+    "shortTitle": "short title",
+    "remote": {
+      "id": "remote id"
+    },
+    "remoteSource": "Source",
+    "authorFreetext": "author freetext"
+  }
+}

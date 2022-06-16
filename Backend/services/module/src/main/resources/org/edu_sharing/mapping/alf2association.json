@@ -1,0 +1,28 @@
+[
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}map_ref_target": "=idFromNodeRef(@(0))",
+      "{http://www.campuscontent.de/model/1.0}forked_origin": "=idFromNodeRef(@(0))",
+      "{http://www.campuscontent.de/model/1.0}published_original": "=idFromNodeRef(@(0))"
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}map_ref_target": "symlink.id",
+      "{http://www.campuscontent.de/model/1.0}forked_origin": "forkedOrigin.id",
+      "{http://www.campuscontent.de/model/1.0}forked_origin_version": "forkedOrigin.version",
+      "{http://www.campuscontent.de/model/1.0}original": "original.id",
+      "{http://www.campuscontent.de/model/1.0}published_original": "publishedOriginal.id",
+      "{http://www.campuscontent.de/model/1.0}schema_relation": "legacy.schemaRelation"
+    }
+  }
+]

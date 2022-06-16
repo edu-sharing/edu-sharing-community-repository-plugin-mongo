@@ -1,0 +1,253 @@
+{
+  "mapping" : "org/edu_sharing/mapping/alf2lom.json",
+
+  "input": {
+    // General
+    "{http://www.alfresco.org/model/content/1.0}title" : "My fallback title",
+    "{http://www.campuscontent.de/model/lom/1.0}title" : "My title",
+    "{http://www.campuscontent.de/model/lom/1.0}general_language" :  [ "de" ],
+    "{http://www.alfresco.org/model/content/1.0}description" : "Fall back description",
+    "{http://www.campuscontent.de/model/lom/1.0}general_description" :  ["User defined description"],
+    "{http://www.campuscontent.de/model/lom/1.0}general_keyword" : [ "ship" , "ocean", "transport"],
+    "{http://www.campuscontent.de/model/lom/1.0}coverage" :  [ "coverage" ],
+    "{http://www.campuscontent.de/model/lom/1.0}structure" : "atomic",
+    "{http://www.campuscontent.de/model/lom/1.0}aggregationlevel" :  "1",
+
+    // Lifecycle
+    "{http://www.campuscontent.de/model/lom/1.0}version": "1.1",
+    "{http://www.campuscontent.de/model/lom/1.0}status" : "final",
+    "{http://www.campuscontent.de/model/1.0}lifecyclecontributer_author" : [ "BEGIN:VCARD\nN:test;Administrator\nEMAIL;TYPE=PREF,INTERNET:simon@metaventis.com\nX-ORCID:http://orcid.org/0000-0001-7851-8094TS\nX-GND-URI:http://d-nb.info/gnd/1206683651TS\nUID:urn:uuid:6460498f-a808-4ad1-a953-63a01f52ce9b\nFN:Administrator test\nVERSION:3.0\nEND:VCARD" ],
+    "{http://www.campuscontent.de/model/1.0}lifecyclecontributer_publisher" : [ "BEGIN:VCARD\nORG:Metaventis\nX-ROR:http://ror/test\nN:;\nTITLE:\nX-ES-LOM-CONTRIBUTE-DATE:\nVERSION:3.0\nEND:VCARD" ],
+
+    // Meta-Metadata
+    "{http://www.campuscontent.de/model/lom/1.0}metadataschema" : "some schema",
+    "{http://www.campuscontent.de/model/1.0}metadatacontributer_creator" : [ "BEGIN:VCARD\nVERSION:3.0\nN:;Administrator\nFN:Administrator \nORG:\nURL:\nTITLE:\nTEL;TYPE=WORK,VOICE:\nADR;TYPE=intl,postal,parcel,work:;;;;;;\nEMAIL;TYPE=PREF,INTERNET:\nEND:VCARD" ],
+    "{http://www.campuscontent.de/model/1.0}metadatacontributer_provider" : [ "BEGIN:VCARD\nVERSION:3.0\nFN:Omega RLP\nN:Omega RLP;\nEND:VCARD" ],
+
+    // Technical
+    "{http://www.campuscontent.de/model/lom/1.0}format" : " application/pdf",
+    "{http://www.campuscontent.de/model/1.0}ccressourcetype": "h5p",
+    "{http://www.campuscontent.de/model/1.0}ccresourcesubtype" : [ "some cc resource subtype" ],
+    "{http://www.campuscontent.de/model/1.0}ccressourceversion" : "1.5",
+    "{http://www.campuscontent.de/model/1.0}ccresourcecontent" : "some cc resource content",
+    "{http://www.campuscontent.de/model/lom/1.0}size" : "6444",
+    "{http://www.campuscontent.de/model/lom/1.0}location" : [ "ccrep://local/6e4bd986-cd80-4cdb-befc-fb05a7312518" ],
+    "{http://www.campuscontent.de/model/lom/1.0}installationremarks" : [ "some installation remarks" ],
+    "{http://www.campuscontent.de/model/lom/1.0}otherplatformrequirements" : [ "some other platform requirements" ],
+    "{http://www.campuscontent.de/model/lom/1.0}duration" : "00:01:15",
+    "{http://www.campuscontent.de/model/1.0}location_status" : "0",
+    "{http://www.campuscontent.de/model/1.0}height" : 4021.0,
+    "{http://www.campuscontent.de/model/1.0}width" : 8021.0,
+
+    // Educational
+    "{http://www.campuscontent.de/model/1.0}educationalcontext" : [ "special education", "other education" ],
+    "{http://www.campuscontent.de/model/1.0}educationalintendedenduserrole" : [ "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/teacher", "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/pupil" ],
+    "{http://www.campuscontent.de/model/1.0}educationallearningresourcetype" : [ "simulation", "book" ],
+    "{http://www.campuscontent.de/model/1.0}curriculum" : [ "27611", "16512" ],
+    "{http://www.campuscontent.de/model/lom/1.0}typicallearningtime" : 3.066E7,
+    "{http://www.campuscontent.de/model/lom/1.0}educationaltypicalagerange" : [ "0-5", "10-12" ],
+    "{http://www.campuscontent.de/model/1.0}educationalinteractivitytype" : [ "some typical interactivity type", "some more typical interactivity type" ],
+    "{http://www.campuscontent.de/model/1.0}educationaltypicalagerange_from" : 0,
+    "{http://www.campuscontent.de/model/1.0}educationaltypicalagerange_to" : 5,
+    "{http://www.campuscontent.de/model/1.0}educationallanguage" : [ "de", "en" ],
+
+    // Rights
+    "{http://www.campuscontent.de/model/lom/1.0}cost" : "true",
+    "{http://www.campuscontent.de/model/lom/1.0}copyright_and_other_restrictions" : "false",
+    "{http://www.campuscontent.de/model/lom/1.0}rights_description" : "Youtube",
+    "{http://www.campuscontent.de/model/1.0}customlicense_key" : [ "Omega-Licensetype:license_open" ],
+    "{http://www.campuscontent.de/model/1.0}author_freetext" : [ "some author" ],
+    "{http://www.campuscontent.de/model/1.0}commonlicense_cc_version" : "4.0",
+    "{http://www.campuscontent.de/model/1.0}commonlicense_key" : [ "CC_BY" ],
+    "{http://www.campuscontent.de/model/1.0}commonlicense_cc_locale" : "germany",
+    "{http://www.campuscontent.de/model/1.0}license_to" : "Nov 16, 2020 12:00:00 AM",
+    "{http://www.campuscontent.de/model/1.0}public_access" : false,
+    "{http://www.campuscontent.de/model/1.0}questionsallowed" : true,
+    "{http://www.campuscontent.de/model/1.0}restricted_access" : false,
+
+    // Classification
+    "{http://www.campuscontent.de/model/1.0}taxonid" : [ "360", "512" ],
+    "{http://www.campuscontent.de/model/1.0}learninggoal" : "some learning goal",
+    "{http://www.campuscontent.de/model/1.0}classification_keyword": [ "some keyword" ],
+
+    // Editorial
+    "{http://www.campuscontent.de/model/1.0}editorial_state" : "activated",
+    "{http://www.campuscontent.de/model/1.0}editorial_checklist" : [ "some checklist", "some more checks" ]
+  },
+
+  "expected" : {
+    "general" : {
+      "title" : "My title",
+      "language" : [ "de" ],
+      "description" : "User defined description",
+      "keyword" : [ "ship" , "ocean", "transport"],
+      "coverage": [ "coverage" ],
+      "structure" : {
+        "value" : "atomic"
+      },
+      "aggregationLevel" : {
+        "value" : "1"
+      }
+    },
+
+    "lifecycle" : {
+      "version" : "1.1",
+      "status" : {
+        "value": "final"
+      },
+      "contribute" : [
+        {
+          "role" : "author",
+          "content" :  [ "BEGIN:VCARD\nN:test;Administrator\nEMAIL;TYPE=PREF,INTERNET:simon@metaventis.com\nX-ORCID:http://orcid.org/0000-0001-7851-8094TS\nX-GND-URI:http://d-nb.info/gnd/1206683651TS\nUID:urn:uuid:6460498f-a808-4ad1-a953-63a01f52ce9b\nFN:Administrator test\nVERSION:3.0\nEND:VCARD" ]
+        },{
+          "role" : "publisher",
+          "content" : [ "BEGIN:VCARD\nORG:Metaventis\nX-ROR:http://ror/test\nN:;\nTITLE:\nX-ES-LOM-CONTRIBUTE-DATE:\nVERSION:3.0\nEND:VCARD" ]
+        }
+      ]
+    },
+
+    "meta-metadata": {
+      "schema" : "some schema",
+      "contribute" : [
+        {
+          "role" : "creator",
+          "content" :  [ "BEGIN:VCARD\nVERSION:3.0\nN:;Administrator\nFN:Administrator \nORG:\nURL:\nTITLE:\nTEL;TYPE=WORK,VOICE:\nADR;TYPE=intl,postal,parcel,work:;;;;;;\nEMAIL;TYPE=PREF,INTERNET:\nEND:VCARD" ]
+        },{
+          "role" : "provider",
+          "content" : [ "BEGIN:VCARD\nVERSION:3.0\nFN:Omega RLP\nN:Omega RLP;\nEND:VCARD"]
+        }
+      ]
+    },
+
+    "technical" : {
+      "format" : [
+        {
+          "mimetype" : " application/pdf",
+          "type": "h5p",
+          "subtype" : [ "some cc resource subtype" ],
+          "version" : "1.5",
+          "content" : "some cc resource content"
+        }
+      ],
+      "size" : "6444",
+      "location" : [ "ccrep://local/6e4bd986-cd80-4cdb-befc-fb05a7312518" ],
+      "installationRemarks" : [ "some installation remarks" ],
+      "otherPlatformRequirements" : [ "some other platform requirements" ],
+      "duration" : "PT00H01M15S",
+      "locationHttpsStatus" : "0",
+      "dimension" : {
+        "height": 4021.0,
+        "width": 8021.0
+      }
+    },
+
+    "educational" : [
+      {
+        "context" : [
+          {
+            "value" : "special education"
+          }, {
+            "value" : "other education"
+          }
+        ],
+
+        "intendedEndUserRole" : [
+          {
+            "value": "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/teacher"
+          }, {
+            "value": "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/pupil"
+          }
+        ],
+        "learningResourceType" : [
+          {
+            "value" : "simulation"
+          }, {
+            "value" : "book"
+          }
+        ],
+        "curriculum" : [
+          {
+            "value" : "27611"
+          }, {
+            "value" : "16512"
+          }
+        ],
+        "typicalLearningTime" : 3.066E7,
+        "typicalAgeRange" : [
+          {
+            "value" : "0-5"
+          }, {
+            "value" : "10-12"
+          }
+        ],
+        "interactivityType" : [ {
+            "value" :  "some typical interactivity type"
+          }, {
+            "value" :  "some more typical interactivity type"
+          }
+        ],
+        "typicalAgeRangeNominal" : {
+          "from": 0,
+          "to": 5
+        },
+        "language" : [
+          {
+            "value" : "de"
+          }, {
+            "value" : "en"
+          }
+        ]
+      }
+    ],
+
+    "rights" : {
+      "cost" : {
+        "value" : "true"
+      },
+      "copyrightAndOtherRestrictions" : {
+        "value" : "false"
+      },
+      "description" : "Youtube",
+      "author" : [ "some author" ],
+      "version" : "4.0",
+      "internal" : [ "CC_BY" ],
+      "locale" : "germany",
+      "expirationDate" : "Nov 16, 2020 12:00:00 AM",
+      "publicAccess" : false,
+      "negotiationPermitted" : true,
+      "restrictedAccess" : false
+    },
+
+    "classification": {
+      "taxon": [
+        {
+          "value": "360"
+        },
+        {
+          "value": "512"
+        }
+      ],
+      "learningGoal": "some learning goal",
+      "keyword": [
+        {
+          "value": "some keyword"
+        }
+      ]
+    },
+
+    "editorial" : [
+      {
+        "state" : {
+          "value" : "activated"
+        },
+        "checklist" : [
+          {
+            "value" : "some checklist"
+          }, {
+            "value" : "some more checks"
+          }
+        ]
+      }
+    ]
+  }
+}

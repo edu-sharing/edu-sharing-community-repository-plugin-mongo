@@ -5,7 +5,7 @@ import org.edu_sharing.lightbend.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "mongo")
-public class MongoConfig {
+public class MongoSettings {
     String connectionString;
     String database;
 }

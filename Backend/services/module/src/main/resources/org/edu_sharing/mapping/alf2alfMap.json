@@ -1,0 +1,32 @@
+[
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.alfresco.org/model/content/1.0}template": "=idFromNodeRef(@(0))",
+      "{http://www.alfresco.org/model/system/1.0}locale": "=mapFromLocale(@(0))"
+    }
+  },
+  {
+    "operation": "remove",
+    "spec": {
+      "{http://www.alfresco.org/model/content/1.0}title": "",
+      "{http://www.alfresco.org/model/content/1.0}description": "",
+      "{http://www.campuscontent.de/model/1.0}customlicense_key": ""
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "*": {
+        "@": "&"
+      }
+    }
+  }
+]

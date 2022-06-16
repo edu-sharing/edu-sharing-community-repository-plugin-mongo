@@ -1,0 +1,11 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "version": "{http://www\\.alfresco\\.org/model/content/1\\.0}versionLabel",
+      "comment": "{http://www\\.campuscontent\\.de/model/1\\.0}version_comment",
+      "autoCreateVersion": "{http://www\\.campuscontent\\.de/model/1\\.0}create_version",
+      "type": "{http://www\\.alfresco\\.org/model/content/1\\.0}versionType"
+    }
+  }
+]

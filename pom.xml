@@ -38,9 +38,9 @@
     <!-- release-2 -->
     <bom.repository.version>${project.version}</bom.repository.version>
 
-    <mongodb.version.major>5</mongodb.version.major>
-    <mongodb.version.minor>0</mongodb.version.minor>
-    <mongodb.version.patch>6</mongodb.version.patch>
+    <mongodb.version.major>4</mongodb.version.major>
+    <mongodb.version.minor>4</mongodb.version.minor>
+    <mongodb.version.patch>13</mongodb.version.patch>
     <mongodb.version>${mongodb.version.major}.${mongodb.version.minor}.${mongodb.version.patch}</mongodb.version>
 
   </properties>

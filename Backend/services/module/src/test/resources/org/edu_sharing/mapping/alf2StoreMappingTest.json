@@ -1,0 +1,15 @@
+{
+  "mapping": "org/edu_sharing/mapping/alf2store.json",
+
+  "input": {
+    "{http://www.alfresco.org/model/system/1.0}node-dbid": 14.0,
+    "{http://www.alfresco.org/model/system/1.0}store-identifier": "SapcesStore",
+    "{http://www.alfresco.org/model/system/1.0}store-protocol": "workspace"
+  },
+
+  "expected": {
+    "dbId": 14.0,
+    "id": "SapcesStore",
+    "protocol": "workspace"
+  }
+}

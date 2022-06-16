@@ -1,0 +1,29 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}remotenodeid":"REMOTE_SHADOW.id",
+      "{http://www.campuscontent.de/model/1.0}remoterepositoryid":"REMOTE_SHADOW.repository.id",
+      "{http://www.campuscontent.de/model/1.0}remoterepositorytype":"REMOTE_SHADOW.repository.type",
+
+      "{http://www.campuscontent.de/model/1.0}replicationmodified": "REPLICATION.modified",
+      "{http://www.campuscontent.de/model/1.0}replicationsource": "REPLICATION.repository.id",
+      "{http://www.campuscontent.de/model/1.0}replicationsourcehash": "REPLICATION.hash",
+      "{http://www.campuscontent.de/model/1.0}replicationsourceid": "REPLICATION.id",
+      "{http://www.campuscontent.de/model/1.0}replicationsourceorigin": "REPLICATION.repository.origin",
+      "{http://www.campuscontent.de/model/1.0}replicationsourcetimestamp": "REPLICATION.timestamp",
+      "{http://www.campuscontent.de/model/1.0}replicationsourceuuid": "REPLICATION.uuid",
+      "{http://www.campuscontent.de/model/1.0}importblocked": "REPLICATION.importBlocked"
+    }
+  },
+
+  {
+    "operation": "shift",
+    "spec": {
+      "*" : {
+        "$": "location",
+        "*" : "&"
+      }
+    }
+  }
+]

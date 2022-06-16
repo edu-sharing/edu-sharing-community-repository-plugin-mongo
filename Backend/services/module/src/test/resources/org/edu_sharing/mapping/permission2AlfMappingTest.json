@@ -1,0 +1,167 @@
+{
+  "mapping": "org/edu_sharing/mapping/permission2alf.json",
+
+  "input": {
+    "action": "PERMISSION_ADD",
+    "history": [
+      {
+        "notifyUser": "admin",
+        "notifyAction": "PERMISSION_ADD",
+        "user": {
+          "username": "admin",
+          "authorityName": "admin",
+          "authorityType": "USER"
+        },
+        "created": "Sep 1, 2020 2:42:49 PM",
+        "acl": {
+          "inherited": false,
+          "aces": [
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "CCPublish",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            },
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "Consumer",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            }
+          ]
+        }
+      },
+      {
+        "notifyUser": "admin",
+        "notifyAction": "PERMISSION_CHANGE",
+        "user": {
+          "username": "admin",
+          "authorityName": "admin",
+          "authorityType": "USER"
+        },
+        "created": "Sep 1, 2020 2:48:13 PM",
+        "acl": {
+          "inherited": false,
+          "aces": []
+        }
+      },
+      {
+        "notifyUser": "admin",
+        "notifyAction": "PERMISSION_ADD",
+        "user": {
+          "username": "admin",
+          "authorityName": "admin",
+          "authorityType": "USER"
+        },
+        "created": "Sep 1, 2020 2:50:22 PM",
+        "acl": {
+          "inherited": false,
+          "aces": [
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "CCPublish",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            },
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "Consumer",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            }
+          ]
+        }
+      },
+      {
+        "notifyUser": "admin",
+        "notifyAction": "PERMISSION_ADD",
+        "user": {
+          "username": "admin",
+          "authorityName": "admin",
+          "authorityType": "USER"
+        },
+        "created": "Jan 14, 2021 2:48:43 PM",
+        "acl": {
+          "inherited": false,
+          "aces": [
+            {
+              "authority": "bernd4",
+              "permission": "Consumer",
+              "accessStatus": "acepted",
+              "authorityType": "USER",
+              "user": {
+                "nodeId": "3d4d674d-8f46-4611-96a0-9c8eabdfc473",
+                "email": "simon@metaventis.com",
+                "givenName": "bernd4",
+                "surname": "bernd4",
+                "repositoryId": "local",
+                "username": "bernd4",
+                "authorityName": "bernd4",
+                "authorityType": "USER"
+              },
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            },
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "CCPublish",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            },
+            {
+              "authority": "GROUP_EVERYONE",
+              "permission": "Consumer",
+              "accessStatus": "acepted",
+              "authorityType": "EVERYONE",
+              "id": 0,
+              "isInherited": false,
+              "isEdited": false
+            }
+          ]
+        }
+      }
+    ],
+    "invited": [
+      "bernd4",
+      "GROUP_EVERYONE"
+    ],
+    "modified": "Thu Nov 04 08:57:23 CET 2021",
+    "users": [
+      "admin"
+    ]
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}ph_action": "PERMISSION_ADD",
+    "{http://www.campuscontent.de/model/1.0}ph_history": [
+      "{\"notifyUser\":\"admin\",\"notifyAction\":\"PERMISSION_ADD\",\"user\":{\"username\":\"admin\",\"authorityName\":\"admin\",\"authorityType\":\"USER\"},\"created\":\"Sep 1, 2020 2:42:49 PM\",\"acl\":{\"inherited\":false,\"aces\":[{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"CCPublish\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false},{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"Consumer\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false}]}}",
+      "{\"notifyUser\":\"admin\",\"notifyAction\":\"PERMISSION_CHANGE\",\"user\":{\"username\":\"admin\",\"authorityName\":\"admin\",\"authorityType\":\"USER\"},\"created\":\"Sep 1, 2020 2:48:13 PM\",\"acl\":{\"inherited\":false,\"aces\":[]}}",
+      "{\"notifyUser\":\"admin\",\"notifyAction\":\"PERMISSION_ADD\",\"user\":{\"username\":\"admin\",\"authorityName\":\"admin\",\"authorityType\":\"USER\"},\"created\":\"Sep 1, 2020 2:50:22 PM\",\"acl\":{\"inherited\":false,\"aces\":[{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"CCPublish\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false},{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"Consumer\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false}]}}",
+      "{\"notifyUser\":\"admin\",\"notifyAction\":\"PERMISSION_ADD\",\"user\":{\"username\":\"admin\",\"authorityName\":\"admin\",\"authorityType\":\"USER\"},\"created\":\"Jan 14, 2021 2:48:43 PM\",\"acl\":{\"inherited\":false,\"aces\":[{\"authority\":\"bernd4\",\"permission\":\"Consumer\",\"accessStatus\":\"acepted\",\"authorityType\":\"USER\",\"user\":{\"nodeId\":\"3d4d674d-8f46-4611-96a0-9c8eabdfc473\",\"email\":\"simon@metaventis.com\",\"givenName\":\"bernd4\",\"surname\":\"bernd4\",\"repositoryId\":\"local\",\"username\":\"bernd4\",\"authorityName\":\"bernd4\",\"authorityType\":\"USER\"},\"id\":0,\"isInherited\":false,\"isEdited\":false},{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"CCPublish\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false},{\"authority\":\"GROUP_EVERYONE\",\"permission\":\"Consumer\",\"accessStatus\":\"acepted\",\"authorityType\":\"EVERYONE\",\"id\":0,\"isInherited\":false,\"isEdited\":false}]}}"
+    ],
+    "{http://www.campuscontent.de/model/1.0}ph_invited": [
+      "bernd4",
+      "GROUP_EVERYONE"
+    ],
+    "{http://www.campuscontent.de/model/1.0}ph_modified": "Thu Nov 04 08:57:23 CET 2021",
+    "{http://www.campuscontent.de/model/1.0}ph_users": [
+      "admin"
+    ]
+  }
+}

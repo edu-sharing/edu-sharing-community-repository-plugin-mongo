@@ -1,0 +1,18 @@
+{
+  "mapping": "org/edu_sharing/mapping/remote2alf.json",
+
+  "input": {
+    "id":"6602201",
+    "location" : "REMOTE_SHADOW",
+    "repository": {
+      "id": "pixabay",
+      "type": "PIXABAY"
+    }
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}remotenodeid":"6602201",
+    "{http://www.campuscontent.de/model/1.0}remoterepositoryid":"pixabay",
+    "{http://www.campuscontent.de/model/1.0}remoterepositorytype":"PIXABAY"
+  }
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}educontextname": "context",
+      "{http://www.campuscontent.de/model/1.0}eduscopename": "scope"
+    }
+  }
+]

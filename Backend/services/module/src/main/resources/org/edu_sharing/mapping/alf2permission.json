@@ -1,0 +1,25 @@
+[
+  // we need to create a copy first because of modfier
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}ph_history": "=jsonfy(@(0))"
+    }
+  },
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}ph_history" : "history",
+      "{http://www.campuscontent.de/model/1.0}ph_action": "action",
+      "{http://www.campuscontent.de/model/1.0}ph_invited": "invited",
+      "{http://www.campuscontent.de/model/1.0}ph_modified": "modified",
+      "{http://www.campuscontent.de/model/1.0}ph_users": "users"
+    }
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "symlink": {
+        "id": "{http://www\\.campuscontent\\.de/model/1\\.0}map_ref_target"
+      },
+      "forkedOrigin": {
+        "id": "{http://www\\.campuscontent\\.de/model/1\\.0}forked_origin",
+        "version": "{http://www\\.campuscontent\\.de/model/1\\.0}forked_origin_version"
+      },
+      "original": {
+        "id": "{http://www\\.campuscontent\\.de/model/1\\.0}original"
+      },
+      "publishedOriginal": {
+        "id": "{http://www\\.campuscontent\\.de/model/1\\.0}published_original"
+      },
+      "legacy": {
+        "schemaRelation": "{http://www\\.campuscontent\\.de/model/1\\.0}schema_relation"
+      }
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}map_ref_target": "=nodeRefFromId(@(0))",
+      "{http://www.campuscontent.de/model/1.0}forked_origin": "=nodeRefFromId(@(0))",
+      "{http://www.campuscontent.de/model/1.0}published_original": "=nodeRefFromId(@(0))"
+    }
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "mapping": "org/edu_sharing/mapping/association2alf.json",
+
+  "input": {
+    "symlink": {
+      "id": "2a8a811d-45dc-4d48-af03-a4d40f669e97"
+    },
+    "forkedOrigin": {
+      "id":  "100e16d2-3109-4767-b31f-2c4384d05e31",
+      "version": "1.0"
+    },
+    "original": {
+      "id": "6e4bd986-cd80-4cdb-befc-fb05a7312518"
+    },
+    "publishedOriginal": {
+      "id": "108bb0ff-9d75-470d-ad49-64e4108a6b4f"
+    },
+    "legacy": {
+      "schemaRelation": [ "ispartof#BY-00164289" ]
+    }
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}map_ref_target": "defined in MappingTest.java!",
+    "{http://www.campuscontent.de/model/1.0}forked_origin": "defined in MappingTest.java!",
+    "{http://www.campuscontent.de/model/1.0}forked_origin_version": "1.0",
+    "{http://www.campuscontent.de/model/1.0}original": "6e4bd986-cd80-4cdb-befc-fb05a7312518",
+    "{http://www.campuscontent.de/model/1.0}published_original": "defined in MappingTest.java!",
+    "{http://www.campuscontent.de/model/1.0}schema_relation": [ "ispartof#BY-00164289" ]
+  }
+}

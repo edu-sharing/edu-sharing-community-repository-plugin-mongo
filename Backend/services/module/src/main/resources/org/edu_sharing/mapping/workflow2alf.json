@@ -1,0 +1,17 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "instructions": "{http://www\\.campuscontent\\.de/model/1\\.0}wf_instructions",
+      "protocol": "{http://www\\.campuscontent\\.de/model/1\\.0}\\.protocol",
+      "receiver": "{http://www\\.campuscontent\\.de/model/1\\.0}wf_receiver",
+      "status": "{http://www\\.campuscontent\\.de/model/1\\.0}wf_status"
+    }
+  },
+  {
+    "operation": "org.edu_sharing.plugin_mongo.joltextension.CustomModifier$Overwritr",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}.protocol": "=stringfy(@(0))"
+    }
+  }
+]

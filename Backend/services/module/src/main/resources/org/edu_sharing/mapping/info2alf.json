@@ -1,0 +1,26 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "creator" : "{http://www\\.alfresco\\.org/model/content/1\\.0}creator",
+      "createDate" : "{http://www\\.alfresco\\.org/model/content/1\\.0}created",
+      "modifier" : "{http://www\\.alfresco\\.org/model/content/1\\.0}modifier",
+      "modifiedDate" : "{http://www\\.alfresco\\.org/model/content/1\\.0}modified",
+      "filename" : "{http://www\\.alfresco\\.org/model/content/1\\.0}name",
+      "url" : "{http://www\\.campuscontent\\.de/model/1\\.0}wwwurl",
+      "owner" : "{http://www\\.alfresco\\.org/model/content/1\\.0}owner",
+      "propagateMetadataSet" : "{http://www\\.alfresco\\.org/model/content/1\\.0}edu_forcemetadataset",
+      "metadataSet" : "{http://www\\.alfresco\\.org/model/content/1\\.0}edu_metadataset",
+      "urlOrigin" : "{http://www\\.campuscontent\\.de/model/1\\.0}linktype",
+      "objectType" : {
+        "value" : "{http://www\\.campuscontent\\.de/model/1\\.0}objecttype"
+      },
+      "originallyCreated" : "{http://www\\.campuscontent\\.de/model/1\\.0}originally_created",
+      "searchContext" : "{http://www\\.campuscontent\\.de/model/1\\.0}search_context",
+      "organisation" : "{http://www\\.campuscontent\\.de/model/1\\.0}university",
+      "preview" : {
+        "url" : "{http://www\\.campuscontent\\.de/model/1\\.0}thumbnailurl"
+      }
+    }
+  }
+]

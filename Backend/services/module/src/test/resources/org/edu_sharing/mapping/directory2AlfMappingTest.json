@@ -1,0 +1,13 @@
+{
+  "mapping": "org/edu_sharing/mapping/directory2alf.json",
+
+  "input": {
+    "type": "USERDATAFOLDER",
+    "hasTemplate": true
+  },
+
+  "expected": {
+    "{http://www.campuscontent.de/model/1.0}maptype": "USERDATAFOLDER",
+    "{http://www.campuscontent.de/model/1.0}metadataPresettingStatus": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "mapping": "org/edu_sharing/mapping/alf2share.json",
+
+  "input": {
+    "{http://www.campuscontent.de/model/1.0}share_download_counter": 1.0,
+    "{http://www.campuscontent.de/model/1.0}share_password": "asddsagferhreh",
+    "{http://www.campuscontent.de/model/1.0}share_expirydate": "-1.0",
+    "{http://www.campuscontent.de/model/1.0}share_mail": "LINK",
+    "{http://www.campuscontent.de/model/1.0}share_token": "cff197a46d6a08a2a0fe46591a3bf3c0"
+  },
+
+  "expected": {
+    "downloadCount": 1.0,
+    "password": "asddsagferhreh",
+    "expires": "-1.0",
+    "mail": "LINK",
+    "token": "cff197a46d6a08a2a0fe46591a3bf3c0"
+  }
+}
