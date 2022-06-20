@@ -216,7 +216,10 @@ public class RatingServiceImpl implements RatingService {
 
         RatingDetails ratingDetails = ratingCollection.aggregate(aggregation).first();
         if (ratingDetails == null) {
-            return null;
+            ratingDetails = new RatingDetails();
+            ratingDetails.setOverall(new RatingBase.RatingData());
+            ratingDetails.setAffiliation(new HashMap<>());
+            return ratingDetails;
         }
 
         filter = Filters.and(filter, Filters.gte(RatingConstants.AUTHORITY_KEY, authority));
