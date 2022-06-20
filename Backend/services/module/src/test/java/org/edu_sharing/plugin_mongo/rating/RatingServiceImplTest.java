@@ -336,7 +336,15 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
 
-        Assertions.assertNull(ratingDetails);
+        Assertions.assertNotNull(ratingDetails);
+        Assertions.assertNotNull(ratingDetails.getAffiliation(), "affiliation");
+        Assertions.assertNotNull(ratingDetails.getOverall(), "overall");
+
+        Assertions.assertEquals(0, ratingDetails.isUser(), "user");
+        Assertions.assertEquals(0, ratingDetails.getAffiliation().size(), "affiliation size");
+        Assertions.assertEquals(0, ratingDetails.getOverall().getCount(), "overall count");
+        Assertions.assertEquals(0, ratingDetails.getOverall().getSum(), "overall sum");
+        Assertions.assertEquals(0, ratingDetails.getOverall().getRating(), "overall rating");
     }
 
     @Test
