@@ -179,6 +179,18 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-installer-compose-debian-bullseye</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-deploy-installer-repository-scripts-debian-bullseye</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>

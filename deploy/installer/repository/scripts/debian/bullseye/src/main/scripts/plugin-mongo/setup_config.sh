@@ -6,7 +6,7 @@ eduSConf="tomcat/shared/classes/config/cluster/edu-sharing.deployment.conf"
 
 ########################################################################################################################
 
-echo "- update edu-sharing env for plugin elastic"
+echo "- update edu-sharing env for plugin mongo"
 
 pushd "$ALF_HOME" &> /dev/null
 
