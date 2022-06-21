@@ -17,7 +17,7 @@ hocon -f "${eduSConf}" \
 	set "mongo.connectionString" '"'"${repository_mongo_db_connection_string}"'"'
 
 hocon -f "${eduSConf}" \
-	set "mongo.database" '"'"${repository_mongo_database}"'"'
+	set "mongo.database" '"'"${repository_mongo_db_database}"'"'
 
 
 ########################################################################################################################
