@@ -7,7 +7,13 @@ services:
     tty: true
     expose:
       - 27017
+    environment:
+      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
+      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
+      MONGODB_ROOT_USER: "${REPOSITORY_MONGO_ROOT_USER:-root}"
+      MONGODB_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
 
   repository:
     environment:
-      REPOSITORY_MONGO_CONNECTION_STRING: "mongodb://repository:repository@127.0.0.1:27017/edu-sharing"
+      REPOSITORY_MONGO_CONNECTION_STRING: "mongodb://repository:repository@repository-mongo:27017/edu-sharing"

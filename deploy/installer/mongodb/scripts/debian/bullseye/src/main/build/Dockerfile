@@ -65,7 +65,6 @@ RUN set -eux \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
-COPY assets/dbInit.js .
 COPY assets/config/mongod.conf /etc/mongod.conf
 
 RUN mkdir -p /data/db /data/configdb \
