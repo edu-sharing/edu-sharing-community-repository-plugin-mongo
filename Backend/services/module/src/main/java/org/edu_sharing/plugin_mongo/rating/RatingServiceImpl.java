@@ -13,6 +13,7 @@ import org.bson.codecs.pojo.*;
 import org.bson.conversions.Bson;
 import org.edu_sharing.plugin_mongo.mongo.codec.NodeRefCodec;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
+import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.permission.annotation.NodePermission;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class RatingServiceImpl implements RatingService {
+public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
 
     // TODO in 6.1: we need to check for TOOLPERMISSION_RATE_READ and TOOLPERMISSION_RATE_WRITE for almost all methods
     // Für die Ausgabe von Ratings muss folgendes erfüllt sein:
@@ -331,5 +332,11 @@ public class RatingServiceImpl implements RatingService {
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.AUTHORITY_KEY));
         ratingCollection.createIndex(Indexes.ascending(RatingConstants.NODEID_KEY, RatingConstants.AUTHORITY_KEY));
+    }
+
+    @Override
+    public void OnDeletedInAlfresco(Set<String> nodeIds) {
+        database.getCollection(RatingConstants.COLLECTION_KEY)
+                .deleteMany(Filters.in(RatingConstants.NODEID_KEY, nodeIds));
     }
 }

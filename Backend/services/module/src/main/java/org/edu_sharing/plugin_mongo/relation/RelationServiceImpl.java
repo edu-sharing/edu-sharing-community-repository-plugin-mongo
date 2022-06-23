@@ -15,6 +15,8 @@ import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
+import org.edu_sharing.plugin_mongo.rating.RatingConstants;
+import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.plugin_mongo.util.MongoDbUtil;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.InsufficientPermissionException;
@@ -27,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 @Log4j
-public class RelationServiceImpl implements RelationService {
+public class RelationServiceImpl implements RelationService, AwareAlfrescoDeletion {
 
     private final MongoDatabase database;
     private final NodeService nodeService;
@@ -249,5 +251,11 @@ public class RelationServiceImpl implements RelationService {
                         Arrays.asList(Filters.eq("item." + RelationConstants.RELATION_CREATOR_KEY, actualAuthority))
                 )
         );
+    }
+
+    @Override
+    public void OnDeletedInAlfresco(Set<String> nodeIds) {
+        database.getCollection(RatingConstants.COLLECTION_KEY)
+                .deleteMany(Filters.in(RelationConstants.RELATION_NODE_KEY, nodeIds));
     }
 }
