@@ -2,5 +2,5 @@ version: '3.7'
 
 services:
 
-  repository-elastic:
-    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-installer-tracker-scripts-debian-bullseye:${docker.tag}"
+  repository-mongo:
+    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-installer-mongodb-scripts-debian-bullseye:${docker.tag}"

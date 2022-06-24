@@ -1,8 +1,1 @@
 version: '3.7'
-
-services:
-
-  repository-elastic:
-    command: ["--local"]
-    volumes:
-      - "${MAVEN_HOME}:/root/.m2"
