@@ -3,6 +3,7 @@ package org.edu_sharing.plugin_mongo.jobs.quarz;
 import org.alfresco.repo.domain.qname.QNameDAO;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.solr.*;
+import org.alfresco.repo.search.SearchTrackingComponent;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -43,7 +44,7 @@ public class ObsoleteMongoEntriesDeletionJob extends AbstractJobMapAnnotationPar
           sampleValue = "5000")
   protected int maxDeletedNodeChecks = 5000;
 
-  @Autowired private SOLRTrackingComponent trackingComponent;
+  @Autowired private SearchTrackingComponent trackingComponent;
   @Autowired private MongoAlfrescoSyncStateRepository repository;
   @Autowired private QNameDAO qnameDAO;
 
