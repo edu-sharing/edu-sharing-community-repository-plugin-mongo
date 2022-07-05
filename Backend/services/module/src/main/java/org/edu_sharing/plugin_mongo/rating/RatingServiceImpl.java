@@ -82,11 +82,12 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
             Double rating, String text) throws Exception {
 
         Objects.requireNonNull(nodeId, "nodeId must not be null");
-        nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         if(!Objects.equals(nodeService.getType(nodeId), CCConstants.CCM_TYPE_IO)) {
             throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
         }
+
+        nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         String authority = integrityService.getAuthority();
         String affiliation = integrityService.getAffiliation();
