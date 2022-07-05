@@ -16,6 +16,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.mongo.util.MongoSerializationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -35,7 +36,7 @@ public class AlfrescoMetadataService {
     private final VersionService versionService;
 
     private final AlfrescoMappingService mappingService;
-    private final  CodecRegistry codecRegistry;
+    private final MongoDatabaseFactory databaseFactory;
 
     public Metadata getMetadata(String nodeId, String version) {
 
@@ -72,7 +73,7 @@ public class AlfrescoMetadataService {
         document.put(ASPECTS_KEY, aspects.stream().map(QName::toString).collect(Collectors.toList()));
         mappingService.setProperties(document, properties);
 
-        return MongoSerializationUtil.toObject(document, codecRegistry, Metadata.class);
+        return MongoSerializationUtil.toObject(document, databaseFactory.getCodecRegistry(), Metadata.class);
     }
 
 

@@ -132,13 +132,13 @@
     </bean>
 
     <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
-        <constructor-arg name="database" ref="mongoDatabase"/>
+        <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
-        <constructor-arg name="database" ref="mongoDatabase"/>
+        <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>

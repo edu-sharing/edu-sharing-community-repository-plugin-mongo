@@ -25,6 +25,7 @@ import org.edu_sharing.service.rating.RatingHistory;
 import org.edu_sharing.service.rating.RatingService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 
 import java.util.*;
 
@@ -40,7 +41,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     private final MongoDatabase database;
     private final NodeService nodeService;
 
-    public RatingServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
+    public RatingServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
@@ -65,7 +66,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
                 CodecRegistries.fromCodecs(new NodeRefCodec()),
                 CodecRegistries.fromProviders(pojoCodecProvider));
 
-        this.database = database.withCodecRegistry(pojoCodecRegistry);
+        this.database = mongoDatabaseFactory.getMongoDatabase().withCodecRegistry(pojoCodecRegistry);
         this.integrityService = integrityService;
         this.nodeService = nodeService;
     }

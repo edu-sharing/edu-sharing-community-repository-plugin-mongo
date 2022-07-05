@@ -59,7 +59,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("2", "Bach", null, "good bead", 5d, DateUtils.addDays(now, -3))
         ));
 
-        underTest = new RatingServiceImpl(db, nodeService, integrityService);
+        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService);
 
         Mockito.lenient()
                 .when(nodeService.getOriginalNode(anyString()))

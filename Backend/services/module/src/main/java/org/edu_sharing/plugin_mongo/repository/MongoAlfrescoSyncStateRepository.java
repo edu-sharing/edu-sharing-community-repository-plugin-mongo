@@ -14,6 +14,7 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.domain.system.TransactionalSyncState;
 import org.edu_sharing.plugin_mongo.mongo.automation.annotation.Initialize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -35,11 +36,11 @@ public class MongoAlfrescoSyncStateRepository {
   public static final String ID = "_id";
   public static final String MODIFIED = "modified";
 
-  @NonNull private MongoDatabase mongoDatabase;
+  @NonNull private MongoDatabaseFactory mongoDatabaseFactory;
 
   @Initialize
   public void createIndices() {
-    mongoDatabase
+    mongoDatabaseFactory.getMongoDatabase()
         .getCollection(DELETED_REFERENCED_NODES_COLLECTION)
         .createIndex(Indexes.ascending(MODIFIED));
   }
@@ -47,7 +48,7 @@ public class MongoAlfrescoSyncStateRepository {
   @NonNull
   public TransactionalSyncState getTransactionalSyncState() {
     return Optional.ofNullable(
-            mongoDatabase
+            mongoDatabaseFactory.getMongoDatabase()
                 .getCollection(ALFRESCO_SYNC_STATE_COLLECTION, TransactionalSyncState.class)
                 .find(Filters.eq(TRANSACTIONAL_SYNC_STATE_ID))
                 .first())
@@ -56,7 +57,7 @@ public class MongoAlfrescoSyncStateRepository {
 
   public boolean setTransactionalSyncState(@NonNull TransactionalSyncState syncState) {
     UpdateResult updateResult =
-        mongoDatabase
+            mongoDatabaseFactory.getMongoDatabase()
             .getCollection(ALFRESCO_SYNC_STATE_COLLECTION, TransactionalSyncState.class)
             .replaceOne(
                 Filters.eq(TRANSACTIONAL_SYNC_STATE_ID),
@@ -73,7 +74,7 @@ public class MongoAlfrescoSyncStateRepository {
     }
 
     MongoCollection<Document> collection =
-        mongoDatabase.getCollection(DELETED_REFERENCED_NODES_COLLECTION);
+            mongoDatabaseFactory.getMongoDatabase().getCollection(DELETED_REFERENCED_NODES_COLLECTION);
     BulkWriteResult result =
         collection.bulkWrite(
             nodeIdsToKeepChecking.stream()
@@ -91,7 +92,7 @@ public class MongoAlfrescoSyncStateRepository {
 
   @NonNull
   public List<String> getDeletedNodeIdsToTrack(int amount) {
-    return mongoDatabase
+    return mongoDatabaseFactory.getMongoDatabase()
         .getCollection(DELETED_REFERENCED_NODES_COLLECTION, Document.class)
         .find()
         .sort(new Document(MODIFIED, 1))
@@ -107,14 +108,14 @@ public class MongoAlfrescoSyncStateRepository {
     }
 
     DeleteResult result =
-        mongoDatabase
+            mongoDatabaseFactory.getMongoDatabase()
             .getCollection(DELETED_REFERENCED_NODES_COLLECTION)
             .deleteMany(Filters.in(ID, nodeIdsToDelete));
     return result.wasAcknowledged() && result.getDeletedCount() > 0;
   }
 
   public void reset() {
-    mongoDatabase.getCollection(ALFRESCO_SYNC_STATE_COLLECTION).deleteMany(new Document());
-    mongoDatabase.getCollection(DELETED_REFERENCED_NODES_COLLECTION).deleteMany(new Document());
+    mongoDatabaseFactory.getMongoDatabase().getCollection(ALFRESCO_SYNC_STATE_COLLECTION).deleteMany(new Document());
+    mongoDatabaseFactory.getMongoDatabase().getCollection(DELETED_REFERENCED_NODES_COLLECTION).deleteMany(new Document());
   }
 }
