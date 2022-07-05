@@ -160,36 +160,18 @@ public class ObsoleteMongoEntriesDeletionJob extends AbstractJobMapAnnotationPar
   }
 
   private boolean isReferenced(NodeRef nodeRef) {
-    // TODO alf 5 does not support left outer joins!
-    return isReferencedByOriginal(nodeRef) || isReferencedByPublishedOriginal(nodeRef);
-  }
-
-  private boolean isReferencedByOriginal(NodeRef nodeRef) {
     QueryStatement query =
-        Query.select(CCConstants.SYS_PROP_NODE_UID)
-            .from(CCConstants.CCM_TYPE_IO)
-            .where(
-                Filters.and(
-                    Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
-                    Filters.eq(CCConstants.CCM_PROP_IO_ORIGINAL, nodeRef.getId())));
+            Query.select(CCConstants.SYS_PROP_NODE_UID)
+                    .from(CCConstants.CCM_TYPE_IO)
+                    .where(
+                            Filters.or(
+                                    Filters.and(
+                                            Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
+                                            Filters.eq(CCConstants.CCM_PROP_IO_ORIGINAL, nodeRef.getId())),
+                                    Filters.and(
+                                            Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
+                                            Filters.eq(CCConstants.CCM_PROP_IO_PUBLISHED_ORIGINAL, nodeRef.toString()))));
 
-    return findReferences(query);
-  }
-
-
-  private boolean isReferencedByPublishedOriginal(NodeRef nodeRef) {
-    QueryStatement query =
-        Query.select(CCConstants.SYS_PROP_NODE_UID)
-            .from(CCConstants.CCM_TYPE_IO)
-            .where(
-                Filters.and(
-                    Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
-                    Filters.eq(CCConstants.CCM_PROP_IO_PUBLISHED_ORIGINAL, nodeRef.toString())));
-
-    return findReferences(query);
-  }
-
-  private boolean findReferences(QueryStatement query) {
     SearchParameters searchParameters = new SearchParameters();
     searchParameters.setLanguage(SearchService.LANGUAGE_CMIS_ALFRESCO);
     searchParameters.setMaxPermissionChecks(0);
