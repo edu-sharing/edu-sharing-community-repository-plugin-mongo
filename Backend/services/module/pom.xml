@@ -121,7 +121,7 @@
     <dependency>
       <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
-      <version>provided</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -247,6 +247,12 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aspects</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-mongodb</artifactId>
       <scope>provided</scope>
     </dependency>
 
