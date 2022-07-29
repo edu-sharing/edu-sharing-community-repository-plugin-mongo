@@ -224,7 +224,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
             return ratingDetails;
         }
 
-        filter = Filters.and(filter, Filters.gte(RatingConstants.AUTHORITY_KEY, authority));
+        filter = Filters.and(filter, Filters.eq(RatingConstants.AUTHORITY_KEY, authority));
         Double userRating = database.getCollection(RatingConstants.COLLECTION_KEY).
                 find(filter)
                 .map(doc -> doc.getDouble(RatingConstants.RATING_KEY))
