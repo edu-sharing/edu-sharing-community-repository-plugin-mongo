@@ -411,6 +411,25 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
+    void deleteUserData() {
+        // given
+        String authority = "Schmidt";
+        List<Document> expected = new ArrayList<>();
+
+        MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)).into(expected);
+
+        // when
+        underTest.deleteUserData(authority);
+
+        // then
+        List<Document> actual = new ArrayList<>();
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)).into(actual);
+
+        Assertions.assertEquals(0, actual.size());
+    }
+
+    @Test
     void getAlteredNodeIds() {
         // given
         Date after = DateUtils.addDays(now, -2);
