@@ -328,13 +328,12 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     }
     /**
      * This method deletes all ratings from the specified authority
-     * TODO: swollner please check implementation
      * @param authority --- The authority to delete all ratings off
      */
     public void deleteUserData(@NotNull String authority) {
         Objects.requireNonNull(authority, "authority must not be null");
         database.getCollection(RatingConstants.COLLECTION_KEY)
-                .deleteMany(Filters.in(RatingConstants.AUTHORITY_KEY, authority));
+                .deleteMany(Filters.eq(RatingConstants.AUTHORITY_KEY, authority));
     }
 
 

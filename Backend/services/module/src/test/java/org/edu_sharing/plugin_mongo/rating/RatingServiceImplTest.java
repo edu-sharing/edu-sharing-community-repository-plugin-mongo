@@ -414,19 +414,22 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     void deleteUserData() {
         // given
         String authority = "Schmidt";
-        List<Document> expected = new ArrayList<>();
+        String otherAuthority = "Müller";
 
+        List<Document> expected = new ArrayList<>();
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
-        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)).into(expected);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, otherAuthority)).into(expected);
 
         // when
         underTest.deleteUserData(authority);
 
         // then
         List<Document> actual = new ArrayList<>();
-        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)).into(actual);
+        collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, otherAuthority)).into(actual);
 
-        Assertions.assertEquals(0, actual.size());
+        Assertions.assertEquals(0,  collection.countDocuments(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+
     }
 
     @Test
