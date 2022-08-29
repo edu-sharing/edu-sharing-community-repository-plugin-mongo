@@ -327,6 +327,11 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority), Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
     }
 
+    @Override
+    public void deleteUserData(@NotNull String authority) {
+
+    }
+
     private void createIndexes() {
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.createIndex(Indexes.descending(RatingConstants.TIMESTAMP_KEY));
