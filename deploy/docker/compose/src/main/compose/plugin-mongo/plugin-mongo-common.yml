@@ -17,7 +17,7 @@ services:
     expose:
       - "27017"
     volumes:
-      - "repository-mongo-volume-data:/bitnami/mongodb"
+      - "repository-mongo-volume-data-primary:/bitnami/mongodb"
 
   repository-mongo-secondary:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
@@ -32,6 +32,8 @@ services:
       MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
     expose:
       - "27017"
+    volumes:
+      - "repository-mongo-volume-data-secondary:/bitnami/mongodb"
 
   repository-mongo-arbiter:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
@@ -77,4 +79,5 @@ services:
       - repository-mongo-secondary
 
 volumes:
-  repository-mongo-volume-data:
+  repository-mongo-volume-data-primary:
+  repository-mongo-volume-data-secondary:
