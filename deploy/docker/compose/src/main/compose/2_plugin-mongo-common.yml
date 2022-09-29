@@ -4,6 +4,7 @@ services:
 
   repository-mongo-primary:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+    container_name: "repository-mongo-primary_${COMPOSE_PROJECT_NAME}"
     environment:
       ALLOW_EMPTY_PASSWORD: "false"
       MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-primary"
@@ -21,6 +22,7 @@ services:
 
   repository-mongo-secondary:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+    container_name: "repository-mongo-secondary_${COMPOSE_PROJECT_NAME}"
     depends_on:
       - repository-mongo-primary
     environment:
@@ -35,6 +37,7 @@ services:
 
   repository-mongo-arbiter:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+    container_name: "repository-mongo-arbiter_${COMPOSE_PROJECT_NAME}"
     depends_on:
       - repository-mongo-primary
     environment:
@@ -50,6 +53,7 @@ services:
 
   repository-mongo-express:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo_express:${docker.tag}"
+    container_name: "repository-mongo-express_${COMPOSE_PROJECT_NAME}"
     environment:
       ME_CONFIG_MONGODB_SERVER: "repository-mongo-primary,repository-mongo-secondary"
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
