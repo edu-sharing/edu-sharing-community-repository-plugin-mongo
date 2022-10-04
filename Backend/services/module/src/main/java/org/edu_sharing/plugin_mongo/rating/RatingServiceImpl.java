@@ -224,7 +224,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
             return ratingDetails;
         }
 
-        filter = Filters.and(filter, Filters.gte(RatingConstants.AUTHORITY_KEY, authority));
+        filter = Filters.and(filter, Filters.eq(RatingConstants.AUTHORITY_KEY, authority));
         Double userRating = database.getCollection(RatingConstants.COLLECTION_KEY).
                 find(filter)
                 .map(doc -> doc.getDouble(RatingConstants.RATING_KEY))
@@ -326,6 +326,16 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.updateMany(Filters.eq(RatingConstants.AUTHORITY_KEY, oldAuthority), Updates.set(RatingConstants.AUTHORITY_KEY, newAuthority));
     }
+    /**
+     * This method deletes all ratings from the specified authority
+     * @param authority --- The authority to delete all ratings off
+     */
+    public void deleteUserData(@NotNull String authority) {
+        Objects.requireNonNull(authority, "authority must not be null");
+        database.getCollection(RatingConstants.COLLECTION_KEY)
+                .deleteMany(Filters.eq(RatingConstants.AUTHORITY_KEY, authority));
+    }
+
 
     private void createIndexes() {
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
