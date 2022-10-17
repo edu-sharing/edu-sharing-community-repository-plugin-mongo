@@ -17,6 +17,8 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASS:-admin}"
     expose:
       - "8081"
+    ports:
+      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_EXPRESS_PORT:-8501}:8081"
     restart: on-failure
     depends_on:
       - repository-mongo-primary
