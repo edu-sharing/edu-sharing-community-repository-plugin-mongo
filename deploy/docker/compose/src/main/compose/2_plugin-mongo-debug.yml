@@ -14,9 +14,6 @@ services:
     ports:
       - "${COMMON_BIND_HOST:-127.0.0.1}:8503:27017"
 
-  repository-mongo-express:
-    ports:
-      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_EXPRESS_PORT:-8501}:8081"
 
   repository-service:
     environment:
