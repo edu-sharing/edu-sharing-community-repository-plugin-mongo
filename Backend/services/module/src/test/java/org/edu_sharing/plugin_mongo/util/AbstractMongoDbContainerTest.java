@@ -32,7 +32,7 @@ public abstract class AbstractMongoDbContainerTest {
 
     @BeforeAll
     public static void startContainerAndPublicPortIsAvailable() {
-        mongoDbContainer = new MongoDBContainer(DockerImageName.parse("mongo:5.0.3"));
+        mongoDbContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.4.18"));
         mongoDbContainer.start();
         initMongoDb();
         logger.info("mongoDB started.");
