@@ -19,5 +19,10 @@ stages:
 
 deploy:
   stage: deploy
+  artifacts:
+    paths:
+      - Backend/services/module/target/surefire-reports
+    when: fail
+    expire_in: 3 day
   script:
     - mvn $MAVEN_CLI -s .mvn/settings.xml deploy
