@@ -11,7 +11,7 @@ spec:
   selector: {{ include "edusharing_repository_mongo.labels.app" $ | nindent 4 }}
     statefulset.kubernetes.io/pod-name: {{ $targetPod }}
   ports:
-    - name: http-api
+    - name: tcp-api
       port: {{ $.Values.service.port.api }}
 {{- end }}
 ---
@@ -26,7 +26,7 @@ spec:
   publishNotReadyAddresses: true
   selector: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
   ports:
-  - name: http-api
+  - name: tcp-api
     port: {{ .Values.service.port.api }}
 {{- if and .Values.global.metrics.servicemonitor.enabled .Values.sidecar.metrics.enabled }}
 ---
