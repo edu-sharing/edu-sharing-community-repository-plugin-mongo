@@ -1,0 +1,216 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "edusharing_repository_mongo.name" . }}
+  labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 6 }}
+  serviceName: {{ include "edusharing_repository_mongo.name" . }}-headless
+  template:
+    metadata:
+      labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 8 }}
+      annotations:
+        checksum/configmap-env: {{ include (print .Template.BasePath "/configmap-env.yaml") . | sha256sum | trunc 63 }}
+        checksum/configmap-file: {{ include (print .Template.BasePath "/configmap-file.yaml") . | sha256sum | trunc 63 }}
+        {{- if not .Values.global.metrics.servicemonitor.enabled }}
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9216"
+        prometheus.io/scrape: {{ .Values.sidecar.metrics.enabled | quote }}
+        {{- end }}
+        sidecar.istio.io/inject: {{ .Values.global.cluster.istio.enabled | quote }}
+        {{- if .Values.podAnnotations }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- end }}
+    spec:
+      initContainers:
+      {{- if (default .Values.global.cluster.storage.data.permission .Values.persistence.data.permission) }}
+        - name: {{ include "edusharing_repository_mongo.name" . }}-init-permission
+          image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-minideb:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command:
+            - "/bin/bash"
+            - "-ec"
+            - |
+              if [[ ! "$(ls -A /bitnami/mongodb)" ]]; then
+                chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /bitnami/mongodb
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/mongodb
+        {{- with .Values.init.permission.resources }}
+          resources: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.init.permission.securityContext }}
+          securityContext: {{ toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ include "edusharing_repository_mongo.name" . }}
+        image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-mongo:{{ .Values.image.tag }}
+        command:
+        - /scripts/setup.sh
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MONGODB_INITIAL_PRIMARY_HOST
+          value: "{{ printf "%s-0.%s-headless.%s.svc.%s" (include "edusharing_repository_mongo.name" .) (include "edusharing_repository_mongo.name" .) .Release.Namespace .Values.global.cluster.domain }}"
+        - name: MONGODB_ADVERTISED_HOSTNAME
+          value: "{{ printf "$(MY_POD_NAME).%s-headless.%s.svc.%s" (include "edusharing_repository_mongo.name" .) .Release.Namespace .Values.global.cluster.domain }}"
+        - name: MONGODB_ADVERTISED_PORT_NUMBER
+          value: "{{ .Values.service.port.api }}"
+        envFrom:
+        - configMapRef:
+            name: {{ include "edusharing_repository_mongo.name" . }}-env
+        - secretRef:
+            name: {{ include "edusharing_repository_mongo.name" . }}-env
+        ports:
+        - name: api
+          containerPort: 27017
+        {{- with .Values.startupProbe }}
+        startupProbe:
+          exec:
+            command:
+              - bash
+              - -ec
+              - |
+                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+          failureThreshold: {{ .failureThreshold }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+        {{- end }}
+        {{- with .Values.livenessProbe }}
+        livenessProbe:
+          exec:
+            command:
+              - mongo
+              - --disableImplicitSessions
+              - --eval
+              - "db.adminCommand('ping')"
+          failureThreshold: {{ .failureThreshold }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+        {{- end }}
+        {{- with .Values.readinessProbe }}
+        readinessProbe:
+          exec:
+            command:
+              - bash
+              - -ec
+              - |
+                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+          failureThreshold: {{ .failureThreshold }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          successThreshold: {{ .successThreshold }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+        {{- end }}
+        {{- with .Values.resources }}
+        resources: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.securityContext }}
+        securityContext: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+          - name: data
+            mountPath: /bitnami/mongodb
+          - name: file
+            mountPath: /scripts/setup.sh
+            subPath: setup.sh
+          {{- if .Values.config.override }}
+          - name: file
+            mountPath: /opt/bitnami/mongodb/conf/mongodb.conf
+            subPath: mongodb.conf
+          {{- end }}
+      {{- if .Values.sidecar.metrics.enabled }}
+      - name: {{ include "edusharing_repository_mongo.name" . }}-metrics
+        image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-mongo_exporter:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        command:
+          - /bin/bash
+          - -ec
+          - >-
+            /bin/mongodb_exporter
+            --discovering-mode
+            --mongodb.uri=mongodb://$(echo $MONGODB_USERNAME):$(echo $MONGODB_PASSWORD)@localhost:27017/admin
+            --web.listen-address=:9216
+            --web.telemetry-path=/metrics
+        envFrom:
+          - secretRef:
+              name: {{ include "edusharing_repository_mongo.name" . }}-env
+        ports:
+          - name: metrics
+            containerPort: 9216
+        {{- with .Values.sidecar.metrics.resources }}
+        resources: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.sidecar.metrics.securityContext }}
+        securityContext: {{ toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.global.image.pullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{ with .Values.terminationGracePeriod }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
+      {{- if or .Values.nodeAffinity .Values.podAntiAffinity }}
+      affinity:
+        {{- with .Values.nodeAffinity }}
+        nodeAffinity: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.podAntiAffinity }}
+        podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity "hard" }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 16 }}
+          {{- else if eq .Values.podAntiAffinity "soft" }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 18 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.global.image.pullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{ with .Values.terminationGracePeriod }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
+      {{- with .Values.nodeAffinity }}
+      affinity:
+        nodeAffinity: {{ toYaml . | nindent 10 }}
+      {{- end }}
+      volumes:
+      - name: file
+        configMap:
+          name: {{ include "edusharing_repository_mongo.name" . }}-file
+          defaultMode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 8 }}
+    spec: {{ merge .Values.persistence.data.spec .Values.global.cluster.storage.data.spec | toYaml | nindent 6 }}

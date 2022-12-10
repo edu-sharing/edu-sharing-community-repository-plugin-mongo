@@ -20,9 +20,15 @@
 
   <properties>
 
+    <docker.from.minideb>
+      dockerio.mirror.docker.edu-sharing.com/bitnami/bitnami-shell:11
+    </docker.from.minideb>
     <docker.from.mongo.db>
       dockerio.mirror.docker.edu-sharing.com/bitnami/mongodb:${mongodb.version}
     </docker.from.mongo.db>
+    <docker.from.mongo.exporter>
+      dockerio.mirror.docker.edu-sharing.com/bitnami/mongodb-exporter:0.30.0
+    </docker.from.mongo.exporter>
     <docker.from.mongo.express>
       dockerio.mirror.docker.edu-sharing.com/mongo-express:0.54.0
     </docker.from.mongo.express>
@@ -55,7 +61,7 @@
   <modules>
     <module>build</module>
     <module>compose</module>
-<!--    <module>helm</module>-->
+    <module>helm</module>
   </modules>
 
 </project>
