@@ -40,7 +40,9 @@
   </build>
 
   <modules>
+    <module>minideb</module>
     <module>mongo</module>
+    <module>mongo_exporter</module>
     <module>mongo_express</module>
     <module>service</module>
   </modules>
