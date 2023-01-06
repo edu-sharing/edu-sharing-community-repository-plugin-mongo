@@ -1,6 +1,7 @@
 #!/bin/bash
-set -eux
+set -eu
 
+########################################################################################################################
 
 debug_repository_plugin_mongo="${DEBUG_REPOSITORY_PLUGIN_MONGO:-}"
 

@@ -1,0 +1,189 @@
+########################################################################################################################
+# GLOBAL
+########################################################################################################################
+
+global:
+
+  cluster:
+
+    domain: cluster.local
+
+    istio:
+      enabled: false
+
+    storage:
+
+      data:
+        permission: false
+        spec: {}
+
+  debug: false
+
+  image:
+    pullPolicy: Always
+    pullSecrets: []
+    registry: ${docker.registry}
+    repository: ${docker.repository}
+
+  metrics:
+    scrape:
+      interval: 10s
+      timeout: 10s
+    servicemonitor:
+      enabled: false
+
+  password: ""
+
+########################################################################################################################
+# LOCAL
+########################################################################################################################
+
+nameOverride: edusharing-repository-transform
+
+image:
+  prefix: ${docker.prefix}
+  tag: ${docker.tag}
+
+########################################################################################################################
+
+replicaCount: 3
+
+########################################################################################################################
+
+service:
+
+  port:
+    api: 27017
+    metrics: 9216
+
+config:
+
+  database: repository
+  username: repository
+  password: ""
+
+  replicaSet:
+    key: "repository"
+
+  override: {}
+
+########################################################################################################################
+
+debug: false
+
+########################################################################################################################
+
+nodeAffinity: {}
+
+tolerations: []
+
+########################################################################################################################
+
+persistence:
+
+  data:
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+
+########################################################################################################################
+
+podAnnotations: {}
+
+podSecurityContext:
+
+  runAsUser: 1000
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+
+securityContext:
+
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+########################################################################################################################
+
+terminationGracePeriod: 120
+
+startupProbe:
+
+  failureThreshold: 30
+  initialDelaySeconds: 0
+  periodSeconds: 20
+  successThreshold: 1
+  timeoutSeconds: 10
+
+livenessProbe:
+
+  failureThreshold: 3
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+
+readinessProbe:
+
+  failureThreshold: 1
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10
+
+########################################################################################################################
+
+resources:
+
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 2Gi
+
+########################################################################################################################
+
+init:
+
+  permission:
+
+    resources:
+
+      limits:
+        cpu: 125m
+        memory: 512Mi
+      requests:
+        cpu: 125m
+        memory: 512Mi
+
+    securityContext:
+
+      runAsUser: 0
+
+########################################################################################################################
+
+sidecar:
+
+  metrics:
+
+    enabled: true
+
+    resources:
+
+      limits:
+        cpu: 125m
+        memory: 512Mi
+      requests:
+        cpu: 125m
+        memory: 512Mi
+
+    securityContext:
+
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+
+########################################################################################################################

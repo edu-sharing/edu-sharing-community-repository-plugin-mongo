@@ -1,0 +1,15 @@
+{{- if .Values.global.cluster.istio.enabled }}
+{{- if .Capabilities.APIVersions.Has "networking.istio.io/v1beta1" }}
+{{- range $i, $e := until (.Values.replicaCount | int) }}
+{{- $targetPod := (printf "%s-%d" (include "edusharing_repository_mongo.name" $) $i) }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ $targetPod }}
+  labels: {{ include "edusharing_repository_mongo.labels.app" $ | nindent 4 }}
+spec:
+  host: {{ $targetPod }}
+{{- end }}
+{{- end }}
+{{- end }}

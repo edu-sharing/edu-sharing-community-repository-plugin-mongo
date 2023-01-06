@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+
+  repository-mongo-primary:
+    restart: unless-stopped
+
+  repository-mongo-secondary:
+    restart: unless-stopped
+
+  repository-mongo-arbiter:
+    restart: unless-stopped

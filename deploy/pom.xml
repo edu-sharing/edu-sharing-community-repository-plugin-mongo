@@ -28,7 +28,7 @@
 
   <modules>
     <module>docker</module>
-    <module>installer</module>
+<!--    <module>installer</module>-->
   </modules>
 
 </project>
