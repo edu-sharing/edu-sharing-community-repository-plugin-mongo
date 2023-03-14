@@ -33,7 +33,7 @@
     <alfresco.sdk.version>3.1.0</alfresco.sdk.version>
 
     <!-- release-2 -->
-    <bom.repository.version>8.0.0-RC43</bom.repository.version>
+    <bom.repository.version>8.0.0-RC45</bom.repository.version>
 
     <mongodb.version.major>4</mongodb.version.major>
     <mongodb.version.minor>4</mongodb.version.minor>
