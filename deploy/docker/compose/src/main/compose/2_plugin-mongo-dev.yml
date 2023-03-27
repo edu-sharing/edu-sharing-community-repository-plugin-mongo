@@ -2,28 +2,6 @@ version: '3.7'
 
 services:
 
-  repository-mongo-express:
-    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo_express:${docker.tag}"
-    environment:
-      ME_CONFIG_MONGODB_SERVER: "repository-mongo-primary,repository-mongo-secondary"
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-      ME_CONFIG_MONGODB_AUTH_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      ME_CONFIG_MONGODB_AUTH_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-      ME_CONFIG_MONGODB_AUTH_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
-      #      ME_CONFIG_MONGODB_URL: "mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@repository-mongo:27017/"
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "${REPOSITORY_MONGO_ROOT_USER:-root}"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
-      ME_CONFIG_BASICAUTH_USERNAME: "${MONGO_EXPRESS_USER:-admin}"
-      ME_CONFIG_BASICAUTH_PASSWORD: "${MONGO_EXPRESS_PASS:-admin}"
-    expose:
-      - "8081"
-    ports:
-      - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_EXPRESS_PORT:-8501}:8081"
-    restart: on-failure
-    depends_on:
-      - repository-mongo-primary
-      - repository-mongo-secondary
-
   repository-service:
     volumes:
       - "${GIT_ROOT}/repository-mongo/Backend/alfresco/module/target/edu_sharing-community-repository-plugin-mongo-backend-alfresco-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-alfresco-module:amp.version}.amp:/opt/alfresco/amps/alfresco/1/edu_sharing-community-repository-plugin-mongo-backend-alfresco-module-${org.edu_sharing:edu_sharing-community-repository-plugin-mongo-backend-alfresco-module:amp.version}.amp"
