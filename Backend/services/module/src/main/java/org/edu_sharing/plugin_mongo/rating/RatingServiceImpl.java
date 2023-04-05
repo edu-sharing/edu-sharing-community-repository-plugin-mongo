@@ -4,7 +4,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.DeleteResult;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -16,6 +18,9 @@ import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.notification.NotificationService;
+import org.edu_sharing.service.notification.NotificationServiceFactoryUtility;
+import org.edu_sharing.service.notification.Status;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.rating.Rating;
@@ -39,6 +44,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     private final IntegrityService integrityService;
     private final MongoDatabase database;
     private final NodeService nodeService;
+    private final NotificationService notificationService;
 
     public RatingServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
 
@@ -68,6 +74,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         this.database = database.withCodecRegistry(pojoCodecRegistry);
         this.integrityService = integrityService;
         this.nodeService = nodeService;
+        this.notificationService = NotificationServiceFactoryUtility.getLocalService();
     }
 
     /**
@@ -106,6 +113,15 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         options.upsert(true);
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
+
+        HashMap<String, Object> nodeProps;
+        try {
+            nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+        } catch (Throwable e) {
+            nodeProps = new HashMap<>();
+        }
+        RatingDetails accumulatedRatings = getAccumulatedRatings(nodeId, null);
+        notificationService.notifyRatingChanged(nodeId, nodeProps, rating, accumulatedRatings, Status.ADDED);
     }
 
     /**
@@ -122,7 +138,18 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
-        ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+        Document rating = ratingCollection.findOneAndDelete(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+
+        if(rating != null) {
+            HashMap<String, Object> nodeProps;
+            try {
+                nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+            } catch (Throwable e) {
+                nodeProps = new HashMap<>();
+            }
+            RatingDetails accumulatedRatings = getAccumulatedRatings(nodeId, null);
+            notificationService.notifyRatingChanged(nodeId, nodeProps, rating.getDouble(RatingConstants.RATING_KEY), accumulatedRatings, Status.REMOVED);
+        }
     }
 
     /**
