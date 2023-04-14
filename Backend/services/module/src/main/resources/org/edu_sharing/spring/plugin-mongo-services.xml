@@ -135,6 +135,7 @@
         <constructor-arg name="database" ref="mongoDatabase"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
+        <constructor-arg name="serviceFactory" ref="notificationServiceFactory"/>
     </bean>
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">

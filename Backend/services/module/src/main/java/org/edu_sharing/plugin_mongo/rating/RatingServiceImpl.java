@@ -17,6 +17,7 @@ import org.edu_sharing.plugin_mongo.mongo.codec.NodeRefCodec;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.factory.ServiceFactory;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.notification.NotificationService;
 import org.edu_sharing.service.notification.NotificationServiceFactoryUtility;
@@ -46,7 +47,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     private final NodeService nodeService;
     private final NotificationService notificationService;
 
-    public RatingServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
+    public RatingServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService, ServiceFactory serviceFactory) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
@@ -74,7 +75,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         this.database = database.withCodecRegistry(pojoCodecRegistry);
         this.integrityService = integrityService;
         this.nodeService = nodeService;
-        this.notificationService = NotificationServiceFactoryUtility.getLocalService();
+        this.notificationService = serviceFactory.getLocalService();
     }
 
     /**
