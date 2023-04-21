@@ -28,4 +28,3 @@ services:
 
 volumes:
   repository-mongo-volume-data-primary:
-  repository-mongo-volume-data-secondary:
