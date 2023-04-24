@@ -38,7 +38,7 @@ global:
 # LOCAL
 ########################################################################################################################
 
-nameOverride: edusharing-repository-transform
+nameOverride: edusharing-repository-mongo
 
 image:
   prefix: ${docker.prefix}

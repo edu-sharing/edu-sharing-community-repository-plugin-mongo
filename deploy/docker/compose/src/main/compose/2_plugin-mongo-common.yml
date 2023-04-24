@@ -2,11 +2,11 @@ version: '3.7'
 
 services:
 
-  repository-mongo-primary:
+  repository-mongo:
     image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
     environment:
       ALLOW_EMPTY_PASSWORD: "false"
-      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-primary"
+      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo"
       MONGODB_REPLICA_SET_MODE: "primary"
       MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
       MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
@@ -19,44 +19,12 @@ services:
     volumes:
       - "repository-mongo-volume-data-primary:/bitnami/mongodb"
 
-  repository-mongo-secondary:
-    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
-    depends_on:
-      - repository-mongo-primary
-    environment:
-      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-secondary"
-      MONGODB_REPLICA_SET_MODE: "secondary"
-      MONGODB_INITIAL_PRIMARY_HOST: "repository-mongo-primary"
-      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
-      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
-      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
-    expose:
-      - "27017"
-    volumes:
-      - "repository-mongo-volume-data-secondary:/bitnami/mongodb"
-
-  repository-mongo-arbiter:
-    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
-    depends_on:
-      - repository-mongo-primary
-    environment:
-      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo-arbiter"
-      MONGODB_REPLICA_SET_MODE: "arbiter"
-      MONGODB_INITIAL_PRIMARY_HOST: "repository-mongo-primary"
-      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
-      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
-      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
-    expose:
-        - "27017"
-
   repository-service:
     environment:
       REPOSITORY_MONGO_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTION_STRING:-mongodb://repository:repository@repository-mongo-primary:27017,repository-mongo-secondary:27017/edu-sharing}"
+      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTION_STRING:-mongodb://repository:repository@repository-mongo:27017/edu-sharing}"
     depends_on:
-      - repository-mongo-primary
-      - repository-mongo-secondary
+      - repository-mongo
 
 volumes:
   repository-mongo-volume-data-primary:
-  repository-mongo-volume-data-secondary:

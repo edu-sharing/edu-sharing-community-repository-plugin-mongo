@@ -2,11 +2,5 @@ version: '3.7'
 
 services:
 
-  repository-mongo-primary:
-    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
-
-  repository-mongo-secondary:
-    image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
-
-  repository-mongo-arbiter:
+  repository-mongo:
     image: "${docker.registry}/${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
