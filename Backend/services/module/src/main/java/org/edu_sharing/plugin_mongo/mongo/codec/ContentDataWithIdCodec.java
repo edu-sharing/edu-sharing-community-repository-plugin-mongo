@@ -7,7 +7,9 @@ import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
     @Override
     public ContentDataWithId decode(BsonReader bsonReader, DecoderContext decoderContext) {
