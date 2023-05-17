@@ -8,13 +8,27 @@ import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.edu_sharing.plugin_mongo.mongo.MongoInvalidTypeException;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
 import java.util.Objects;
 
 @Component
 public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
+    private final CodecRegistry registry;
+    private final Codec<Locale> localeCodec;
+
+    /**
+     * Registry constructor.
+     *
+     * @param registry The CodecRegistry to use.
+     */
+    public ContentDataWithIdCodec(CodecRegistry registry) {
+        this.registry = registry;
+        this.localeCodec = this.registry.get(Locale.class);
+    }
     @Override
     public ContentDataWithId decode(BsonReader reader, DecoderContext decoderContext) {
         if (Objects.requireNonNull(reader.getCurrentBsonType()) == BsonType.DOCUMENT) {
@@ -45,10 +59,15 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
                         size = reader.readInt64();
                     }
                 }
+                else if(bsonType == BsonType.DOCUMENT) {
+                    if (name.equals("locale")) {
+                        this.localeCodec.decode(reader, decoderContext);
+                    }
+                }
             }
             return new ContentDataWithId(new ContentData(contentUrl, mimetype, size, encoding), null);
         }
-        throw new MongoInvalidTypeException(String.format("%s can not create ContentDataWithId from type %s", reader.getCurrentName(), reader.getCurrentBsonType()));
+        throw new MongoInvalidTypeException(String.format("%s can not create %s from type %s", reader.getCurrentName(), getClass().getName(), reader.getCurrentBsonType()));
     }
     @Override
     public void encode(BsonWriter bsonWriter, ContentDataWithId contentDataWithId, EncoderContext encoderContext) {

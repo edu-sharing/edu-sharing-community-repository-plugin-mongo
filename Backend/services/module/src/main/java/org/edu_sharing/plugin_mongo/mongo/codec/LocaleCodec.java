@@ -46,7 +46,7 @@ public class LocaleCodec implements Codec<Locale> {
             }
             return new Locale(language, country, variant);
         }
-        throw new MongoInvalidTypeException(String.format("%s can not create ContentDataWithId from type %s", reader.getCurrentName(), reader.getCurrentBsonType()));
+        throw new MongoInvalidTypeException(String.format("%s can not create %s from type %s", reader.getCurrentName(), getClass().getName(), reader.getCurrentBsonType()));
     }
     @Override
     public void encode(BsonWriter bsonWriter, Locale locale, EncoderContext encoderContext) {
