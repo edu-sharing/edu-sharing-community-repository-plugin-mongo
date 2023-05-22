@@ -4,7 +4,6 @@ import lombok.*;
 import org.edu_sharing.plugin_mongo.domain.metadata.RangedValue;
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RangedValueSuggestionData extends SuggestionData<RangedValue> {
 
