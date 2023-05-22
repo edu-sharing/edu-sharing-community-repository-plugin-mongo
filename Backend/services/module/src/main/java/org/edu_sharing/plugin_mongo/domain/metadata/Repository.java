@@ -6,9 +6,9 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Repository extends RangedValue {
     String type;
