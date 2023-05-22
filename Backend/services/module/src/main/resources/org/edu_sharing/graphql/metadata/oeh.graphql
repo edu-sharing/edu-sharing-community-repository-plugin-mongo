@@ -1,0 +1,13 @@
+type Oeh {
+    unmetLegalCriteria: [RangedValue]
+    sourceContentType: RangedValue
+    toolCategory: RangedValue
+    conditionsOfAccess: RangedValue
+    containsAdvertisement: RangedValue
+    price: RangedValue
+    accessibilitySummary: [RangedValue]
+    dataProtectionConformity: [RangedValue]
+    fskRating: RangedValue
+    licenseOer: RangedValue
+    generalIdentifier: String
+}

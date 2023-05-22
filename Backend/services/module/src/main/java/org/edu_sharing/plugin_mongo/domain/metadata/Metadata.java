@@ -38,6 +38,7 @@ public class Metadata {
     ImportedObject importedObject;
     Association association;
     Lom lom;
+    Oeh oeh;
     Map<String, Object> alfMap;
 }
 

@@ -55,6 +55,8 @@ class MappingTest {
                 Arguments.of("workflow2AlfMappingTest", null, null),
                 Arguments.of("alf2ImportedObjectMappingTest", null, null),
                 Arguments.of("importedObject2AlfMappingTest", null, null),
+                Arguments.of("alf2OehMappingTest", null, null),
+                Arguments.of("oeh2AlfMappingTest", null, null),
 
                 Arguments.of("alf2ReferenceMappingTest",
                         (Consumer<Map>) o -> o.put("{http://www.campuscontent.de/model/1.0}collection_proposal_target", new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "29a6417a-c2d5-42bd-846f-0c4274832464")),

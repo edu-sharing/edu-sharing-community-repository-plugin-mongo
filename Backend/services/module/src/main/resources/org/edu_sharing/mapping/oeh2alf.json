@@ -1,0 +1,45 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+
+      "unmetLegalCriteria": {
+        "*": {
+          "value": "{http://www\\.campuscontent\\.de/model/1\\.0}unmetLegalCriteria[]"
+        }
+      },
+      "sourceContentType": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}sourceContentType"
+      },
+      "toolCategory": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}toolCategory"
+      },
+      "conditionsOfAccess": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}conditionsOfAccess"
+      },
+      "containsAdvertisement": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}containsAdvertisement"
+      },
+      "price": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}price"
+      },
+      "accessibilitySummary": {
+        "*": {
+          "value": "{http://www\\.campuscontent\\.de/model/1\\.0}accessibilitySummary[]"
+        }
+      },
+      "dataProtectionConformity": {
+        "*": {
+          "value": "{http://www\\.campuscontent\\.de/model/1\\.0}dataProtectionConformity[]"
+        }
+      },
+      "fskRating": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}fskRating"
+      },
+      "licenseOer": {
+        "value": "{http://www\\.campuscontent\\.de/model/1\\.0}license_oer"
+      },
+      "generalIdentifier": "{http://www\\.campuscontent\\.de/model/1\\.0}general_identifier"
+    }
+  }
+]
