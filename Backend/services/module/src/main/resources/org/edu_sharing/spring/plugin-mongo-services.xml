@@ -111,6 +111,12 @@
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="oeh"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2oeh.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/oeh2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="lom"/>
                     <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2lom.json"/>
                     <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/lom2alf.json"/>
