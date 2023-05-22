@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.mongo.codec;
 
+import lombok.RequiredArgsConstructor;
 import org.alfresco.repo.domain.node.ContentDataWithId;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.bson.BsonReader;
@@ -10,6 +11,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.edu_sharing.plugin_mongo.mongo.MongoInvalidTypeException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
@@ -25,6 +27,7 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
      *
      * @param registry The CodecRegistry to use.
      */
+    @Autowired
     public ContentDataWithIdCodec(CodecRegistry registry) {
         this.registry = registry;
         this.localeCodec = this.registry.get(Locale.class);

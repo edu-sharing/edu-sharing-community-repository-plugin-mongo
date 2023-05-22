@@ -1,17 +1,14 @@
 package org.edu_sharing.plugin_mongo.mongo.codec;
 
-import org.alfresco.repo.domain.node.ContentDataWithId;
-import org.alfresco.service.cmr.repository.ContentData;
 import org.bson.BsonReader;
-import org.bson.BsonWriter;
 import org.bson.BsonType;
+import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.edu_sharing.plugin_mongo.mongo.MongoInvalidTypeException;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -22,7 +19,6 @@ public class LocaleCodec implements Codec<Locale> {
         if (Objects.requireNonNull(reader.getCurrentBsonType()) == BsonType.DOCUMENT) {
             reader.readStartDocument();
             String language = "", country = "", variant = "";
-            long size = 0;
             while (true) {
                 BsonType bsonType = reader.readBsonType();
                 if (bsonType == BsonType.END_OF_DOCUMENT) {
