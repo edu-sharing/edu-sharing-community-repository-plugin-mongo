@@ -20,6 +20,7 @@ type Replication implements Remote {
 
 type Repository {
     id: String!
+    value: String!
     type: String
     origin: String
 }

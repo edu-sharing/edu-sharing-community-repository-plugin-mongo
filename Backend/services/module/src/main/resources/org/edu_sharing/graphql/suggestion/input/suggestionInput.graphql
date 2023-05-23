@@ -3,4 +3,5 @@ input SuggestionInput {
     id: String!
     type: SuggestionType!
     lom: LomSuggestionInput!
+    oeh: OehSuggestionInput!
 }

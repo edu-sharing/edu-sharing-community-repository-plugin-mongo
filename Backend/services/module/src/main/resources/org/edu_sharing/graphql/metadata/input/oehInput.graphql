@@ -1,0 +1,13 @@
+input Oeh {
+    unmetLegalCriteria: [RangedValueInput]
+    sourceContentType: RangedValueInput
+    toolCategory: RangedValueInput
+    conditionsOfAccess: RangedValueInput
+    containsAdvertisement: RangedValueInput
+    price: RangedValueInput
+    accessibilitySummary: [RangedValueInput]
+    dataProtectionConformity: [RangedValueInput]
+    fskRating: RangedValueInput
+    licenseOer: RangedValueInput
+    generalIdentifier: String
+}

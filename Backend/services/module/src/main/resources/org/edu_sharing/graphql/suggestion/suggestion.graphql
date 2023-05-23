@@ -4,4 +4,5 @@ type Suggestion {
     type: SuggestionType!
     date: Date!
     lom: LomSuggestion!
+    oeh: OehSuggestion!
 }

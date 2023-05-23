@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Data
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 public class Suggestion {
   @NonNull String nodeId;
   @NonNull String id;
@@ -16,13 +16,15 @@ public class Suggestion {
 
   @NonNull SuggestionType type;
   LomSuggestion lom;
+  OehSuggestion oeh;
 
   public Suggestion(
       @NonNull String nodeId,
       @NonNull String id,
       @NonNull Date date,
       @NonNull SuggestionType type,
-      LomSuggestion lom) {
+      LomSuggestion lom,
+      OehSuggestion oeh) {
 
     if (StringUtils.isBlank(nodeId)) {
       throw new IllegalArgumentException("nodeId");
@@ -37,5 +39,6 @@ public class Suggestion {
     this.date = date;
     this.type = type;
     this.lom = lom;
+    this.oeh = oeh;
   }
 }

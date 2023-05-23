@@ -1,0 +1,75 @@
+{
+  "mapping" : "org/edu_sharing/mapping/alf2oeh.json",
+
+  "input": {
+    // General
+    "{http://www.campuscontent.de/model/1.0}unmetLegalCriteria" : [
+      "criminal_law",
+      "protection_of_minors",
+      "personality_right",
+      "copyright_law",
+      "data_privacy"
+    ],
+    "{http://www.campuscontent.de/model/1.0}sourceContentType" : "some-database",
+    "{http://www.campuscontent.de/model/1.0}toolCategory" : "Blog",
+    "{http://www.campuscontent.de/model/1.0}conditionsOfAccess" : "no login",
+    "{http://www.campuscontent.de/model/1.0}containsAdvertisement" : "No",
+    "{http://www.campuscontent.de/model/1.0}price" : "Yes",
+    "{http://www.campuscontent.de/model/1.0}accessibilitySummary" : [
+      "not_tested",
+      "A (lowest)",
+      "BITV 2.0 (2019)",
+      "WCAG"
+    ],
+    "{http://www.campuscontent.de/model/1.0}dataProtectionConformity" : [
+      "Sensible data collection",
+      "Not GDPR checked"
+    ],
+    "{http://www.campuscontent.de/model/1.0}fskRating" : "fsk0",
+    "{http://www.campuscontent.de/model/1.0}license_oer" : "partly OER",
+    "{http://www.campuscontent.de/model/1.0}general_identifier" : "some-identifier-id"
+  },
+
+  "expected" : {
+    "unmetLegalCriteria": [
+      { "value": "criminal_law" },
+      { "value": "protection_of_minors" },
+      { "value": "personality_right" },
+      { "value": "copyright_law" },
+      { "value": "data_privacy" }
+    ],
+    "sourceContentType": {
+      "value": "some-database"
+    },
+    "toolCategory": {
+      "value": "Blog"
+    },
+    "conditionsOfAccess": {
+      "value": "no login"
+    },
+    "containsAdvertisement": {
+      "value": "No"
+    },
+    "price": {
+      "value": "Yes"
+    },
+    "accessibilitySummary": [
+      { "value": "not_tested" },
+      { "value": "A (lowest)" },
+      { "value": "BITV 2.0 (2019)" },
+      { "value": "WCAG" }
+    ],
+    "dataProtectionConformity": [
+      { "value": "Sensible data collection" },
+      { "value": "Not GDPR checked" }
+    ],
+
+    "fskRating": {
+      "value": "fsk0"
+    },
+    "licenseOer": {
+      "value": "partly OER"
+    },
+    "generalIdentifier":"some-identifier-id"
+  }
+}
