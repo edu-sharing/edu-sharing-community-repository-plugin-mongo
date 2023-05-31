@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class StringSuggestionData extends SuggestionData<String> {
     public StringSuggestionData(String value) {
         super(value);
