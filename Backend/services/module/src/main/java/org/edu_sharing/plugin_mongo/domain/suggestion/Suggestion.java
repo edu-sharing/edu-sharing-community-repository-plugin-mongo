@@ -1,13 +1,14 @@
 package org.edu_sharing.plugin_mongo.domain.suggestion;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.edu_sharing.plugin_mongo.domain.suggestion.lom.LomSuggestion;
 
 import java.util.Date;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor(force = true)
 public class Suggestion {
   @NonNull String nodeId;

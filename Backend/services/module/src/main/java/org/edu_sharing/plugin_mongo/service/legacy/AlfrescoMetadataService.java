@@ -36,6 +36,8 @@ public class AlfrescoMetadataService {
 
     private final AlfrescoMappingService mappingService;
     private final  CodecRegistry codecRegistry;
+    private final MetadataClassProvider metadataSerialisationClassProvider;
+
 
     public Metadata getMetadata(String nodeId, String version) {
 
@@ -72,7 +74,7 @@ public class AlfrescoMetadataService {
         document.put(ASPECTS_KEY, aspects.stream().map(QName::toString).collect(Collectors.toList()));
         mappingService.setProperties(document, properties);
 
-        return MongoSerializationUtil.toObject(document, codecRegistry, Metadata.class);
+        return MongoSerializationUtil.toObject(document, codecRegistry, metadataSerialisationClassProvider.metadataClass());
     }
 
 
