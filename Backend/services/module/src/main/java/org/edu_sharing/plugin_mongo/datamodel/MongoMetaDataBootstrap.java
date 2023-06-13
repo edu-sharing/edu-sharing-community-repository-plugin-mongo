@@ -15,6 +15,13 @@ public class MongoMetaDataBootstrap {
     @Setter
     private List<MongoModelInfo> modelInfos = new ArrayList<>();
 
+
+    //The list of custom models to bootsrap with
+    //This is mainly used to support CustomData transformations defined in deploy projects
+    @Getter
+    @Setter
+    private List<MongoModelInfo> customModelInfos = new ArrayList<>();
+
     @Setter
     private MongoModelDictionary modelDictionary;
 
@@ -31,6 +38,13 @@ public class MongoMetaDataBootstrap {
         }
 
         for (MongoModelInfo modelInfo : modelInfos) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Loading model: " + modelInfo.getName() + " (from " + modelInfo + ")");
+            }
+            modelDictionary.putModel(modelInfo);
+        }
+
+        for (MongoModelInfo modelInfo : customModelInfos) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Loading model: " + modelInfo.getName() + " (from " + modelInfo + ")");
             }

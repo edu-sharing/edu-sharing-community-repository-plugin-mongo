@@ -17,7 +17,7 @@
     </bean>
 
     <!-- model config -->
-    <bean id="mongoMappingBootstrap" parent="mongoMetaDataBootstrap">
+    <bean id="mongoMappingBootstrap" parent="mongoMetaDataBootstrap" abstract="true">
         <property name="modelInfos">
             <list>
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
@@ -137,6 +137,10 @@
         </property>
     </bean>
 
+    <!-- dummy definition which should be overwritten when custom data are used -->
+    <bean id="customMongoMappingBootstrap" parent="mongoMappingBootstrap">
+    </bean>
+
     <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
         <constructor-arg name="database" ref="mongoDatabase"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
@@ -148,4 +152,7 @@
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
+
+    <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>
+    <bean id="suggestionClassProvider" class="org.edu_sharing.plugin_mongo.repository.DefaultSuggestionClassProvider"/>
 </beans>

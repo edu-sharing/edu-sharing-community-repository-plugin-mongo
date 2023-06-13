@@ -4,7 +4,7 @@ import lombok.*;
 import org.edu_sharing.plugin_mongo.domain.metadata.lom.Dimension;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class DimensionSuggestionData extends SuggestionData<Dimension> {
 
   public DimensionSuggestionData(Dimension value) {

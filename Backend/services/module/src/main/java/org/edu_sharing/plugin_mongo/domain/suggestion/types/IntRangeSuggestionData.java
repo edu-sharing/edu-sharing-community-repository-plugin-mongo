@@ -5,7 +5,7 @@ import lombok.*;
 import org.edu_sharing.plugin_mongo.domain.metadata.lom.IntRange;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class IntRangeSuggestionData extends SuggestionData<IntRange> {
 
     public IntRangeSuggestionData(IntRange value) {
