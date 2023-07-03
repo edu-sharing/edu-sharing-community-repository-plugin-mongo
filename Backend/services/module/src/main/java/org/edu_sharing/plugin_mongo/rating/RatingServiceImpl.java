@@ -91,7 +91,8 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
 
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
-        if(!Objects.equals(nodeService.getType(nodeId), CCConstants.CCM_TYPE_IO)) {
+        String nodeType = nodeService.getType(nodeId);
+        if(!Objects.equals(nodeType, CCConstants.CCM_TYPE_IO)) {
             throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
         }
 
@@ -115,14 +116,17 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
 
+        List<String> aspects;
         HashMap<String, Object> nodeProps;
         try {
+            aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));
             nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
         } catch (Throwable e) {
+            aspects = new ArrayList<>();
             nodeProps = new HashMap<>();
         }
         RatingDetails accumulatedRatings = getAccumulatedRatings(nodeId, null);
-        notificationService.notifyRatingChanged(nodeId, nodeProps, rating, accumulatedRatings, Status.ADDED);
+        notificationService.notifyRatingChanged(nodeId, nodeType, aspects, nodeProps, rating, accumulatedRatings, Status.ADDED);
     }
 
     /**
@@ -142,14 +146,19 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         Document rating = ratingCollection.findOneAndDelete(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
 
         if(rating != null) {
+            String nodeType = null;
+            List<String> aspects;
             HashMap<String, Object> nodeProps;
             try {
+                nodeType = nodeService.getType(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+                aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));
                 nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
             } catch (Throwable e) {
+                aspects = new ArrayList<>();
                 nodeProps = new HashMap<>();
             }
             RatingDetails accumulatedRatings = getAccumulatedRatings(nodeId, null);
-            notificationService.notifyRatingChanged(nodeId, nodeProps, rating.getDouble(RatingConstants.RATING_KEY), accumulatedRatings, Status.REMOVED);
+            notificationService.notifyRatingChanged(nodeId, nodeType, aspects, nodeProps, rating.getDouble(RatingConstants.RATING_KEY), accumulatedRatings, Status.REMOVED);
         }
     }
 

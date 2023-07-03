@@ -127,6 +127,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.eq(rating),
                 ArgumentMatchers.any(),
@@ -169,6 +171,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.eq(rating),
                 ArgumentMatchers.any(),
@@ -206,6 +210,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.never()).notifyRatingChanged(
                 ArgumentMatchers.any(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.any(),
@@ -237,6 +243,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.eq(4d),
                 ArgumentMatchers.any(),
