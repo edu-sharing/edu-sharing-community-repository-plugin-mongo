@@ -7,7 +7,7 @@ import org.edu_sharing.plugin_mongo.domain.metadata.lom.Format;
 import java.util.List;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class FormatSuggestionData extends SuggestionData<Format> {
 
     public FormatSuggestionData(Format value) {

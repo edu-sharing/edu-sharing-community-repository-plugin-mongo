@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class DateSuggestionData extends SuggestionData<Date> {
 
     public DateSuggestionData(Date value) {

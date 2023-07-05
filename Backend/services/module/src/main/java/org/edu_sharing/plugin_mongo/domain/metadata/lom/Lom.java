@@ -15,6 +15,6 @@ public class Lom {
     Technical technical;
     List<Educational> educational;
     Rights rights;
-    List<Classification> classification;
+    Classification classification;
     List<Editorial> editorial;
 }

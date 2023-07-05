@@ -4,6 +4,8 @@
 
 global:
 
+  annotations: {}
+
   cluster:
 
     domain: cluster.local
@@ -33,6 +35,8 @@ global:
       enabled: false
 
   password: ""
+
+  security: {}
 
 ########################################################################################################################
 # LOCAL

@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.Locale;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class LocaleSuggestionData extends SuggestionData<Locale> {
 
     public LocaleSuggestionData(Locale value) {
