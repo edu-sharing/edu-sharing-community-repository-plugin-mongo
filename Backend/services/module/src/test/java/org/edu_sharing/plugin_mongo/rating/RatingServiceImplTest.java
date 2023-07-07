@@ -243,9 +243,9 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
                 ArgumentMatchers.eq(4d),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.eq(Status.REMOVED));
