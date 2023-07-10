@@ -19,19 +19,13 @@ import java.util.Objects;
 
 @Component
 public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
-    private final CodecRegistry registry;
     private final Codec<Locale> localeCodec;
 
-    /**
-     * Registry constructor.
-     *
-     * @param registry The CodecRegistry to use.
-     */
     @Autowired
-    public ContentDataWithIdCodec(CodecRegistry registry) {
-        this.registry = registry;
-        this.localeCodec = this.registry.get(Locale.class);
+    public ContentDataWithIdCodec(LocaleCodec localeCodec) {
+        this.localeCodec = localeCodec;
     }
+
     @Override
     public ContentDataWithId decode(BsonReader reader, DecoderContext decoderContext) {
         if (Objects.requireNonNull(reader.getCurrentBsonType()) == BsonType.DOCUMENT) {
