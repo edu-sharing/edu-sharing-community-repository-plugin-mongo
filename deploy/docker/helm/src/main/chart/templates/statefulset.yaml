@@ -138,6 +138,7 @@ spec:
           - >-
             /bin/mongodb_exporter
             --discovering-mode
+            --compatible-mode
             --mongodb.uri=mongodb://$(echo $MONGODB_USERNAME):$(echo $MONGODB_PASSWORD)@localhost:27017/admin
             --web.listen-address=:9216
             --web.telemetry-path=/metrics
