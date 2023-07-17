@@ -172,16 +172,16 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     /**
      * Get the accumulated ratings data
      *
-     * @param nodeId --- the uuid of the node of the related ratings
+     * @param nodeRef --- the edu-sharing nodeRef of the node of the related ratings
      * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times
      * @return An accumulated RatingDetails of the desired node
      */
     @Override
     @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_READ})
-    public RatingDetails getAccumulatedRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
-        Objects.requireNonNull(nodeId, "nodeId must not be null");
+    public RatingDetails getAccumulatedRatings(@NotNull @NodePermission(CCConstants.PERMISSION_RATE_READ) org.edu_sharing.service.model.NodeRef nodeRef, @Nullable Date after) {
+        Objects.requireNonNull(nodeRef, "nodeRef must not be null");
 
-        nodeId = nodeService.getOriginalNode(nodeId).getId();
+        String nodeId = nodeService.getOriginalNode(nodeRef.getNodeId()).getId();
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
         if (after != null) {
@@ -237,9 +237,9 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     }
 
     @Override
-    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after) {
-        Objects.requireNonNull(nodeId, "nodeId must not be null");
-        NodeRef node = nodeService.getOriginalNode(nodeId);
+    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull @NodePermission(CCConstants.PERMISSION_RATE_READ) org.edu_sharing.service.model.NodeRef nodeRef, @Nullable Date after) {
+        Objects.requireNonNull(nodeRef, "nodeId must not be null");
+        NodeRef node = nodeService.getOriginalNode(nodeRef.getNodeId());
 
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, node.getId());
