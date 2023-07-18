@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
@@ -253,7 +254,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
-        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(new NodeRefImpl(nodeId), null);
 
         // then
         List<Document> expected = new ArrayList<>();
@@ -292,7 +293,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
 
         // when
-        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(new NodeRefImpl(nodeId), null);
 
         // then
         List<Document> expected = new ArrayList<>();
@@ -330,7 +331,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
-        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, null);
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(new NodeRefImpl(nodeId), null);
 
         // then
         List<Document> expected = new ArrayList<>();
@@ -356,7 +357,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
-        RatingDetails ratingDetails = underTest.getAccumulatedRatings(nodeId, after);
+        RatingDetails ratingDetails = underTest.getAccumulatedRatings(new NodeRefImpl(nodeId), after);
 
         // then
         List<Document> expected = new ArrayList<>();
@@ -460,7 +461,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
-        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, null);
+        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(new NodeRefImpl(nodeId), null);
 
         // then
         List<Document> expectedDocuments = new ArrayList<>();
@@ -504,7 +505,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
 
         // when
-        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(nodeId, after);
+        List<RatingHistory> ratingHistories = underTest.getAccumulatedRatingHistory(new NodeRefImpl(nodeId), after);
 
         // then
         List<Document> expectedDocuments = new ArrayList<>();
