@@ -70,3 +70,19 @@ input BooleanSuggestionDataInput {
     version: [String!]!
     info: SuggestionInfoInput!
 }
+
+input FloatSuggestionDataInput {
+    value: Float!
+    description: String
+    confidence: Float
+    version: [String!]!
+    info: SuggestionInfoInput!
+}
+
+input IntSuggestionDataInput {
+    value: Int!
+    description: String
+    confidence: Float
+    version: [String!]!
+    info: SuggestionInfoInput!
+}

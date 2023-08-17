@@ -78,3 +78,19 @@ type BooleanSuggestionData implements SuggestionDataInterface {
     version: [String!]
     info: SuggestionInfo!
 }
+
+type FloatSuggestionData implements SuggestionDataInterface {
+    value: Float!
+    description: String
+    confidence: Float
+    version: [String!]
+    info: SuggestionInfo!
+}
+
+type IntSuggestionData implements SuggestionDataInterface {
+    value: Int!
+    description: String
+    confidence: Float
+    version: [String!]
+    info: SuggestionInfo!
+}
