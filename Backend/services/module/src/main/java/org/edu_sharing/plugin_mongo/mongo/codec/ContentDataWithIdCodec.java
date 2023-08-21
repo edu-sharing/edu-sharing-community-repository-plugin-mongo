@@ -31,7 +31,7 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
         if (Objects.requireNonNull(reader.getCurrentBsonType()) == BsonType.DOCUMENT) {
             reader.readStartDocument();
             String contentUrl = "", mimetype = "", encoding = "";
-            long size = 0;
+            long size = 0, id = 0;
             while (true) {
                 BsonType bsonType = reader.readBsonType();
                 if (bsonType == BsonType.END_OF_DOCUMENT) {
@@ -54,7 +54,9 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
                 } else if(bsonType == BsonType.INT64) {
                      if (name.equals("size")) {
                         size = reader.readInt64();
-                    }
+                    } else if(name.equals("id")) {
+                         id = reader.readInt64();
+                     }
                 }
                 else if(bsonType == BsonType.DOCUMENT) {
                     if (name.equals("locale")) {
@@ -62,7 +64,7 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
                     }
                 }
             }
-            return new ContentDataWithId(new ContentData(contentUrl, mimetype, size, encoding), null);
+            return new ContentDataWithId(new ContentData(contentUrl, mimetype, size, encoding), id);
         }
         throw new MongoInvalidTypeException(String.format("%s can not create %s from type %s", reader.getCurrentName(), getClass().getName(), reader.getCurrentBsonType()));
     }
