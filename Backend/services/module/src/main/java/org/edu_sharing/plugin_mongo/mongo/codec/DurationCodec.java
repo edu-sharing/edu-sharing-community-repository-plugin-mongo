@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +26,11 @@ public class DurationCodec implements Codec<Duration> {
     public Duration decode(BsonReader bsonReader, DecoderContext decoderContext) {
         String durationString = bsonReader.readString();
         if(durationString != null) {
-            return Duration.parse(durationString);
+            try {
+                return Duration.parse(durationString);
+            } catch(DateTimeParseException e) {
+                return Duration.ofMillis(Long.parseLong(durationString));
+            }
         }
         return null;
     }
