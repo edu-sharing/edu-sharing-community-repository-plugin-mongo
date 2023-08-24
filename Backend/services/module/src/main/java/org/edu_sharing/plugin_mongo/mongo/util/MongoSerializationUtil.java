@@ -40,7 +40,7 @@ public final class MongoSerializationUtil {
      * @return an Object of type T
      */
     public static <T> T toObject(@NotNull @NonNull Bson document, @NotNull @NonNull CodecRegistry codecRegistry, @NotNull @NonNull Class<T> clazz) {
-        return toObject(document.toBsonDocument(), codecRegistry, clazz);
+        return toObject(document.toBsonDocument(document.getClass(), codecRegistry), codecRegistry, clazz);
     }
 
     /**

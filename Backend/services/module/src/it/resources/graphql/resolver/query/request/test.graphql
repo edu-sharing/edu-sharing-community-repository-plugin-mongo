@@ -1,5 +1,0 @@
-query {
-    metadata(id: "13213") {
-        id
-    }
-}

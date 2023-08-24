@@ -68,8 +68,15 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
     }
     @Override
     public void encode(BsonWriter bsonWriter, ContentDataWithId contentDataWithId, EncoderContext encoderContext) {
-        // @TODO
-        // bsonWriter.writeString(contentDataWithId.toString());
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("contentUrl", contentDataWithId.getContentUrl());
+        bsonWriter.writeString("mimetype", contentDataWithId.getMimetype());
+        bsonWriter.writeString("encoding", contentDataWithId.getEncoding());
+        bsonWriter.writeString("contentUrl", contentDataWithId.getContentUrl());
+        bsonWriter.writeInt64("size", contentDataWithId.getSize());
+        bsonWriter.writeName("locale");
+        this.localeCodec.encode(bsonWriter, contentDataWithId.getLocale(), encoderContext);
+        bsonWriter.writeEndDocument();
     }
 
     @Override
