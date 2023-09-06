@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.mongo.codec;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;
@@ -46,7 +47,17 @@ public class LocaleCodec implements Codec<Locale> {
     }
     @Override
     public void encode(BsonWriter bsonWriter, Locale locale, EncoderContext encoderContext) {
-        // @TODO
+        bsonWriter.writeStartDocument();
+        if(StringUtils.isNotBlank(locale.getLanguage())) {
+            bsonWriter.writeString("language", locale.getLanguage());
+        }
+        if(StringUtils.isNotBlank(locale.getCountry())) {
+            bsonWriter.writeString("country", locale.getCountry());
+        }
+        if(StringUtils.isNotBlank(locale.getVariant())) {
+            bsonWriter.writeString("variant", locale.getVariant());
+        }
+        bsonWriter.writeEndDocument();
     }
 
     @Override
