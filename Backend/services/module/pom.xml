@@ -71,31 +71,9 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-test-source</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/it/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
     </plugins>
-
     <testResources>
-      <testResource>
-        <directory>src/it/resources</directory>
-      </testResource>
       <testResource>
         <directory>src/test/resources</directory>
       </testResource>
@@ -275,15 +253,7 @@
 
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
       <scope>test</scope>
     </dependency>
 
@@ -320,20 +290,6 @@
       </exclusions>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

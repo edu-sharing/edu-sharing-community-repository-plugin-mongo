@@ -17,7 +17,7 @@
     </bean>
 
     <!-- model config -->
-    <bean id="mongoMappingBootstrap" parent="mongoMetaDataBootstrap">
+    <bean id="mongoMappingBootstrap" parent="mongoMetaDataBootstrap" abstract="true">
         <property name="modelInfos">
             <list>
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
@@ -111,6 +111,12 @@
                 </bean>
 
                 <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
+                    <constructor-arg name="name" value="oeh"/>
+                    <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2oeh.json"/>
+                    <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/oeh2alf.json"/>
+                </bean>
+
+                <bean class="org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo">
                     <constructor-arg name="name" value="lom"/>
                     <constructor-arg name="alf2mongo" value="org/edu_sharing/mapping/alf2lom.json"/>
                     <constructor-arg name="mongo2alf" value="org/edu_sharing/mapping/lom2alf.json"/>
@@ -131,10 +137,15 @@
         </property>
     </bean>
 
+    <!-- dummy definition which should be overwritten when custom data are used -->
+    <bean id="customMongoMappingBootstrap" parent="mongoMappingBootstrap">
+    </bean>
+
     <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
         <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
+        <constructor-arg name="serviceFactory" ref="notificationServiceFactory"/>
     </bean>
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
@@ -142,4 +153,7 @@
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
+
+    <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>
+    <bean id="suggestionClassProvider" class="org.edu_sharing.plugin_mongo.repository.DefaultSuggestionClassProvider"/>
 </beans>

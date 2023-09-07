@@ -36,6 +36,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
 
     @NonNull MongoDatabaseFactory mongoDatabaseFactory; // can't use final because of proxying by CGLib
 
+    @NonNull SuggestionClassProvider suggestionClassProvider;
     // will be called by IndexCreationAutomation aspect
     @Initialize
     public void createIndices() {
@@ -48,7 +49,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public List<Suggestion> getSuggestions(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId) {
-        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, Suggestion.class)
+        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
                 .find(Filters.eq(NODE_ID, nodeId))
                 .into(new ArrayList<>());
     }
@@ -56,7 +57,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public Map<String, List<Suggestion>> getSuggestions(@NodePermission(CCConstants.PERMISSION_WRITE) Collection<String> nodeIds) {
-        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, Suggestion.class)
+        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
                 .find(Filters.in(NODE_ID, nodeIds))
                 .into(new ArrayList<>())
                 .stream()

@@ -4,11 +4,16 @@
 
 global:
 
+  annotations: {}
+
   cluster:
 
     domain: cluster.local
 
     istio:
+      enabled: false
+
+    pdb:
       enabled: false
 
     storage:
@@ -34,11 +39,13 @@ global:
 
   password: ""
 
+  security: {}
+
 ########################################################################################################################
 # LOCAL
 ########################################################################################################################
 
-nameOverride: edusharing-repository-transform
+nameOverride: edusharing-repository-mongo
 
 image:
   prefix: ${docker.prefix}
@@ -94,7 +101,6 @@ podAnnotations: {}
 
 podSecurityContext:
 
-  runAsUser: 1000
   fsGroup: 1000
   fsGroupChangePolicy: OnRootMismatch
 
@@ -104,6 +110,7 @@ securityContext:
   capabilities:
     drop:
     - ALL
+  runAsUser: 1000
 
 ########################################################################################################################
 
@@ -170,6 +177,8 @@ sidecar:
 
     enabled: true
 
+    relabelings: []
+
     resources:
 
       limits:
@@ -185,5 +194,6 @@ sidecar:
       capabilities:
         drop:
           - ALL
+      runAsUser: 1000
 
 ########################################################################################################################

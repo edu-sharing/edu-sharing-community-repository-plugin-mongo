@@ -1,14 +1,15 @@
 package org.edu_sharing.plugin_mongo.domain.suggestion;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.edu_sharing.plugin_mongo.domain.suggestion.lom.LomSuggestion;
 
 import java.util.Date;
 
 @Data
-@Builder
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(force = true)
 public class Suggestion {
   @NonNull String nodeId;
   @NonNull String id;
@@ -16,13 +17,15 @@ public class Suggestion {
 
   @NonNull SuggestionType type;
   LomSuggestion lom;
+  OehSuggestion oeh;
 
   public Suggestion(
       @NonNull String nodeId,
       @NonNull String id,
       @NonNull Date date,
       @NonNull SuggestionType type,
-      LomSuggestion lom) {
+      LomSuggestion lom,
+      OehSuggestion oeh) {
 
     if (StringUtils.isBlank(nodeId)) {
       throw new IllegalArgumentException("nodeId");
@@ -37,5 +40,6 @@ public class Suggestion {
     this.date = date;
     this.type = type;
     this.lom = lom;
+    this.oeh = oeh;
   }
 }

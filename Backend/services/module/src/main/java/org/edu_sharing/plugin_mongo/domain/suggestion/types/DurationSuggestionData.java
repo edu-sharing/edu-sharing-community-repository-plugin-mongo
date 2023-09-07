@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.Duration;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class DurationSuggestionData extends SuggestionData<Duration> {
 
   public DurationSuggestionData(Duration value) {

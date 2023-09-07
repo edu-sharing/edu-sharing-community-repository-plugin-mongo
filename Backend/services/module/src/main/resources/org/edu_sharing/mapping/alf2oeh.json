@@ -1,0 +1,30 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "{http://www.campuscontent.de/model/1.0}unmetLegalCriteria": {
+        "*": "unmetLegalCriteria[#1].value"
+      },
+
+      "{http://www.campuscontent.de/model/1.0}sourceContentType":"sourceContentType.value",
+      "{http://www.campuscontent.de/model/1.0}toolCategory":"toolCategory.value",
+      "{http://www.campuscontent.de/model/1.0}conditionsOfAccess":"conditionsOfAccess.value",
+      "{http://www.campuscontent.de/model/1.0}containsAdvertisement":"containsAdvertisement.value",
+      "{http://www.campuscontent.de/model/1.0}price":"price.value",
+
+
+
+      "{http://www.campuscontent.de/model/1.0}accessibilitySummary": {
+        "*": "accessibilitySummary[#1].value"
+      },
+
+      "{http://www.campuscontent.de/model/1.0}dataProtectionConformity": {
+        "*": "dataProtectionConformity[#1].value"
+      },
+
+      "{http://www.campuscontent.de/model/1.0}fskRating":"fskRating.value",
+      "{http://www.campuscontent.de/model/1.0}license_oer":"licenseOer.value",
+      "{http://www.campuscontent.de/model/1.0}general_identifier":"generalIdentifier"
+    }
+  }
+]

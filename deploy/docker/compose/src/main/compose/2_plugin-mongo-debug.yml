@@ -2,18 +2,9 @@ version: '3.7'
 
 services:
 
-  repository-mongo-primary:
+  repository-mongo:
     ports:
       - "${COMMON_BIND_HOST:-127.0.0.1}:${REPOSITORY_MONGO_PORT:-8500}:27017"
-
-  repository-mongo-secondary:
-    ports:
-      - "${COMMON_BIND_HOST:-127.0.0.1}:8502:27017"
-
-  repository-mongo-arbiter:
-    ports:
-      - "${COMMON_BIND_HOST:-127.0.0.1}:8503:27017"
-
 
   repository-service:
     environment:

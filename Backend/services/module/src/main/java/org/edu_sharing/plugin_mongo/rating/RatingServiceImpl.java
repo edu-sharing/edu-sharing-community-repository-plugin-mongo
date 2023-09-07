@@ -4,7 +4,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.DeleteResult;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -15,7 +17,12 @@ import org.edu_sharing.plugin_mongo.mongo.codec.NodeRefCodec;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.factory.ServiceFactory;
+import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.notification.NotificationService;
+import org.edu_sharing.service.notification.NotificationServiceFactoryUtility;
+import org.edu_sharing.service.notification.Status;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.rating.Rating;
@@ -40,8 +47,9 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     private final IntegrityService integrityService;
     private final MongoDatabase database;
     private final NodeService nodeService;
+    private final NotificationService notificationService;
 
-    public RatingServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService) {
+    public RatingServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService, ServiceFactory serviceFactory) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
@@ -69,6 +77,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         this.database = mongoDatabaseFactory.getMongoDatabase().withCodecRegistry(pojoCodecRegistry);
         this.integrityService = integrityService;
         this.nodeService = nodeService;
+        this.notificationService = serviceFactory.getLocalService();
     }
 
     /**
@@ -84,7 +93,8 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
 
         Objects.requireNonNull(nodeId, "nodeId must not be null");
 
-        if(!Objects.equals(nodeService.getType(nodeId), CCConstants.CCM_TYPE_IO)) {
+        String nodeType = nodeService.getType(nodeId);
+        if(!Objects.equals(nodeType, CCConstants.CCM_TYPE_IO)) {
             throw new IllegalArgumentException("Ratings only supported for nodes of type "+CCConstants.CCM_TYPE_IO);
         }
 
@@ -107,6 +117,18 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         options.upsert(true);
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
         ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
+
+        List<String> aspects;
+        HashMap<String, Object> nodeProps;
+        try {
+            aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));
+            nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+        } catch (Throwable e) {
+            aspects = new ArrayList<>();
+            nodeProps = new HashMap<>();
+        }
+        RatingDetails accumulatedRatings = getAccumulatedRatings(new NodeRefImpl(nodeId), null);
+        notificationService.notifyRatingChanged(nodeId, nodeType, aspects, nodeProps, rating, accumulatedRatings, Status.ADDED);
     }
 
     /**
@@ -123,7 +145,23 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         nodeId = nodeService.getOriginalNode(nodeId).getId();
 
         MongoCollection<Document> ratingCollection = database.getCollection(RatingConstants.COLLECTION_KEY);
-        ratingCollection.deleteOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+        Document rating = ratingCollection.findOneAndDelete(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+
+        if(rating != null) {
+            String nodeType = null;
+            List<String> aspects;
+            HashMap<String, Object> nodeProps;
+            try {
+                nodeType = nodeService.getType(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+                aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));
+                nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
+            } catch (Throwable e) {
+                aspects = new ArrayList<>();
+                nodeProps = new HashMap<>();
+            }
+            RatingDetails accumulatedRatings = getAccumulatedRatings(new NodeRefImpl(nodeId), null);
+            notificationService.notifyRatingChanged(nodeId, nodeType, aspects, nodeProps, rating.getDouble(RatingConstants.RATING_KEY), accumulatedRatings, Status.REMOVED);
+        }
     }
 
     /**
@@ -173,16 +211,16 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     /**
      * Get the accumulated ratings data
      *
-     * @param nodeId --- the uuid of the node of the related ratings
+     * @param nodeRef --- the edu-sharing nodeRef of the node of the related ratings
      * @param after  --- the date which the ratings should have at least. Use null (default) to use ratings of all times
      * @return An accumulated RatingDetails of the desired node
      */
     @Override
     @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_RATE_READ})
-    public RatingDetails getAccumulatedRatings(@NotNull @NodePermission({CCConstants.PERMISSION_RATE_READ}) String nodeId, @Nullable Date after) {
-        Objects.requireNonNull(nodeId, "nodeId must not be null");
+    public RatingDetails getAccumulatedRatings(@NotNull @NodePermission(CCConstants.PERMISSION_RATE_READ) org.edu_sharing.service.model.NodeRef nodeRef, @Nullable Date after) {
+        Objects.requireNonNull(nodeRef, "nodeRef must not be null");
 
-        nodeId = nodeService.getOriginalNode(nodeId).getId();
+        String nodeId = nodeService.getOriginalNode(nodeRef.getNodeId()).getId();
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, nodeId);
         if (after != null) {
@@ -238,9 +276,9 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     }
 
     @Override
-    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull String nodeId, @Nullable Date after) {
-        Objects.requireNonNull(nodeId, "nodeId must not be null");
-        NodeRef node = nodeService.getOriginalNode(nodeId);
+    public List<RatingHistory> getAccumulatedRatingHistory(@NotNull @NodePermission(CCConstants.PERMISSION_RATE_READ) org.edu_sharing.service.model.NodeRef nodeRef, @Nullable Date after) {
+        Objects.requireNonNull(nodeRef, "nodeId must not be null");
+        NodeRef node = nodeService.getOriginalNode(nodeRef.getNodeId());
 
         //after is optional
         Bson filter = Filters.eq(RatingConstants.NODEID_KEY, node.getId());

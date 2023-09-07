@@ -33,9 +33,7 @@ type Lom {
     #This category describes where this learning
     #object falls within a particular classification
     #system.
-    #To define multiple classifications, there may
-    #be multiple instances of this category.
-    classification: [Classification!]
+    classification: Classification
 
 
     editorial: [Editorial!]

@@ -1,22 +1,19 @@
 package org.edu_sharing.plugin_mongo.service.legacy;
 
 import com.bazaarvoice.jolt.Chainr;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.alfresco.repo.domain.node.ContentDataWithId;
-import org.alfresco.service.cmr.repository.ContentData;
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelDictionary;
 import org.edu_sharing.plugin_mongo.datamodel.MongoModelInfo;
 import org.edu_sharing.plugin_mongo.datamodel.remover.Remover;
-import org.edu_sharing.plugin_mongo.domain.metadata.Metadata;
 import org.edu_sharing.plugin_mongo.joltextension.CustomFunction;
-import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.repository.server.tools.URLTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component

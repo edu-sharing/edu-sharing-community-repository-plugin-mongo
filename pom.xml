@@ -157,6 +157,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>edu_sharing-community-repository-plugin-mongo-backend-services-module</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>edu_sharing-community-repository-plugin-mongo-backend-services-module</artifactId>
+        <version>${project.version}</version>
         <type>amp</type>
       </dependency>
 

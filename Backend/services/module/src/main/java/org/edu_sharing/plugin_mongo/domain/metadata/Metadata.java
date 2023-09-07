@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.domain.metadata;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.alfresco.repo.domain.node.ContentDataWithId;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Metadata {
@@ -38,6 +39,7 @@ public class Metadata {
     ImportedObject importedObject;
     Association association;
     Lom lom;
+    Oeh oeh;
     Map<String, Object> alfMap;
 }
 

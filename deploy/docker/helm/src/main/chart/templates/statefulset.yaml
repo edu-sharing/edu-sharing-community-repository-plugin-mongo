@@ -20,30 +20,30 @@ spec:
         prometheus.io/scrape: {{ .Values.sidecar.metrics.enabled | quote }}
         {{- end }}
         sidecar.istio.io/inject: {{ .Values.global.cluster.istio.enabled | quote }}
-        {{- if .Values.podAnnotations }}
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- with merge .Values.podAnnotations .Values.global.annotations }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       initContainers:
       {{- if (default .Values.global.cluster.storage.data.permission .Values.persistence.data.permission) }}
-        - name: {{ include "edusharing_repository_mongo.name" . }}-init-permission
-          image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-minideb:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
-          command:
-            - "/bin/bash"
-            - "-ec"
-            - |
-              if [[ ! "$(ls -A /bitnami/mongodb)" ]]; then
-                chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /bitnami/mongodb
-              fi
-          volumeMounts:
-            - name: data
-              mountPath: /bitnami/mongodb
+      - name: {{ include "edusharing_repository_mongo.name" . }}-init-permission
+        image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-minideb:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        command:
+        - "/bin/bash"
+        - "-ec"
+        - |
+          if [[ ! "$(ls -A /bitnami/mongodb)" ]]; then
+            chown -R {{ .Values.securityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /bitnami/mongodb
+          fi
+        volumeMounts:
+        - name: data
+          mountPath: /bitnami/mongodb
         {{- with .Values.init.permission.resources }}
-          resources: {{ toYaml . | nindent 10 }}
+        resources: {{ toYaml . | nindent 10 }}
         {{- end }}
         {{- with .Values.init.permission.securityContext }}
-          securityContext: {{ toYaml . | nindent 10 }}
+        securityContext: {{ toYaml . | nindent 10 }}
         {{- end }}
       {{- end }}
       containers:
@@ -138,6 +138,7 @@ spec:
           - >-
             /bin/mongodb_exporter
             --discovering-mode
+            --compatible-mode
             --mongodb.uri=mongodb://$(echo $MONGODB_USERNAME):$(echo $MONGODB_PASSWORD)@localhost:27017/admin
             --web.listen-address=:9216
             --web.telemetry-path=/metrics
@@ -157,7 +158,7 @@ spec:
       {{- with .Values.global.image.pullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.podSecurityContext }}
+      {{- with merge .Values.podSecurityContext .Values.global.security }}
       securityContext: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.tolerations }}
@@ -187,22 +188,6 @@ spec:
                   matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 18 }}
           {{- end }}
         {{- end }}
-      {{- end }}
-      {{- with .Values.global.image.pullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.podSecurityContext }}
-      securityContext: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{ with .Values.terminationGracePeriod }}
-      terminationGracePeriodSeconds: {{ . }}
-      {{- end }}
-      {{- with .Values.nodeAffinity }}
-      affinity:
-        nodeAffinity: {{ toYaml . | nindent 10 }}
       {{- end }}
       volumes:
       - name: file
