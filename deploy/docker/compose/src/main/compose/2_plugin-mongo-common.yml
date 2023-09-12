@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   repository-mongo:
-    image: "${docker.repository}/${docker.prefix}-deploy-docker-build-mongo:${docker.tag}"
+    image: "${docker.edu_sharing.community.common.mongodb}"
     environment:
       ALLOW_EMPTY_PASSWORD: "false"
       MONGODB_ADVERTISED_HOSTNAME: "repository-mongo"
