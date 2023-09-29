@@ -33,3 +33,7 @@ app.kubernetes.io/name: {{ include "edusharing_repository_mongo.name" . }}
 {{- $repository := default .Values.global.image.repository .Values.image.repository -}}
 {{ $registry }}{{ if $registry }}/{{ end }}{{ $repository }}{{ if $repository }}/{{ end }}
 {{- end -}}
+
+{{- define "edusharing_repository_mongo.pvc.share.data" -}}
+share-data-{{ include "edusharing_repository_mongo.name" . }}
+{{- end -}}

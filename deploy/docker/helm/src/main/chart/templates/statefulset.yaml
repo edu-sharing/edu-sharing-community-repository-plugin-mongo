@@ -5,6 +5,7 @@ metadata:
   labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 6 }}
   serviceName: {{ include "edusharing_repository_mongo.name" . }}-headless
@@ -176,16 +177,16 @@ spec:
         podAntiAffinity:
           {{- if eq .Values.podAntiAffinity "hard" }}
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 16 }}
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 16 }}
           {{- else if eq .Values.podAntiAffinity "soft" }}
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 18 }}
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 18 }}
           {{- end }}
         {{- end }}
       {{- end }}
