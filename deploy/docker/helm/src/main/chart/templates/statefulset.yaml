@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   selector:
     matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 6 }}
   serviceName: {{ include "edusharing_repository_mongo.name" . }}-headless
