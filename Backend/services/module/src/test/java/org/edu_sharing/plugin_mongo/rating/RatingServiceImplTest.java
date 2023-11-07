@@ -10,8 +10,11 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.factory.ServiceFactory;
 import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.notification.NotificationService;
+import org.edu_sharing.service.notification.Status;
 import org.edu_sharing.service.rating.Rating;
 import org.edu_sharing.service.rating.RatingBase;
 import org.edu_sharing.service.rating.RatingDetails;
@@ -44,6 +47,12 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     @Mock
     private NodeService nodeService;
 
+    @Mock
+    private ServiceFactory serviceFactory;
+
+    @Mock
+    private NotificationService notificationService;
+
 
     @BeforeEach
     void initTestSet() {
@@ -60,7 +69,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("2", "Bach", null, "good bead", 5d, DateUtils.addDays(now, -3))
         ));
 
-        underTest = new RatingServiceImpl(db, nodeService, integrityService);
+        Mockito.when(serviceFactory.getLocalService()).thenReturn(notificationService);
+        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService, serviceFactory);
 
         Mockito.lenient()
                 .when(nodeService.getOriginalNode(anyString()))
@@ -106,6 +116,8 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).first();
 
 
+        //Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(nodeId, );
+
         Assertions.assertEquals(beforeCount + 1, afterCount, "count");
         Assertions.assertEquals(nodeId, result.get(RatingConstants.NODEID_KEY), RatingConstants.NODEID_KEY);
         Assertions.assertEquals(rating, result.get(RatingConstants.RATING_KEY), RatingConstants.RATING_KEY);
@@ -113,6 +125,15 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
         Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
         Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
+
+        Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
+                ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.eq(rating),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(Status.ADDED));
     }
 
     @Test
@@ -148,6 +169,15 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Assertions.assertEquals(affiliation, result.get(RatingConstants.AFFILIATION_KEY), RatingConstants.AFFILIATION_KEY);
         Assertions.assertEquals(authority, result.get(RatingConstants.AUTHORITY_KEY), RatingConstants.AUTHORITY_KEY);
         Assertions.assertNotNull(result.get(RatingConstants.TIMESTAMP_KEY), RatingConstants.TIMESTAMP_KEY); // TODO can we do this better?
+
+        Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
+                ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.eq(rating),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(Status.ADDED));
     }
 
     @Test
@@ -168,7 +198,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         Mockito.when(nodeService.getType(nodeId)).thenReturn(nodeType);
 
         // when
-        Assertions.assertThrows(IllegalArgumentException.class, ()-> underTest.addOrUpdateRating(nodeId, rating, reason));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.addOrUpdateRating(nodeId, rating, reason));
 
         // then
         long afterCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
@@ -178,6 +208,15 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Assertions.assertEquals(beforeCount, afterCount, "count");
         Assertions.assertEquals(expected, result, RatingConstants.NODEID_KEY);
+
+        Mockito.verify(notificationService, Mockito.never()).notifyRatingChanged(
+                ArgumentMatchers.any(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 
     @Test
@@ -202,6 +241,15 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Assertions.assertEquals(beforeCount - 1, afterCount, "count");
         Assertions.assertNull(result, "result");
+
+        Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
+                ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(4d),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(Status.REMOVED));
     }
 
     @Test
@@ -298,7 +346,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // then
         List<Document> expected = new ArrayList<>();
         collection.find(Filters.eq(RatingConstants.NODEID_KEY, nodeId)).into(expected);
-        Double expectedUserRating = collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).map(doc->doc.getDouble(RatingConstants.RATING_KEY)).first();
+        Double expectedUserRating = collection.find(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority))).map(doc -> doc.getDouble(RatingConstants.RATING_KEY)).first();
 
 
         Assertions.assertNotNull(ratingDetails, String.format("no rating found for node %s", nodeId));
@@ -428,7 +476,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         List<Document> actual = new ArrayList<>();
         collection.find(Filters.eq(RatingConstants.AUTHORITY_KEY, otherAuthority)).into(actual);
 
-        Assertions.assertEquals(0,  collection.countDocuments(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
+        Assertions.assertEquals(0, collection.countDocuments(Filters.eq(RatingConstants.AUTHORITY_KEY, authority)));
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
 
     }

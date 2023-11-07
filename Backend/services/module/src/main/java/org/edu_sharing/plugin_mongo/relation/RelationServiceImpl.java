@@ -25,6 +25,7 @@ import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.relations.*;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
     private final NodeService nodeService;
     private final IntegrityService integrityService;
 
-    public RelationServiceImpl(MongoDatabase database, NodeService nodeService, IntegrityService integrityService) {
+    public RelationServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService) {
         this.integrityService = integrityService;
         this.nodeService = nodeService;
 
@@ -52,7 +53,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
                 MongoClientSettings.getDefaultCodecRegistry(),
                 CodecRegistries.fromProviders(pojoCodecProvider));
 
-        this.database = database.withCodecRegistry(pojoCodecRegistry);
+        this.database = mongoDatabaseFactory.getMongoDatabase().withCodecRegistry(pojoCodecRegistry);
     }
 
     private void createIndexes() {

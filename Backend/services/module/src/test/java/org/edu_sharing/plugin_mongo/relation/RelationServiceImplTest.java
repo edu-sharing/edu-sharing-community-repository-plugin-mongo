@@ -30,7 +30,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -71,7 +70,7 @@ class RelationServiceImplTest extends AbstractMongoDbContainerTest {
                 )
         ));
 
-        underTest = new RelationServiceImpl(db, nodeService, integrityService);
+        underTest = new RelationServiceImpl(dbFactory, nodeService, integrityService);
         Mockito.lenient()
                 .when(nodeService.getOriginalNode(anyString()))
                 .thenAnswer((Answer<NodeRef>) invocationOnMock -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, invocationOnMock.getArgument(0)));

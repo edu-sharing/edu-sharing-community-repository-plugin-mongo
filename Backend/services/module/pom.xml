@@ -99,7 +99,7 @@
     <dependency>
       <groupId>org.alfresco</groupId>
       <artifactId>alfresco-repository</artifactId>
-      <version>provided</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -222,6 +222,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-mongodb</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!--test-->
 
     <dependency>
@@ -247,15 +253,7 @@
 
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
       <scope>test</scope>
     </dependency>
 
@@ -292,20 +290,6 @@
       </exclusions>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

@@ -47,9 +47,11 @@ global:
 
 nameOverride: edusharing-repository-mongo
 
-image:
-  prefix: ${docker.prefix}
-  tag: ${docker.tag}
+images:
+  mongo:
+    db: ${docker.edu_sharing.community.common.mongodb}
+    exporter: ${docker.edu_sharing.community.common.mongodb.exporter}
+  minideb: ${docker.edu_sharing.community.common.minideb}
 
 ########################################################################################################################
 

@@ -17,6 +17,7 @@ import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -33,14 +34,13 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     private final String NODE_ID = "nodeId";
     private final String SUGGESTION_ID = "id";
 
-    @NonNull MongoDatabase mongoDatabase; // can't use final because of proxying by CGLib
-    @NonNull CodecRegistry codecRegistry; // can't use final because of proxying by CGLib
+    @NonNull MongoDatabaseFactory mongoDatabaseFactory; // can't use final because of proxying by CGLib
 
     @NonNull SuggestionClassProvider suggestionClassProvider;
     // will be called by IndexCreationAutomation aspect
     @Initialize
     public void createIndices() {
-        MongoCollection<Document> collection = mongoDatabase.getCollection(SUGGESTION_KEY);
+        MongoCollection<Document> collection = mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY);
 
         collection.createIndex(Indexes.ascending(NODE_ID));
         collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(SUGGESTION_KEY)), new IndexOptions().unique(true));
@@ -49,7 +49,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public List<Suggestion> getSuggestions(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId) {
-        return mongoDatabase.getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
+        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
                 .find(Filters.eq(NODE_ID, nodeId))
                 .into(new ArrayList<>());
     }
@@ -57,7 +57,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public Map<String, List<Suggestion>> getSuggestions(@NodePermission(CCConstants.PERMISSION_WRITE) Collection<String> nodeIds) {
-        return mongoDatabase.getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
+        return mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, suggestionClassProvider.suggestionClass())
                 .find(Filters.in(NODE_ID, nodeIds))
                 .into(new ArrayList<>())
                 .stream()
@@ -67,7 +67,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public boolean addOrUpdate(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, String suggestionId, Suggestion suggestion) {
-        UpdateResult updateResult = mongoDatabase.getCollection(SUGGESTION_KEY, Suggestion.class)
+        UpdateResult updateResult = mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, Suggestion.class)
                 .replaceOne(Filters.and(Filters.eq(NODE_ID, suggestion.getNodeId()), Filters.eq(SUGGESTION_ID, suggestion.getId())),
                         suggestion,
                         new ReplaceOptions().upsert(true));
@@ -81,7 +81,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     @Override
     @Permission(requiresUser = true)
     public boolean remove(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, String suggestionId) {
-        DeleteResult deleteResult = mongoDatabase.getCollection(SUGGESTION_KEY, Suggestion.class)
+        DeleteResult deleteResult = mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY, Suggestion.class)
                 .deleteMany(Filters.and(Filters.eq(NODE_ID, nodeId), Filters.eq(SUGGESTION_ID, suggestionId)));
 
         return deleteResult.wasAcknowledged() && deleteResult.getDeletedCount() > 0;
@@ -89,6 +89,6 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
 
     @Override
     public void OnDeletedInAlfresco(Set<String> nodeIds) {
-        mongoDatabase.getCollection(SUGGESTION_KEY).deleteMany(Filters.in(NODE_ID, nodeIds));
+        mongoDatabaseFactory.getMongoDatabase().getCollection(SUGGESTION_KEY).deleteMany(Filters.in(NODE_ID, nodeIds));
     }
 }
