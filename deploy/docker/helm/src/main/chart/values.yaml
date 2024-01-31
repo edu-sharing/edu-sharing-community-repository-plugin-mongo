@@ -17,8 +17,10 @@ global:
       enabled: false
 
     storage:
-
       data:
+        permission: false
+        spec: {}
+      share:
         permission: false
         spec: {}
 
@@ -83,6 +85,7 @@ debug: false
 ########################################################################################################################
 
 nodeAffinity: {}
+podAntiAffinity: "soft"
 
 tolerations: []
 
@@ -96,6 +99,14 @@ persistence:
       resources:
         requests:
           storage: 5Gi
+  share:
+    data:
+      create: true
+      spec:
+        accessModes: [ "ReadWriteMany" ]
+        resources:
+          requests:
+            storage: 5Gi
 
 ########################################################################################################################
 
@@ -170,6 +181,33 @@ init:
     securityContext:
 
       runAsUser: 0
+
+########################################################################################################################
+
+job:
+
+  dump:
+
+    podAnnotations: {}
+
+    resources:
+
+      limits:
+        cpu: 500m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 2Gi
+
+    schedule: "0 * * * *"
+
+    securityContext:
+
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsUser: 1000
 
 ########################################################################################################################
 
