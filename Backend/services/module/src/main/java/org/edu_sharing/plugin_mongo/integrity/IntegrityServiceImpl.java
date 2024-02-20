@@ -6,7 +6,7 @@ import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.authority.AuthorityService;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
 public class IntegrityServiceImpl implements IntegrityService {
 
@@ -25,7 +25,7 @@ public class IntegrityServiceImpl implements IntegrityService {
     public String getAffiliation(){
         String user = getAuthority();
         User userInfo = authorityService.getUser(user);
-        HashMap<String, Serializable> properties = userInfo.getProperties();
+        Map<String, Serializable> properties = userInfo.getProperties();
         if(properties == null){
             return null;
         }
