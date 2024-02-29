@@ -1,16 +1,13 @@
-{{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
-{{- else }}
-apiVersion: batch/v1beta1
-{{- end }}
 kind: CronJob
 metadata:
-  name: {{ include "edusharing_repository_mongo.name" . }}-dump
-  labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  name: {{ include "edusharing_common_lib.names.name" . }}-dump
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
     app.kubernetes.io/component: dump
 spec:
   concurrencyPolicy: Forbid
   schedule: {{ .Values.job.dump.schedule | quote }}
+  suspend: {{ .Values.job.dump.suspend }}
   successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
@@ -26,19 +23,19 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: {{ include "edusharing_repository_mongo.name" . }}-job-dump
-            image: {{ include "edusharing_repository_mongo.image" . }}{{ .Values.image.prefix }}-deploy-docker-build-mongo:{{ .Values.image.tag }}
+          - name: {{ include "edusharing_common_lib.names.name" . }}-job-dump
+            image: {{ include "edusharing_common_lib.images.common" . }}{{ .Values.job.dump.image.name }}:{{ .Values.job.dump.image.tag }}
             imagePullPolicy: {{ .Values.global.image.pullPolicy }}
             args:
             - "/bin/bash"
             - "-ec"
             - |
-              mongodump --uri={{ printf "mongodb://%s-0:%d,%s-1:%d,%s-2:%d/%s" (include "edusharing_repository_mongo.name" .) (.Values.service.port.api | int) (include "edusharing_repository_mongo.name" .) (.Values.service.port.api | int) (include "edusharing_repository_mongo.name" .) (.Values.service.port.api | int) .Values.config.database }} --archive --gzip -u ${MONGODB_ROOT_USER} -p ${MONGODB_ROOT_PASSWORD} > /bitnami/mongodb/dump-$(date +'%H%M').gz
+              mongodump --uri={{ printf "mongodb://%s-0:%d,%s-1:%d,%s-2:%d/%s" (include "edusharing_common_lib.names.name" .) (.Values.service.port.api | int) (include "edusharing_common_lib.names.name" .) (.Values.service.port.api | int) (include "edusharing_common_lib.names.name" .) (.Values.service.port.api | int) .Values.config.database }} --archive --gzip -u ${MONGODB_ROOT_USER} -p ${MONGODB_ROOT_PASSWORD} > /bitnami/mongodb/dump-$(date +'%H%M').gz
             envFrom:
             - configMapRef:
-                name: {{ include "edusharing_repository_mongo.name" . }}-env
+                name: {{ include "edusharing_common_lib.names.name" . }}-env
             - secretRef:
-                name: {{ include "edusharing_repository_mongo.name" . }}-env
+                name: {{ include "edusharing_common_lib.names.name" . }}-env
             volumeMounts:
             - name: share-data
               mountPath: /bitnami/mongodb

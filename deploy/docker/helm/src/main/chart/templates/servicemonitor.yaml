@@ -4,8 +4,8 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "edusharing_repository_mongo.name" . }}
-  labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  name: {{ include "edusharing_common_lib.names.name" . }}
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
     app.kubernetes.io/component: "metrics"
 spec:
   endpoints:
@@ -17,7 +17,7 @@ spec:
     metricRelabelings: {{ toYaml . | nindent 6 }}
     {{- end }}
   selector:
-    matchLabels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 6 }}
+    matchLabels: {{ include "edusharing_common_lib.labels.app" . | nindent 6 }}
       app.kubernetes.io/component: "metrics"
   namespaceSelector:
     matchNames:

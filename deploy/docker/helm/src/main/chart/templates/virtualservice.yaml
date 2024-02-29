@@ -1,16 +1,16 @@
 {{- if .Values.global.cluster.istio.enabled }}
 {{- if .Capabilities.APIVersions.Has "networking.istio.io/v1beta1" }}
 {{- range $i, $e := until (.Values.replicaCount | int) }}
-{{- $targetPod := (printf "%s-%d" (include "edusharing_repository_mongo.name" $) $i) }}
+{{- $targetPod := (printf "%s-%d" (include "edusharing_common_lib.names.name" $) $i) }}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: {{ $targetPod }}
-  labels: {{ include "edusharing_repository_mongo.labels.app" $ | nindent 4 }}
+  labels: {{ include "edusharing_common_lib.labels.app" $ | nindent 4 }}
 spec:
   hosts:
-  - {{ include "edusharing_repository_mongo.name" $ }}
+  - {{ include "edusharing_common_lib.names.name" $ }}
   http:
   - route:
     - destination:

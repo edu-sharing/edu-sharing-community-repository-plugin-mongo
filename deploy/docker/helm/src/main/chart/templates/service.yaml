@@ -1,14 +1,14 @@
 {{- range $i, $e := until (.Values.replicaCount | int) }}
-{{- $targetPod := (printf "%s-%d" (include "edusharing_repository_mongo.name" $) $i) }}
+{{- $targetPod := (printf "%s-%d" (include "edusharing_common_lib.names.name" $) $i) }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $targetPod }}
-  labels: {{ include "edusharing_repository_mongo.labels.app" $ | nindent 4 }}
+  labels: {{ include "edusharing_common_lib.labels.app" $ | nindent 4 }}
 spec:
   type: ClusterIP
-  selector: {{ include "edusharing_repository_mongo.labels.app" $ | nindent 4 }}
+  selector: {{ include "edusharing_common_lib.labels.app" $ | nindent 4 }}
     statefulset.kubernetes.io/pod-name: {{ $targetPod }}
   ports:
     - name: tcp-api
@@ -18,13 +18,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "edusharing_repository_mongo.name" . }}-headless
-  labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  name: {{ include "edusharing_common_lib.names.name" . }}-headless
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
   publishNotReadyAddresses: true
-  selector: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  selector: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
   ports:
   - name: tcp-api
     port: {{ .Values.service.port.api }}
@@ -33,12 +33,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "edusharing_repository_mongo.name" . }}-metrics
-  labels: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  name: {{ include "edusharing_common_lib.names.name" . }}-metrics
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
     app.kubernetes.io/component: "metrics"
 spec:
   type: ClusterIP
-  selector: {{ include "edusharing_repository_mongo.labels.app" . | nindent 4 }}
+  selector: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
   ports:
     - name: http-metrics
       port: {{ .Values.service.port.metrics }}

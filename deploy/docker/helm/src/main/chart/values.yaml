@@ -31,11 +31,12 @@ global:
     pullSecrets: []
     registry: ${docker.registry}
     repository: ${docker.repository}
+    common: ${docker.common}
 
   metrics:
     scrape:
-      interval: 10s
-      timeout: 10s
+      interval: 60s
+      timeout: 60s
     servicemonitor:
       enabled: false
 
@@ -49,11 +50,9 @@ global:
 
 nameOverride: edusharing-repository-mongo
 
-images:
-  mongo:
-    db: ${docker.edu_sharing.community.common.mongodb}
-    exporter: ${docker.edu_sharing.community.common.mongodb.exporter}
-  minideb: ${docker.edu_sharing.community.common.minideb}
+image:
+  name: ${docker.edu_sharing.community.common.mongodb.name}
+  tag: ${docker.edu_sharing.community.common.mongodb.tag}
 
 ########################################################################################################################
 
@@ -169,6 +168,10 @@ init:
 
   permission:
 
+    image:
+      name: ${docker.edu_sharing.community.common.minideb.name}
+      tag: "${docker.edu_sharing.community.common.minideb.tag}"
+
     resources:
 
       limits:
@@ -188,6 +191,10 @@ job:
 
   dump:
 
+    image:
+      name: ${docker.edu_sharing.community.common.mongodb.name}
+      tag: ${docker.edu_sharing.community.common.mongodb.tag}
+
     podAnnotations: {}
 
     resources:
@@ -200,6 +207,7 @@ job:
         memory: 2Gi
 
     schedule: "0 * * * *"
+    suspend: false
 
     securityContext:
 
@@ -216,6 +224,10 @@ sidecar:
   metrics:
 
     enabled: true
+
+    image:
+      name: ${docker.edu_sharing.community.common.mongodb.exporter.name}
+      tag: "${docker.edu_sharing.community.common.mongodb.exporter.tag}"
 
     relabelings: []
 
