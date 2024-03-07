@@ -20,24 +20,32 @@
 
   <properties>
 
-    <docker.edu_sharing.communty.common.repository>
-      ${docker.registry}/community/common
-    </docker.edu_sharing.communty.common.repository>
+    <docker.edu_sharing.community.common.mongodb.name>
+      edu_sharing-community-common-docker-mongodb
+    </docker.edu_sharing.community.common.mongodb.name>
 
-    <docker.edu_sharing.community.common.mongodb>
-      ${docker.edu_sharing.communty.common.repository}/edu_sharing-community-common-docker-mongodb:7.0.5
-    </docker.edu_sharing.community.common.mongodb>
+    <docker.edu_sharing.community.common.mongodb.tag>
+      7.0.5
+    </docker.edu_sharing.community.common.mongodb.tag>
 
-    <docker.edu_sharing.community.common.mongodb.exporter>
-      ${docker.edu_sharing.communty.common.repository}/edu_sharing-community-common-docker-mongodb-exporter:0.30.0
-    </docker.edu_sharing.community.common.mongodb.exporter>
+    <docker.edu_sharing.community.common.mongodb.exporter.name>
+      edu_sharing-community-common-docker-mongodb-exporter
+    </docker.edu_sharing.community.common.mongodb.exporter.name>
 
-    <docker.edu_sharing.community.common.minideb>
-      ${docker.edu_sharing.communty.common.repository}/edu_sharing-community-common-docker-minideb:11
-    </docker.edu_sharing.community.common.minideb>
+    <docker.edu_sharing.community.common.mongodb.exporter.tag>
+      0.30.0
+    </docker.edu_sharing.community.common.mongodb.exporter.tag>
+
+    <docker.edu_sharing.community.common.minideb.name>
+      edu_sharing-community-common-docker-minideb
+    </docker.edu_sharing.community.common.minideb.name>
+
+    <docker.edu_sharing.community.common.minideb.tag>
+      11
+    </docker.edu_sharing.community.common.minideb.tag>
 
     <helm.kube.version>&gt;= 1.20.0</helm.kube.version>
-    <helm.version>3.10.0</helm.version>
+    <helm.version>3.14.2</helm.version>
 
   </properties>
 
