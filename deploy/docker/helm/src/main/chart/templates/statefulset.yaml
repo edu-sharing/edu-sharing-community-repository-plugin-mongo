@@ -78,8 +78,10 @@ spec:
             command:
               - bash
               - -ec
-              - |
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
+                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
+                throw new Error("Not ready") }'
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -89,10 +91,11 @@ spec:
         livenessProbe:
           exec:
             command:
-              - mongo
-              - --disableImplicitSessions
-              - --eval
-              - "db.adminCommand('ping')"
+              - bash
+              - '-ec'
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval
+                'db.adminCommand("ping")'
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -104,8 +107,10 @@ spec:
             command:
               - bash
               - -ec
-              - |
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
+                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
+                throw new Error("Not ready") }'
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
