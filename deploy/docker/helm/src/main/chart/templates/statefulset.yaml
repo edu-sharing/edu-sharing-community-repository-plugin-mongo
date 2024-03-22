@@ -76,10 +76,20 @@ spec:
         startupProbe:
           exec:
             command:
+              {{- if semverCompare "<5" $.Values.image.tag }}
               - bash
               - -ec
-              - |
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+              - >-
+                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' |
+                grep -q 'true'
+              {{- else }}
+              - bash
+              - -ec
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
+                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
+                throw new Error("Not ready") }'
+              {{- end }}
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -89,10 +99,18 @@ spec:
         livenessProbe:
           exec:
             command:
+              {{- if semverCompare "<5" $.Values.image.tag }}
               - mongo
               - --disableImplicitSessions
               - --eval
               - "db.adminCommand('ping')"
+              {{- else }}
+              - bash
+              - -ec
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval
+                'db.adminCommand("ping")'
+              {{- end }}
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -102,10 +120,20 @@ spec:
         readinessProbe:
           exec:
             command:
+              {{- if semverCompare "<5" $.Values.image.tag }}
               - bash
               - -ec
-              - |
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+              - >-
+                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' |
+                grep -q 'true'
+              {{- else }}
+              - bash
+              - -ec
+              - >-
+                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
+                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
+                throw new Error("Not ready") }'
+              {{- end }}
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
