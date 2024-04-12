@@ -6,7 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.log4j.Log4j;
-import org.alfresco.service.cmr.repository.NodeRef;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -29,7 +29,7 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 
 import java.util.*;
 
-@Log4j
+@Slf4j
 public class RelationServiceImpl implements RelationService, AwareAlfrescoDeletion {
 
     private final MongoDatabase database;

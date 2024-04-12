@@ -1,8 +1,0 @@
-type Suggestion {
-    nodeId: String!
-    id: String!
-    type: SuggestionType!
-    date: Date!
-    lom: LomSuggestion
-    oeh: OehSuggestion
-}

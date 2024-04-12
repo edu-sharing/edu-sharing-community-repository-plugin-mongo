@@ -19,7 +19,7 @@ public class MongoDBRepositoryInitializationAspect {
     public static final String SETUP_INDICES = "initialize";
 
     //@Before("public * execution(@org.edu_sharing.plugin_mongo.*Repository.*(..)")
-    @Before("bean(*Repository) && within(org.edu_sharing.plugin_mongo..*)")
+    @Before("bean(*Repository*) && within(org.edu_sharing.plugin_mongo..*)")
     public void initializeRepositoryJoinPoint(JoinPoint joinPoint) throws InvocationTargetException, IllegalAccessException {
 
         Class<?> targetClass = joinPoint.getTarget().getClass();

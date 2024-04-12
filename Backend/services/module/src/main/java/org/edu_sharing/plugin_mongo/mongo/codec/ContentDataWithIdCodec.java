@@ -32,6 +32,7 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
             reader.readStartDocument();
             String contentUrl = "", mimetype = "", encoding = "";
             long size = 0, id = 0;
+            Locale locale = null;
             while (true) {
                 BsonType bsonType = reader.readBsonType();
                 if (bsonType == BsonType.END_OF_DOCUMENT) {
@@ -60,11 +61,12 @@ public class ContentDataWithIdCodec implements Codec<ContentDataWithId> {
                 }
                 else if(bsonType == BsonType.DOCUMENT) {
                     if (name.equals("locale")) {
-                        this.localeCodec.decode(reader, decoderContext);
+                        locale = this.localeCodec.decode(reader, decoderContext);
                     }
                 }
             }
-            return new ContentDataWithId(new ContentData(contentUrl, mimetype, size, encoding), id);
+
+            return new ContentDataWithId(new ContentData(contentUrl, mimetype, size, encoding, locale), id);
         }
         throw new MongoInvalidTypeException(String.format("%s can not create %s from type %s", reader.getCurrentName(), getClass().getName(), reader.getCurrentBsonType()));
     }
