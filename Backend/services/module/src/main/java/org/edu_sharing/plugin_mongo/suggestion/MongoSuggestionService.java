@@ -2,6 +2,7 @@ package org.edu_sharing.plugin_mongo.suggestion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.restservices.suggestions.v1.dto.CreateSuggestionRequestDTO;
 import org.edu_sharing.service.permission.annotation.NodePermission;
@@ -24,11 +25,12 @@ public class MongoSuggestionService implements SuggestionService {
 
     @Override
     @Permission(value = CCConstants.CCM_VALUE_TOOLPERMISSION_SUGGESTION_WRITE, requiresUser = true)
-    public List<Suggestion> createSuggestion(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, String providerId, SuggestionType type, List<CreateSuggestionRequestDTO> suggestionDtos) {
+    public List<Suggestion> createSuggestion(@NodePermission(CCConstants.PERMISSION_READ) String nodeId, SuggestionType type, String version, List<CreateSuggestionRequestDTO> suggestionDtos) {
         List<Suggestion> suggestions = suggestionDtos.stream()
                 .map(x -> new Suggestion(
                         null,
                         nodeId,
+                        version,
                         x.getPropertyId(),
                         x.getValue(),
                         type,
@@ -38,7 +40,7 @@ public class MongoSuggestionService implements SuggestionService {
                         x.getDescription(),
                         x.getConfidence(),
                         new Date(),
-                        providerId,
+                        AuthenticationUtil.getFullyAuthenticatedUser(),
                         null,
                         null))
                 .collect(Collectors.toList());
@@ -47,14 +49,18 @@ public class MongoSuggestionService implements SuggestionService {
 
     @Override
     @Permission(value = CCConstants.CCM_VALUE_TOOLPERMISSION_SUGGESTION_WRITE, requiresUser = true)
-    public void deleteSuggestions(@NodePermission(CCConstants.PERMISSION_WRITE)  String nodeId, String providerId) {
-        repository.deleteByNodeIdAndCreatedBy(nodeId, providerId);
+    public void deleteSuggestions(@NodePermission(CCConstants.PERMISSION_READ) String nodeId, List<String> versions) {
+        if(versions == null || versions.isEmpty()){
+            repository.deleteByNodeIdAndCreatedBy(nodeId, AuthenticationUtil.getFullyAuthenticatedUser());
+        }else {
+            repository.deleteByNodeIdAndCreatedByAndInVersion(nodeId, AuthenticationUtil.getFullyAuthenticatedUser(), versions);
+        }
     }
 
     @Override
     @Permission(value = CCConstants.CCM_VALUE_TOOLPERMISSION_SUGGESTION_WRITE, requiresUser = true)
-    public List<Suggestion> updateStatus(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, List<String> ids, SuggestionStatus status) {
-        return repository.updateStatus(nodeId, ids, status);
+    public List<Suggestion> updateStatus(@NodePermission({CCConstants.PERMISSION_WRITE}) String nodeId, List<String> ids, SuggestionStatus status) {
+        return repository.updateStatus(nodeId, ids, status, AuthenticationUtil.getFullyAuthenticatedUser(), new Date());
     }
 
     @Override

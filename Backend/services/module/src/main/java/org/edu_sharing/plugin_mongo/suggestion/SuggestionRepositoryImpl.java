@@ -1,7 +1,5 @@
 package org.edu_sharing.plugin_mongo.suggestion;
 
-import com.mongodb.MongoBulkWriteException;
-import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.bulk.BulkWriteInsert;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.MongoCollection;
@@ -18,7 +16,6 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.edu_sharing.plugin_mongo.mongo.automation.annotation.Initialize;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
-import org.edu_sharing.restservices.DAODuplicateNodeException;
 import org.edu_sharing.service.suggestion.Suggestion;
 import org.edu_sharing.service.suggestion.SuggestionStatus;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +24,7 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,6 +40,9 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     public static final String CREATED_BY = "createdBy";
     public static final String PROPERTY_ID = "propertyId";
     public static final String VALUE = "value";
+    public static final String MODIFIED_BY = "modifiedBy";
+    public static final String MODIFIED = "modified";
+    public static final String VERSION = "version";
     private final String COLLECTION = "suggestion";
     private final String NODE_ID = "nodeId";
     private final String ID = "_id";
@@ -55,7 +56,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     public void createIndices() {
         MongoCollection<Document> collection = mongoDatabaseFactory.getMongoDatabase().getCollection(COLLECTION);
 
-        collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY), Indexes.ascending(PROPERTY_ID)), new IndexOptions().unique(true));
+        collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY), Indexes.ascending(VERSION), Indexes.ascending(PROPERTY_ID)), new IndexOptions().unique(true));
         collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(STATUS), Indexes.ascending(PROPERTY_ID), Indexes.ascending(VALUE)));
         collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(STATUS), Indexes.ascending(ID)));
 
@@ -64,6 +65,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
         // collection.createIndex(Indexes.ascending(NODE_ID));
         // collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(STATUS)));
         // collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY)));
+        // collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY), Indexes.ascending(VERSION)));
     }
 
 
@@ -106,10 +108,17 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     }
 
     @Override
-    public List<Suggestion> updateStatus(String nodeId, List<String> ids, SuggestionStatus status) {
+    public void deleteByNodeIdAndCreatedByAndInVersion(String nodeId, String createBy, List<String> versions) {
+        MongoCollection<Suggestion> collection = getCollection();
+        collection.deleteMany(Filters.and(Filters.eq(NODE_ID, nodeId), Filters.eq(CREATED_BY, createBy), Filters.in(VERSION, versions)));
+
+    }
+
+    @Override
+    public List<Suggestion> updateStatus(String nodeId, List<String> ids, SuggestionStatus status, String modifiedBy, Date modified) {
         MongoCollection<Suggestion> collection = getCollection();
         Bson filter = Filters.and(Filters.eq(NODE_ID, nodeId), Filters.in(ID, ids.stream().map(ObjectId::new).collect(Collectors.toList())));
-        collection.updateMany(filter, Updates.set(STATUS, status));
+        collection.updateMany(filter, List.of(Updates.set(STATUS, status), Updates.set(MODIFIED_BY, modifiedBy), Updates.set(MODIFIED, modified)));
         return collection.find(filter, Suggestion.class).into(new ArrayList<>());
     }
 
@@ -137,6 +146,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
         MongoCollection<Suggestion> collection = getCollection();
         return collection.find(Filters.and(Filters.eq(NODE_ID, nodeId), Filters.in(STATUS, status)), Suggestion.class).into(new ArrayList<>());
     }
+
 
     @NotNull
     private MongoCollection<Suggestion> getCollection() {
