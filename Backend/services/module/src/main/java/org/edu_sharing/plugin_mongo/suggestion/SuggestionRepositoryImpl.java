@@ -56,7 +56,7 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
     public void createIndices() {
         MongoCollection<Document> collection = mongoDatabaseFactory.getMongoDatabase().getCollection(COLLECTION);
 
-        collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY), Indexes.ascending(VERSION), Indexes.ascending(PROPERTY_ID)), new IndexOptions().unique(true));
+        collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(CREATED_BY), Indexes.ascending(VERSION), Indexes.ascending(PROPERTY_ID), Indexes.ascending(VALUE)), new IndexOptions().unique(true));
         collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(STATUS), Indexes.ascending(PROPERTY_ID), Indexes.ascending(VALUE)));
         collection.createIndex(Indexes.compoundIndex(Indexes.ascending(NODE_ID), Indexes.ascending(STATUS), Indexes.ascending(ID)));
 
