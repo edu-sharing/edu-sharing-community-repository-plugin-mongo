@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 public class BaseMerger implements Merger {
 
-    protected HashMap<String, BiFunction<Object, Object, Result>> functionHooks = new HashMap<>();
+    protected Map<String, BiFunction<Object, Object, Result>> functionHooks = new HashMap<>();
 
     @Override
     public Object merge(Object from, Object to) {

@@ -63,7 +63,7 @@ public class AlfrescoMetadataService {
         Set<QName> aspects = nodeService.getAspects(nodeRef);
 
 
-        HashMap<String, Object> properties = new HashMap<>(nativeProperties.size());
+        Map<String, Object> properties = new HashMap<>(nativeProperties.size());
         for (Map.Entry<QName, Serializable> entry : nativeProperties.entrySet()) {
             if(entry.getValue() != null) {
                 properties.put(entry.getKey().toString(), entry.getValue());

@@ -56,7 +56,7 @@ class IntegrityServiceImplTest {
         Serializable affiliation = "teacher";
 
         Mockito.when(authorityService.getUser(authority)).thenReturn(user);
-        Mockito.when(user.getProperties()).thenReturn(new HashMap<String, Serializable>(){{
+        Mockito.when(user.getProperties()).thenReturn(new HashMap<>(){{
             put(CCConstants.CM_PROP_PERSON_EDU_SCHOOL_PRIMARY_AFFILIATION, affiliation);
         }});
 

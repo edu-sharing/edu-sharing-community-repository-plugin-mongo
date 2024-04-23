@@ -4,9 +4,10 @@ import org.bson.codecs.pojo.InstanceCreator;
 import org.bson.codecs.pojo.PropertyModel;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class BufferedInstanceCreator<T> implements InstanceCreator<T> {
-    protected final HashMap<String, Object> buffer = new HashMap<>();
+    protected final Map<String, Object> buffer = new HashMap<>();
 
     @Override
     public <S> void set(S s, PropertyModel<S> propertyModel) {
