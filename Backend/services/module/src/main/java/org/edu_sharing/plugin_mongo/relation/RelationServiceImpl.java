@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.relation;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
@@ -14,6 +15,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.rating.RatingConstants;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
@@ -129,8 +131,8 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
      */
     @Override
     @Permission({CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_RELATIONS})
-    public void createRelation(@NotNull @NodePermission({CCConstants.PERMISSION_RELATION})  String fromNode,
-                               @NotNull @NodePermission({CCConstants.PERMISSION_RELATION})  String toNode,
+    public void createRelation(@NotNull @NodePermission({CCConstants.PERMISSION_RELATION}) String fromNode,
+                               @NotNull @NodePermission({CCConstants.PERMISSION_RELATION}) String toNode,
                                @NotNull InputRelationType relationType) throws NodeRelationException, InsufficientPermissionException {
         Objects.requireNonNull(fromNode, "fromNode must be set");
         Objects.requireNonNull(toNode, "toNode must be set");
@@ -139,18 +141,18 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
         log.debug(String.format("create relation from node %s to node %s of type %s", fromNode, toNode, relationType));
 
         // do this before mapping original since otherwise we might get a missing exception
-        if(!Objects.equals(nodeService.getType(fromNode), CCConstants.CCM_TYPE_IO)) {
-            throw new NodeRelationException("Relation can only set from nodes of type "+CCConstants.CCM_TYPE_IO);
+        if (!Objects.equals(nodeService.getType(fromNode), CCConstants.CCM_TYPE_IO)) {
+            throw new NodeRelationException("Relation can only set from nodes of type " + CCConstants.CCM_TYPE_IO);
         }
 
-        if(!Objects.equals(nodeService.getType(toNode), CCConstants.CCM_TYPE_IO)) {
-            throw new NodeRelationException("Relation can only set to nodes of type "+CCConstants.CCM_TYPE_IO);
+        if (!Objects.equals(nodeService.getType(toNode), CCConstants.CCM_TYPE_IO)) {
+            throw new NodeRelationException("Relation can only set to nodes of type " + CCConstants.CCM_TYPE_IO);
         }
 
         fromNode = nodeService.getOriginalNode(fromNode).getId();
         toNode = nodeService.getOriginalNode(toNode).getId();
 
-        if(Objects.equals(fromNode, toNode)){
+        if (Objects.equals(fromNode, toNode)) {
             throw new NodeRelationException("Relation cannot point to itself");
         }
 
@@ -213,20 +215,36 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
 
         createIndexes();
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);
-        UpdateResult result = collection.updateOne(Filters.and(
-                        Filters.eq(fromNode),
-                        Filters.elemMatch(RelationConstants.RELATION_KEY,
-                                Filters.and(
-                                        Filters.eq(RelationConstants.RELATION_NODE_KEY, toNode),
-                                        Filters.eq(RelationConstants.RELATION_TYPE_KEY, relationType.toString())))),
 
-                Updates.pull(RelationConstants.RELATION_KEY,
-                        new Document(RelationConstants.RELATION_NODE_KEY, toNode)
-                                .append(RelationConstants.RELATION_TYPE_KEY, relationType.toString())));
+        UpdateResult result = collection.updateOne(
+                filterReltation(fromNode, toNode, relationType),
+                createPullRelationUpdate(toNode, relationType));
+
+        // search in both directions if relationType is a reference!
+        if (result.getModifiedCount() == 0 && relationType == InputRelationType.references) {
+            result = collection.updateOne(filterReltation(toNode, fromNode, relationType),
+                    createPullRelationUpdate(fromNode, relationType));
+        }
 
         if (result.getModifiedCount() == 0) {
             throw new NodeRelationException(String.format("Relation between %s and %s of type %s does not exists", fromNode, toNode, relationType));
         }
+
+    }
+
+    private static @NotNull Bson createPullRelationUpdate(String toNode, @NotNull InputRelationType relationType) {
+        return Updates.pull(RelationConstants.RELATION_KEY,
+                new Document(RelationConstants.RELATION_NODE_KEY, toNode)
+                        .append(RelationConstants.RELATION_TYPE_KEY, relationType.toString()));
+    }
+
+    private static @NotNull Bson filterReltation(String fromNode, String toNode, @NotNull InputRelationType relationType) {
+        return Filters.and(
+                Filters.eq(fromNode),
+                Filters.elemMatch(RelationConstants.RELATION_KEY,
+                        Filters.and(
+                                Filters.eq(RelationConstants.RELATION_NODE_KEY, toNode),
+                                Filters.eq(RelationConstants.RELATION_TYPE_KEY, relationType.toString()))));
     }
 
     /**
