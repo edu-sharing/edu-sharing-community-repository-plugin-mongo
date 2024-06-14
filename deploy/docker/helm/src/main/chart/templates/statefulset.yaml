@@ -51,7 +51,9 @@ spec:
       - name: {{ include "edusharing_common_lib.names.name" . }}
         image: {{ include "edusharing_common_lib.images.common" . }}{{ .Values.image.name }}:{{ .Values.image.tag }}
         command:
-        - /scripts/setup.sh
+        - bash
+        - '-ec'
+        - find /bitnami/mongodb -name *.lock -delete && /scripts/setup.sh
         imagePullPolicy: {{ .Values.global.image.pullPolicy }}
         env:
         - name: MY_POD_NAME
