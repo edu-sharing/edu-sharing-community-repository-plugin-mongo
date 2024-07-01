@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/bitnami/readme-generator-for-helm
+    rev: "2.6.1"
+    hooks:
+    - id: helm-readme-generator
+      pass_filenames: false
+      always_run: true
+      args: [--readme=deploy/docker/helm/src/main/chart/README.md, --values=deploy/docker/helm/src/main/chart/values.yaml]
+
