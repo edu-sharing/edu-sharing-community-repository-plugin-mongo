@@ -234,6 +234,15 @@ init:
       ## @param init.permission.image.tag Set init container image tag
       tag: "${docker.edu_sharing.community.common.minideb.tag}"
 
+    ## @param init.permission.startupProbe Optional specs for startupProbe
+    startupProbe:
+
+    ## @param init.permission.livenessProbe Optional specs for livenessProbe
+    livenessProbe:
+
+    ## @param init.permission.readinessProbe Optional specs for readinessProbe
+    readinessProbe:
+
     resources:
       limits:
         ## @param init.permission.resources.limits.cpu Set init container CPU limit on resources
@@ -264,6 +273,15 @@ job:
 
     ## @param job.dump.podAnnotations Set dump job pod annotations
     podAnnotations: {}
+
+    ## @param job.dump.startupProbe Optional specs for startupProbe
+    startupProbe:
+
+    ## @param job.dump.livenessProbe Optional specs for livenessProbe
+    livenessProbe:
+
+    ## @param job.dump.readinessProbe Optional specs for readinessProbe
+    readinessProbe:
 
     resources:
 
@@ -310,6 +328,15 @@ sidecar:
 
     ## @param sidecar.metrics.relabelings Set metrics sidecar relabelings
     relabelings: []
+
+    ## @param sidecar.metrics.startupProbe Optional specs for startupProbe
+    startupProbe:
+
+    ## @param sidecar.metrics.livenessProbe Optional specs for livenessProbe
+    livenessProbe:
+
+    ## @param sidecar.metrics.readinessProbe Optional specs for readinessProbe
+    readinessProbe:
 
     resources:
 

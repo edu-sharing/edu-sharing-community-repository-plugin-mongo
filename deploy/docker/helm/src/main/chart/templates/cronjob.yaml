@@ -39,6 +39,44 @@ spec:
             volumeMounts:
             - name: share-data
               mountPath: /bitnami/mongodb
+            {{- with .Values.job.dump.startupProbe }}
+            startupProbe:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "echo startupProbe > /dev/null"
+              failureThreshold: {{ .failureThreshold }}
+              initialDelaySeconds: {{ .initialDelaySeconds }}
+              periodSeconds: {{ .periodSeconds }}
+              successThreshold: {{ .successThreshold }}
+              timeoutSeconds: {{ .timeoutSeconds }}
+            {{- end }}
+            {{- with .Values.job.dump.livenessProbe }}
+            livenessProbe:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "echo livenessProbe > /dev/null"
+              failureThreshold: {{ .failureThreshold }}
+              initialDelaySeconds: {{ .initialDelaySeconds }}
+              periodSeconds: {{ .periodSeconds }}
+              timeoutSeconds: {{ .timeoutSeconds }}
+            {{- end }}
+            {{- with .Values.job.dump.readinessProbe }}
+            readinessProbe:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "echo readinessProbe > /dev/null"
+              failureThreshold: {{ .failureThreshold }}
+              initialDelaySeconds: {{ .initialDelaySeconds }}
+              periodSeconds: {{ .periodSeconds }}
+              successThreshold: {{ .successThreshold }}
+              timeoutSeconds: {{ .timeoutSeconds }}
+            {{- end }}
             {{- with .Values.job.dump.resources }}
             resources: {{ toYaml . | nindent 14 }}
             {{- end }}
