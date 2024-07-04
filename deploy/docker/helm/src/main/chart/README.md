@@ -75,6 +75,9 @@
 | `resources.requests.memory`                                | Set memory for requests on resources                | `2Gi`                                                          |
 | `init.permission.image.name`                               | Set init container image name                       | `${docker.edu_sharing.community.common.minideb.name}`          |
 | `init.permission.image.tag`                                | Set init container image tag                        | `${docker.edu_sharing.community.common.minideb.tag}`           |
+| `init.permission.startupProbe`                             | Optional specs for startupProbe                     | `nil`                                                          |
+| `init.permission.livenessProbe`                            | Optional specs for livenessProbe                    | `nil`                                                          |
+| `init.permission.readinessProbe`                           | Optional specs for readinessProbe                   | `nil`                                                          |
 | `init.permission.resources.limits.cpu`                     | Set init container CPU limit on resources           | `125m`                                                         |
 | `init.permission.resources.limits.memory`                  | Set init container memory limit on resources        | `512Mi`                                                        |
 | `init.permission.resources.requests.cpu`                   | Set init container CPU for requests on resources    | `125m`                                                         |
@@ -83,6 +86,9 @@
 | `job.dump.image.name`                                      | Set dump job image name                             | `${docker.edu_sharing.community.common.mongodb.name}`          |
 | `job.dump.image.tag`                                       | Set dump job image tag                              | `${docker.edu_sharing.community.common.mongodb.tag}`           |
 | `job.dump.podAnnotations`                                  | Set dump job pod annotations                        | `{}`                                                           |
+| `job.dump.startupProbe`                                    | Optional specs for startupProbe                     | `nil`                                                          |
+| `job.dump.livenessProbe`                                   | Optional specs for livenessProbe                    | `nil`                                                          |
+| `job.dump.readinessProbe`                                  | Optional specs for readinessProbe                   | `nil`                                                          |
 | `job.dump.resources.limits.cpu`                            | Set CPU limit on resources                          | `500m`                                                         |
 | `job.dump.resources.limits.memory`                         | Set memory limit on resources                       | `2Gi`                                                          |
 | `job.dump.resources.requests.cpu`                          | Set CPU for requests on resources                   | `500m`                                                         |
@@ -96,6 +102,9 @@
 | `sidecar.metrics.image.name`                               | Set metrics sidecar image name                      | `${docker.edu_sharing.community.common.mongodb.exporter.name}` |
 | `sidecar.metrics.image.tag`                                | Set metrics sidecar image tag                       | `${docker.edu_sharing.community.common.mongodb.exporter.tag}`  |
 | `sidecar.metrics.relabelings`                              | Set metrics sidecar relabelings                     | `[]`                                                           |
+| `sidecar.metrics.startupProbe`                             | Optional specs for startupProbe                     | `nil`                                                          |
+| `sidecar.metrics.livenessProbe`                            | Optional specs for livenessProbe                    | `nil`                                                          |
+| `sidecar.metrics.readinessProbe`                           | Optional specs for readinessProbe                   | `nil`                                                          |
 | `sidecar.metrics.resources.limits.cpu`                     | Set CPU limit on resources                          | `125m`                                                         |
 | `sidecar.metrics.resources.limits.memory`                  | Set memory limit on resources                       | `512Mi`                                                        |
 | `sidecar.metrics.resources.requests.cpu`                   | Set CPU for requests on resources                   | `125m`                                                         |
