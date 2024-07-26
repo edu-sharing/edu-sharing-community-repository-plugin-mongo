@@ -101,5 +101,4 @@ spec:
           {{- end }}
           volumes:
           - name: share-data
-            persistentVolumeClaim:
-              claimName: {{ include "edusharing_repository_mongo.pvc.share.data" . }}
+            {{ tpl .Values.persistence.share.data.type . | nindent 12 }}
