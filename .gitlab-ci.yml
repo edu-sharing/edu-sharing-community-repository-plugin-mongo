@@ -17,7 +17,7 @@ default:
       command: [ "dockerd-entrypoint.sh" ]
 
 stages:
-  - lint
+  - test
   - deploy
 
 deploy:
@@ -35,7 +35,7 @@ deploy:
     - mvn $MAVEN_CLI -s .mvn/settings.xml deploy
 
 check-helmreadme:
-  stage: lint
+  stage: test
   image: node:lts-alpine3.20
   before_script:
     - ln -s $CI_PROJECT_DIR/deploy/docker/helm/src/main/chart /tmp/deploy && cp /tmp/deploy/README.md /tmp/README_deploy.md
