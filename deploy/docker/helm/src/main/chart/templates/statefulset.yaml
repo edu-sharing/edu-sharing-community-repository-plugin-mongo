@@ -104,6 +104,10 @@ spec:
           value: "{{ printf "$(MY_POD_NAME).%s-headless.%s.svc.%s" (include "edusharing_common_lib.names.name" .) .Release.Namespace .Values.global.cluster.domain }}"
         - name: MONGODB_ADVERTISED_PORT_NUMBER
           value: "{{ .Values.service.port.api }}"
+        {{- if default .Values.global.debug .Values.debug }}
+        - name: EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU
+          value: "1"
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ include "edusharing_common_lib.names.name" . }}-env
