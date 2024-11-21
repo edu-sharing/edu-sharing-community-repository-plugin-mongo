@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 public class BaseRemover implements Remover {
 
-    protected HashMap<String, BiFunction<Object, Object, Boolean>> functionHooks = new HashMap<>();
+    protected Map<String, BiFunction<Object, Object, Boolean>> functionHooks = new HashMap<>();
 
     @Override
     public boolean remove(Object from, Object to) {

@@ -1,9 +1,8 @@
 package org.edu_sharing.plugin_mongo.domain.metadata;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
-import java.util.Date;
 
 @Data
 @Builder

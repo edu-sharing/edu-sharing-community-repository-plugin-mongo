@@ -119,7 +119,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         ratingCollection.replaceOne(Filters.and(Filters.eq(RatingConstants.NODEID_KEY, nodeId), Filters.eq(RatingConstants.AUTHORITY_KEY, authority)), ratingObj, options);
 
         List<String> aspects;
-        HashMap<String, Object> nodeProps;
+        Map<String, Object> nodeProps;
         try {
             aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));
             nodeProps = nodeService.getProperties(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
@@ -150,7 +150,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         if(rating != null) {
             String nodeType = null;
             List<String> aspects;
-            HashMap<String, Object> nodeProps;
+            Map<String, Object> nodeProps;
             try {
                 nodeType = nodeService.getType(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId);
                 aspects = Arrays.asList(nodeService.getAspects(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(), nodeId));

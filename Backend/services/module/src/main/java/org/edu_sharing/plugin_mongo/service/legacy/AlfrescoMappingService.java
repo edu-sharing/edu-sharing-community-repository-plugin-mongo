@@ -59,8 +59,7 @@ public class AlfrescoMappingService {
     }
 
     public void setProperties(Document rootDocument, Map<String, Object> properties) {
-
-        HashMap<String, Object> copyProperties = new HashMap<>(properties);
+        Map<String, Object> copyProperties = new HashMap<>(properties);
 
         if (properties.containsKey(ALF_CONTENT_KEY)) {
             CustomFunction.mapFromContentDataWithId mapper = new CustomFunction.mapFromContentDataWithId();

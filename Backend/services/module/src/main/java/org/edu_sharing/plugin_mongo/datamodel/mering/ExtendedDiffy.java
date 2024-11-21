@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 
 public class ExtendedDiffy extends Diffy {
 
-    protected HashMap<String, BiFunction<Object, Object, Result>> functionHooks = new HashMap<>();
+    protected Map<String, BiFunction<Object, Object, Result>> functionHooks = new HashMap<>();
 
     @Override
     protected Result diffMap(Map<String, Object> expected, Map<String, Object> actual) {

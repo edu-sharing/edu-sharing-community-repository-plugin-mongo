@@ -154,6 +154,8 @@
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
 
+    <bean id="suggestionService" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
+    </bean>
+
     <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>
-    <bean id="suggestionClassProvider" class="org.edu_sharing.plugin_mongo.repository.DefaultSuggestionClassProvider"/>
 </beans>

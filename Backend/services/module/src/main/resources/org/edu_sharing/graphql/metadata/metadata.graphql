@@ -21,6 +21,4 @@ type Metadata {
     #Holds the meta data of the learning object resource
     lom: Lom
     oeh: Oeh
-
-    generated: [Suggestion!]
 }
