@@ -2,30 +2,15 @@ version: '3.7'
 
 services:
 
-  repository-mongo:
-    image: "${docker.registry}/${docker.common}/${docker.edu_sharing.community.common.mongodb.name}:${docker.edu_sharing.community.common.mongodb.tag}"
+  mongo-database:
     environment:
-      ALLOW_EMPTY_PASSWORD: "false"
-      MONGODB_ADVERTISED_HOSTNAME: "repository-mongo"
-      MONGODB_REPLICA_SET_MODE: "primary"
-      MONGODB_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      MONGODB_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
-      MONGODB_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
-      MONGODB_ROOT_USER: "${REPOSITORY_MONGO_ROOT_USER:-root}"
-      MONGODB_ROOT_PASSWORD: "${REPOSITORY_MONGO_ROOT_PASS:-root}"
-      MONGODB_REPLICA_SET_KEY: "${REPOSITORY_MONGO_REPLICATION_SET_KEY:-repository}"
-      EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU: "1"
-    expose:
-      - "27017"
-    volumes:
-      - "repository-mongo-volume-data-primary:/bitnami/mongodb"
+      MONGODB_EXTRA_REPOSITORY_DATABASE: "${REPOSITORY_MONGO_DATABASE:-repository}"
+      MONGODB_EXTRA_REPOSITORY_USERNAME: "${REPOSITORY_MONGO_USER:-repository}"
+      MONGODB_EXTRA_REPOSITORY_PASSWORD: "${REPOSITORY_MONGO_PASS:-repository}"
 
   repository-service:
     environment:
-      REPOSITORY_MONGO_DATABASE: "${REPOSITORY_MONGO_DATABASE:-edu-sharing}"
-      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTION_STRING:-mongodb://repository:repository@repository-mongo:27017/edu-sharing}"
+      REPOSITORY_MONGO_DATABASE: "${REPOSITORY_MONGO_DATABASE:-repository}"
+      REPOSITORY_MONGO_CONNECTION_STRING: "${REPOSITORY_MONGO_CONNECTION_STRING:-mongodb://${REPOSITORY_MONGO_USER:-repository}:${REPOSITORY_MONGO_PASS:-repository}@mongo-database:27017/${REPOSITORY_MONGO_DATABASE:-repository}?authSource=${REPOSITORY_MONGO_DATABASE:-repository}}"
     depends_on:
-      - repository-mongo
-
-volumes:
-  repository-mongo-volume-data-primary:
+      - mongo-database
