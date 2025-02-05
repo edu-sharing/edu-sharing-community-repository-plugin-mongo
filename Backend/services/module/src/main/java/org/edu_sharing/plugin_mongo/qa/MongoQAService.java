@@ -20,7 +20,7 @@ public class MongoQAService implements QAService {
     private final QANodeRepository nodeRepository;
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void createQANode(String sourceId, @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, CreateQANodeRequestDTO requestData) {
         QANode qaNode = new QANode(
                 sourceId,
@@ -34,7 +34,7 @@ public class MongoQAService implements QAService {
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void updateQANode(String sourceId, @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, UpdateQAEntriesRequestDTO requestData) {
         QANode qaNode = nodeRepository.findQANodeBySourceIdAndNodeId(sourceId, nodeId).orElseThrow(IllegalArgumentException::new);
         qaNode.setEntries(requestData.getQaEntries());
@@ -42,37 +42,37 @@ public class MongoQAService implements QAService {
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public QANode getQANode(String sourceId, @NodePermission(CCConstants.PERMISSION_READ) String nodeId) {
         return nodeRepository.findQANodeBySourceIdAndNodeId(sourceId, nodeId).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public List<QANode> getAllQANode(@NodePermission(CCConstants.PERMISSION_READ) String nodeId) {
         return nodeRepository.findAllQANodeByNodeIdIs(nodeId);
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public List<QAEntry> getAllQAEntriesOf(@NodePermission(CCConstants.PERMISSION_READ) String nodeId) {
         return nodeRepository.findAllByNodeIdIs(nodeId).stream().flatMap(x -> x.getEntries().stream()).collect(Collectors.toList());
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public List<QAEntry> getAllQAEntriesOf(String sourceId, @NodePermission(CCConstants.PERMISSION_READ) String nodeId) {
         return nodeRepository.findBySourceIdAndNodeId(sourceId, nodeId).orElseThrow(IllegalArgumentException::new).getEntries();
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void delete(@NodePermission(CCConstants.PERMISSION_WRITE) String nodeId) {
         nodeRepository.deleteAllByNodeId(nodeId);
     }
 
     @Override
-    @Permission(requiresUser = true)
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void delete(String sourceId, @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId) {
         nodeRepository.deleteBySourceIdAndNodeId(sourceId, nodeId);
     }
