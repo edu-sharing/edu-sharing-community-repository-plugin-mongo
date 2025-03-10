@@ -72,7 +72,6 @@
   <modules>
     <module>build</module>
     <module>compose</module>
-    <module>helm</module>
   </modules>
 
 </project>
