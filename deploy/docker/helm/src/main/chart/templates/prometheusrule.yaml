@@ -9,23 +9,13 @@ spec:
   groups:
     - name: {{ include "edusharing_common_lib.names.name" . }}
       rules:
-        {{- if .Values.config.metrics.rules.mongoCursorTimeout.enabled }}
-        - alert: mongoCursorTimeout
-          annotations:
-            description: >-
-              {{ include "edusharing_common_lib.names.name" . }} has timed out cursors since {{ .Values.config.metrics.rules.mongoCursorTimeout.for }}.
-            summary: {{ include "edusharing_common_lib.names.name" . }} has timed out cursors.
-          expr: rate(mongodb_mongod_metrics_cursor_timed_out_total{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"}[5m]) > 0
-          for: {{ .Values.config.metrics.rules.mongoCursorTimeout.for }}
-          labels: {{ toYaml .Values.config.metrics.rules.mongoCursorTimeout.labels | nindent 12 }}
-        {{- end }}
         {{- if .Values.config.metrics.rules.mongoInsufficientMemberships.enabled }}
         - alert: mongoInsufficientMemberships
           annotations:
             description: >-
               {{ include "edusharing_common_lib.names.name" . }} has insufficient memberships since {{ .Values.config.metrics.rules.mongoInsufficientMemberships.for }}.
             summary: {{ include "edusharing_common_lib.names.name" . }} has insufficient memberships.
-          expr: rate(mongodb_members_health{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"}[5m]) < kube_statefulset_replicas{namespace="{{ .Release.Namespace }}",statefulset="{{ include "edusharing_common_lib.names.name" . }}"}
+          expr: mongodb_members_health{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} < kube_statefulset_replicas{namespace="{{ .Release.Namespace }}",statefulset="{{ include "edusharing_common_lib.names.name" . }}"}
           for: {{ .Values.config.metrics.rules.mongoInsufficientMemberships.for }}
           labels: {{ toYaml .Values.config.metrics.rules.mongoInsufficientMemberships.labels | nindent 12 }}
         {{- end }}
@@ -33,9 +23,9 @@ spec:
         - alert: mongoReplicationLag
           annotations:
             description: >-
-              {{ include "edusharing_common_lib.names.name" . }} has high replication lag (> {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}s) since {{ .Values.config.metrics.rules.mongoReplicationLag.for }}.
+              {{ include "edusharing_common_lib.names.name" . }} has high replication lag (> {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}) since {{ .Values.config.metrics.rules.mongoReplicationLag.for }}.
             summary: {{ include "edusharing_common_lib.names.name" . }} has high replication lag.
-          expr: rate(mongodb_mongod_replset_member_replication_lag{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"}[5m]) > {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}
+          expr: mongodb_mongod_replset_member_replication_lag{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} > {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}
           for: {{ .Values.config.metrics.rules.mongoReplicationLag.for }}
           labels: {{ toYaml .Values.config.metrics.rules.mongoReplicationLag.labels | nindent 12 }}
         {{- end }}
@@ -43,10 +33,10 @@ spec:
         - alert: mongoUp
           annotations:
             description: >-
-              {{ include "edusharing_common_lib.names.name" . }} isn't up since {{ .Values.config.metrics.rules.mongoUp.for }}.
-            summary: {{ include "edusharing_common_lib.names.name" . }} isn't up.
+              {{ include "edusharing_common_lib.names.name" . }} is down since {{ .Values.config.metrics.rules.mongoUp.for }}.
+            summary: {{ include "edusharing_common_lib.names.name" . }} is down.
           expr: >-
-            rate(mongodb_up{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"}[5m]) < 1
+            mongodb_up{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} < 1
           for: {{ .Values.config.metrics.rules.mongoUp.for }}
           labels: {{ toYaml .Values.config.metrics.rules.mongoUp.labels | nindent 12 }}
         {{- end }}

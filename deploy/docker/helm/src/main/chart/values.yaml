@@ -115,15 +115,6 @@ config:
 
     rules:
 
-      mongoCursorTimeout:
-        ## @param config.metrics.rules.mongoCursorTimeout.enabled Enable metric rule mongoCursorTimeout
-        enabled: true
-        ## @param config.metrics.rules.mongoCursorTimeout.for Set metric rule mongoCursorTimeout wait interval
-        for: 1m
-        labels:
-          ## @param config.metrics.rules.mongoCursorTimeout.labels.severity Set metric rule mongoCursorTimeout severity level
-          severity: critical
-
       mongoInsufficientMemberships:
         ## @param config.metrics.rules.mongoInsufficientMemberships.enabled Enable metric rule mongoInsufficientMemberships
         enabled: true
