@@ -1,0 +1,44 @@
+{{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" }}
+{{- if .Values.global.metrics.rules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "edusharing_common_lib.names.name" . }}
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
+spec:
+  groups:
+    - name: {{ include "edusharing_common_lib.names.name" . }}
+      rules:
+        {{- if .Values.config.metrics.rules.mongoInsufficientMemberships.enabled }}
+        - alert: mongoInsufficientMemberships
+          annotations:
+            description: >-
+              {{ include "edusharing_common_lib.names.name" . }} has insufficient memberships since {{ .Values.config.metrics.rules.mongoInsufficientMemberships.for }}.
+            summary: {{ include "edusharing_common_lib.names.name" . }} has insufficient memberships.
+          expr: mongodb_members_health{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} < kube_statefulset_replicas{namespace="{{ .Release.Namespace }}",statefulset="{{ include "edusharing_common_lib.names.name" . }}"}
+          for: {{ .Values.config.metrics.rules.mongoInsufficientMemberships.for }}
+          labels: {{ toYaml .Values.config.metrics.rules.mongoInsufficientMemberships.labels | nindent 12 }}
+        {{- end }}
+        {{- if .Values.config.metrics.rules.mongoReplicationLag.enabled }}
+        - alert: mongoReplicationLag
+          annotations:
+            description: >-
+              {{ include "edusharing_common_lib.names.name" . }} has high replication lag (> {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}) since {{ .Values.config.metrics.rules.mongoReplicationLag.for }}.
+            summary: {{ include "edusharing_common_lib.names.name" . }} has high replication lag.
+          expr: mongodb_mongod_replset_member_replication_lag{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} > {{ .Values.config.metrics.rules.mongoReplicationLag.config.max | float64 }}
+          for: {{ .Values.config.metrics.rules.mongoReplicationLag.for }}
+          labels: {{ toYaml .Values.config.metrics.rules.mongoReplicationLag.labels | nindent 12 }}
+        {{- end }}
+        {{- if .Values.config.metrics.rules.mongoUp.enabled }}
+        - alert: mongoUp
+          annotations:
+            description: >-
+              {{ include "edusharing_common_lib.names.name" . }} is down since {{ .Values.config.metrics.rules.mongoUp.for }}.
+            summary: {{ include "edusharing_common_lib.names.name" . }} is down.
+          expr: >-
+            mongodb_up{namespace="{{ .Release.Namespace }}",pod=~"{{ include "edusharing_common_lib.names.name" . }}.*"} < 1
+          for: {{ .Values.config.metrics.rules.mongoUp.for }}
+          labels: {{ toYaml .Values.config.metrics.rules.mongoUp.labels | nindent 12 }}
+        {{- end }}
+{{- end }}
+{{- end }}
