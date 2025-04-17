@@ -17,6 +17,7 @@ import org.edu_sharing.service.suggestion.SuggestionStatus;
 import org.edu_sharing.service.suggestion.SuggestionType;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,6 +38,12 @@ public class MongoSuggestionService implements SuggestionService {
         put(DataTypeDefinition.FLOAT, Double.class);
         put(DataTypeDefinition.DOUBLE, Double.class);
         put(DataTypeDefinition.BOOLEAN, Boolean.class);
+    }};
+
+    Map<Class<?>, Function<String, Object>> typeConverterMapping = new HashMap<>() {{
+        put(Long.class, Long::parseLong);
+        put(Double.class, Double::parseDouble);
+        put(Boolean.class, Boolean::parseBoolean);
     }};
 
     @Override
@@ -65,7 +72,19 @@ public class MongoSuggestionService implements SuggestionService {
             }
 
             if (!targetType.isAssignableFrom(valueClass)) {
+                if (valueClass == String.class) {
+                    Function<String, Object> stringObjectFunction = typeConverterMapping.get(targetType);
+                    if (stringObjectFunction != null) {
+                        try {
+                            x.setValue(stringObjectFunction.apply((String) x.getValue()));
+                            return;
+                        } catch (Exception e) {
+                            log.error("Can't convert {} of type {} to {} because: {}", x.getValue(), valueClass, targetType, e.getMessage(), e);
+                        }
+                    }
+                }
                 throw new IllegalArgumentException(x.getPropertyId() + " is not assignable to " + targetType.getName());
+
             }
         });
 
@@ -88,7 +107,7 @@ public class MongoSuggestionService implements SuggestionService {
                         null,
                         null))
                 .collect(Collectors.toList());
-        return repository.saveAll(suggestions);
+        return repository.saveAny(suggestions);
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface SuggestionRepository {
-    List<Suggestion> saveAll(List<Suggestion> suggestions);
+    List<Suggestion> saveAny(List<Suggestion> suggestions);
 
     void deleteByNodeIdAndCreatedBy(String nodeId, String providerId);
 

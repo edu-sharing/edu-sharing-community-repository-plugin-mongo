@@ -1,5 +1,7 @@
 package org.edu_sharing.plugin_mongo.suggestion;
 
+import com.mongodb.MongoBulkWriteException;
+import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.bulk.BulkWriteInsert;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.MongoCollection;
@@ -76,20 +78,31 @@ public class SuggestionRepositoryImpl implements SuggestionRepository, AwareAlfr
 
 
     @Override
-    public List<Suggestion> saveAll(List<Suggestion> suggestions) {
+    public List<Suggestion> saveAny(List<Suggestion> suggestions) {
         MongoCollection<Suggestion> collection = getCollection();
-        BulkWriteResult bulkWriteResult = collection
-                .bulkWrite(suggestions.stream()
-                        .map(suggestion -> {
-                                    if (StringUtils.isBlank(suggestion.getId())) {
-                                        return new InsertOneModel<>(suggestion);
-                                    } else {
-                                        return new ReplaceOneModel<>(
-                                                Filters.eq(new ObjectId(suggestion.getId())),
-                                                suggestion);
-                                    }
-                                }
-                        ).collect(Collectors.toList()));
+
+        List<WriteModel<Suggestion>> bulkOperations = suggestions.stream()
+                .map(suggestion -> {
+                            if (StringUtils.isBlank(suggestion.getId())) {
+                                return new InsertOneModel<>(suggestion);
+                            } else {
+                                return new ReplaceOneModel<>(
+                                        Filters.eq(new ObjectId(suggestion.getId())),
+                                        suggestion);
+                            }
+                        }
+                ).collect(Collectors.toList());
+
+        BulkWriteResult bulkWriteResult;
+        try {
+            bulkWriteResult = collection.bulkWrite(bulkOperations, new BulkWriteOptions().ordered(false));
+        }catch (MongoBulkWriteException e) {
+            log.warn("Error on writing items to {}: {}", collection.getNamespace().getCollectionName(), e.getMessage(), e);
+            for (BulkWriteError writeError : e.getWriteErrors()) {
+                log.warn("Item {} has failed with {}: {}", suggestions.get(writeError.getIndex()), writeError.getCategory().name(), writeError.getMessage());
+            }
+            bulkWriteResult = e.getWriteResult();
+        }
 
         List<ObjectId> ids = Stream.concat(
                 bulkWriteResult.getInserts().stream().map(BulkWriteInsert::getId).map(BsonValue::asObjectId).map(BsonObjectId::getValue),
