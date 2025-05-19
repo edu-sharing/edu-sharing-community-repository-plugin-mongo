@@ -159,6 +159,6 @@
 
     <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>
     <bean id="qaService" class="org.edu_sharing.plugin_mongo.qa.MongoQAService">
-        <constructor-arg name="nodeRepository" ref="QANodeRepositoryImpl"/>
+        <constructor-arg name="qaRepository" ref="QARepositoryImpl"/>
     </bean>
 </beans>
