@@ -57,6 +57,35 @@ public class QARepositoryImpl implements QARepository, AwareAlfrescoDeletion {
     }
 
     @Override
+    public List<QAEntry> saveAll(List<QAEntry> entries) {
+        MongoCollection<QAEntry> collection = getCollection();
+
+        List<WriteModel<QAEntry>> bulkOperations = entries.stream()
+                .map(entry -> {
+                    if (StringUtils.isBlank(entry.getId())) {
+                        return new InsertOneModel<>(entry);
+                    } else {
+                        return new ReplaceOneModel<>(
+                                Filters.eq(new ObjectId(entry.getId())),
+                                entry);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        BulkWriteResult bulkWriteResult = collection.bulkWrite(bulkOperations, new BulkWriteOptions().ordered(true));
+
+        List<ObjectId> ids = Stream.concat(
+                bulkWriteResult.getInserts().stream().map(BulkWriteInsert::getId).map(BsonValue::asObjectId).map(BsonObjectId::getValue),
+                entries.stream().map(QAEntry::getId).filter(x -> !StringUtils.isBlank(x)).map(ObjectId::new)
+        ).collect(Collectors.toList());
+
+        return collection
+                .find(Filters.in(ID, ids), QAEntry.class)
+                .into(new ArrayList<>());
+    }
+
+
+    @Override
     public List<QAEntry> saveAny(List<QAEntry> entries) {
         MongoCollection<QAEntry> collection = getCollection();
 

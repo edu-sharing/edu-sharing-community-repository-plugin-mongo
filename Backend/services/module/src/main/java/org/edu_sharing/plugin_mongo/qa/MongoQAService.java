@@ -20,18 +20,51 @@ public class MongoQAService implements QAService {
     private final QARepository qaRepository;
 
     @Override
-    public void createOrUpdateQAEntries(@NotNull String nodeId, List<CreateOrUpdateQAEntryDTO> qaEntries) {
+    public List<QAEntry> createQAEntries(@NotNull String nodeId, List<CreateOrUpdateQAEntryDTO> qaEntries) {
+        String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+
+        List<QAEntry> entries = qaEntries.stream()
+                .peek(x -> {
+                    x.setQuestion(x.getQuestion().trim());
+                    x.setAnswer(x.getAnswer().trim());
+                    if (StringUtils.isNotBlank(x.getId())) {
+                        throw new IllegalArgumentException("id needs to be null");
+                    }
+                })
+                .map(x -> new QAEntry(
+                        null,
+                        nodeId,
+                        x.getQuestion(),
+                        x.getAnswer(),
+                        x.getUsedText(),
+                        x.getEducationalLevel(),
+                        new Date(),
+                        currentUser,
+                        null,
+                        null,
+                        false)
+                )
+                .collect(Collectors.toList());
+
+        return qaRepository.saveAll(entries);
+    }
+
+    @Override
+    public List<QAEntry> updateQAEntries(@NotNull String nodeId, List<CreateOrUpdateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         Map<String, QAEntry> knownEntities = qaRepository.findAllByNodeIdAndCreator(nodeId, currentUser)
                 .stream()
                 .collect(Collectors.toMap(QAEntry::getId, x -> x));
 
         List<QAEntry> entries = qaEntries.stream()
-                .peek(x->{
+                .peek(x -> {
                     x.setQuestion(x.getQuestion().trim());
                     x.setAnswer(x.getAnswer().trim());
+                    if (StringUtils.isBlank(x.getId())) {
+                        throw new IllegalArgumentException("id can't be null");
+                    }
                 })
-                .map(x -> Optional.ofNullable(x.getId())
+                .map(x -> Optional.of(x.getId())
                         .map(knownEntities::get)
                         .map(entry -> {
                             CreateOrUpdateQAEntryDTO knownEntity = new CreateOrUpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel());
@@ -48,30 +81,18 @@ public class MongoQAService implements QAService {
                                 }
                             }
                             return entry;
-                        })
-                        .orElse(new QAEntry(
-                                x.getId(),
-                                nodeId,
-                                x.getQuestion(),
-                                x.getAnswer(),
-                                x.getUsedText(),
-                                x.getEducationalLevel(),
-                                new Date(),
-                                currentUser,
-                                null,
-                                null,
-                                false)))
+                        }).orElse(null))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        qaRepository.saveAny(entries);
-
+        return qaRepository.saveAny(entries);
     }
 
     @NotNull
     @Override
     @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public List<QAEntry> getAllQAEntriesOf(@NotNull @NodePermission(CCConstants.PERMISSION_READ) String nodeId, String creator) {
-        if(StringUtils.isBlank(creator)){
+        if (StringUtils.isBlank(creator)) {
             return qaRepository.findAllByNodeId(nodeId);
         }
         return qaRepository.findAllByNodeIdAndCreator(nodeId, creator);
@@ -80,9 +101,9 @@ public class MongoQAService implements QAService {
     @Override
     @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void delete(@NotNull @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, String creator) {
-        if(StringUtils.isBlank(creator)){
+        if (StringUtils.isBlank(creator)) {
             qaRepository.deleteAllByNodeId(nodeId);
-        }else {
+        } else {
             qaRepository.deleteAllByNodeIdAndCreator(nodeId, creator);
         }
     }

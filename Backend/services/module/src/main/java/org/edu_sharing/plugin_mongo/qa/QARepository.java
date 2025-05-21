@@ -10,9 +10,11 @@ public interface QARepository {
 
     void deleteAllByNodeIdAndCreator(String nodeId, String creator);
 
-    List<QAEntry> saveAny(List<QAEntry> nodeEntries);
 
     void deleteAllById(List<String> ids);
 
     void deleteAllByNodeId(String nodeId);
+
+    List<QAEntry> saveAll(List<QAEntry> entries);
+    List<QAEntry> saveAny(List<QAEntry> nodeEntries);
 }
