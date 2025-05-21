@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.restservices.qa.v1.domain.CreateOrUpdateQAEntryDTO;
+import org.edu_sharing.restservices.qa.v1.domain.CreateQAEntryDTO;
+import org.edu_sharing.restservices.qa.v1.domain.UpdateQAEntryDTO;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
 import org.edu_sharing.service.qa.QAService;
@@ -20,16 +21,13 @@ public class MongoQAService implements QAService {
     private final QARepository qaRepository;
 
     @Override
-    public List<QAEntry> createQAEntries(@NotNull String nodeId, List<CreateOrUpdateQAEntryDTO> qaEntries) {
+    public List<QAEntry> createQAEntries(@NotNull String nodeId, List<CreateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
 
         List<QAEntry> entries = qaEntries.stream()
                 .peek(x -> {
                     x.setQuestion(x.getQuestion().trim());
                     x.setAnswer(x.getAnswer().trim());
-                    if (StringUtils.isNotBlank(x.getId())) {
-                        throw new IllegalArgumentException("id needs to be null");
-                    }
                 })
                 .map(x -> new QAEntry(
                         null,
@@ -50,7 +48,7 @@ public class MongoQAService implements QAService {
     }
 
     @Override
-    public List<QAEntry> updateQAEntries(@NotNull String nodeId, List<CreateOrUpdateQAEntryDTO> qaEntries) {
+    public List<QAEntry> updateQAEntries(@NotNull String nodeId, List<UpdateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         Map<String, QAEntry> knownEntities = qaRepository.findAllByNodeIdAndCreator(nodeId, currentUser)
                 .stream()
@@ -60,14 +58,11 @@ public class MongoQAService implements QAService {
                 .peek(x -> {
                     x.setQuestion(x.getQuestion().trim());
                     x.setAnswer(x.getAnswer().trim());
-                    if (StringUtils.isBlank(x.getId())) {
-                        throw new IllegalArgumentException("id can't be null");
-                    }
                 })
                 .map(x -> Optional.of(x.getId())
                         .map(knownEntities::get)
                         .map(entry -> {
-                            CreateOrUpdateQAEntryDTO knownEntity = new CreateOrUpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel());
+                            UpdateQAEntryDTO knownEntity = new UpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel());
                             if (!knownEntity.equals(x)) {
                                 entry.setAnswer(x.getAnswer());
                                 entry.setQuestion(x.getQuestion());
