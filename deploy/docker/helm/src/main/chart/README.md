@@ -5,6 +5,7 @@
 | Name                                      | Description                                    | Value                  |
 | ----------------------------------------- | ---------------------------------------------- | ---------------------- |
 | `global.annotations`                      | Define global annotations                      | `{}`                   |
+| `global.backup.velero.enabled`            | Enable velero backup                           | `false`                |
 | `global.cluster.domain`                   | Set global cluster domain                      | `cluster.local`        |
 | `global.cluster.istio.enabled`            | Enable Istio Service mesh                      | `false`                |
 | `global.cluster.pdb.enabled`              | Enable PDB                                     | `false`                |
