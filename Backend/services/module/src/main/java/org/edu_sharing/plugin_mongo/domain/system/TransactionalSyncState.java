@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class TransactionalSyncState {
     private Long lastTransactionId;
+    private Long lastTransactionTimestamp;
 }

@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.jobs.quarz;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.domain.qname.QNameDAO;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.solr.*;
@@ -24,163 +25,176 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @JobDescription(
-    description =
-        "This will delete all MongoDB documents where the corresponding node and all its references were deleted from alfresco")
+        description =
+                "This will delete all MongoDB documents where the corresponding node and all its references were deleted from alfresco")
 public class ObsoleteMongoEntriesDeletionJob extends AbstractJobMapAnnotationParams {
 
-  @JobFieldDescription(
-          description = "resets sync state. This will delete all data of the sync state and related collections",
-          sampleValue = "false")
-  protected boolean resetSyncState = false;
+    @JobFieldDescription(
+            description = "resets sync state. This will delete all data of the sync state and related collections",
+            sampleValue = "false")
+    protected boolean resetSyncState = false;
 
-  @JobFieldDescription(
-      description = "maximal transactions witch will be processed by this Job",
-      sampleValue = "5000")
-  protected int maxTransactionResults = 5000;
+    @JobFieldDescription(
+            description = "maximal transactions witch will be processed by this Job",
+            sampleValue = "5000")
+    protected int maxTransactionResults = 5000;
 
-  @JobFieldDescription(
-          description = "maximal number of checks against deleted nodes witch will be processed by this Job",
-          sampleValue = "5000")
-  protected int maxDeletedNodeChecks = 5000;
+    @JobFieldDescription(
+            description = "maximal number of checks against deleted nodes which will be processed by this Job",
+            sampleValue = "5000")
+    protected int maxDeletedNodeChecks = 5000;
 
-  @Autowired private SearchTrackingComponent trackingComponent;
-  @Autowired private MongoAlfrescoSyncStateRepository repository;
-  @Autowired private QNameDAO qnameDAO;
+    @Autowired
+    private SearchTrackingComponent trackingComponent;
+    @Autowired
+    private MongoAlfrescoSyncStateRepository repository;
+    @Autowired
+    private QNameDAO qnameDAO;
 
-  @Autowired(required = false)
-  private List<AwareAlfrescoDeletion> awareAlfrescoDeletions = new ArrayList<>();
+    @Autowired(required = false)
+    private List<AwareAlfrescoDeletion> awareAlfrescoDeletions = new ArrayList<>();
 
-  @Autowired private QueryBuilder queryBuilder;
-  @Autowired private SearchService searchService;
+    @Autowired
+    private QueryBuilder queryBuilder;
+    @Autowired
+    private SearchService searchService;
 
-  @Autowired private RetryingTransactionHelper retryingTransactionHelper;
+    @Autowired
+    private RetryingTransactionHelper retryingTransactionHelper;
 
-  @Override
-  public void executeInternal(JobExecutionContext jobExecutionContext) {
-    retryingTransactionHelper.doInTransaction(this::trackRepository);
-  }
-
-  private Void trackRepository() {
-    return AuthenticationUtil.runAsSystem(this::trackTransactions);
-  }
-
-  private Void trackTransactions() {
-
-    if(resetSyncState){
-      repository.reset();
+    @Override
+    public void executeInternal(JobExecutionContext jobExecutionContext) {
+        retryingTransactionHelper.doInTransaction(this::trackRepository);
     }
 
-    List<Transaction> transactions;
-    do {
-      TransactionalSyncState syncState = repository.getTransactionalSyncState();
-      Long minTxnId =
-          Optional.of(syncState)
-              .map(TransactionalSyncState::getLastTransactionId)
-              .map(id -> id + 1)
-              .orElse(0L);
+    private Void trackRepository() {
+        return AuthenticationUtil.runAsSystem(this::trackTransactions);
+    }
 
-      Long maxTxnId = minTxnId + maxTransactionResults;
+    private Void trackTransactions() {
 
-      transactions = trackingComponent.getTransactions(minTxnId, null, maxTxnId, null, maxTransactionResults);
+        if (resetSyncState) {
+            repository.reset();
+        }
 
-      Transaction latestTransaction =
-          transactions.size() > 0 ? transactions.get(transactions.size() - 1) : null;
+        List<Transaction> transactions;
+        do {
+            TransactionalSyncState syncState = repository.getTransactionalSyncState();
+            long nextTransactionId = Optional.of(syncState)
+                    .map(TransactionalSyncState::getLastTransactionId)
+                    .map(id -> id + 1)
+                    .orElse(0L);
 
-      if (latestTransaction == null
-          || Objects.equals(syncState.getLastTransactionId(), latestTransaction.getId())) {
-        logger.info("nothing to do");
-        break;
-      }
+            long lastTransactionTimestamp = Optional.of(syncState)
+                    .map(TransactionalSyncState::getLastTransactionTimestamp)
+                    .orElse(0L);
 
-      NodeParameters nodeParameters = new NodeParameters();
-      nodeParameters.setTransactionIds(
-          transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
+            log.info("starting nextTransactionId: {} lastTransactionTimestamp: {} maxTransactionResults: {}", nextTransactionId, lastTransactionTimestamp, maxTransactionResults);
 
-      Set<String> nodeIdsToKeepTracking = new HashSet<>();
-      Set<String> nodeIdsToDelete = new HashSet<>();
-      trackingComponent.getNodes(
-          nodeParameters,
-          node -> {
-            if (!node.getNodeStatus(qnameDAO).isDeleted()) {
-              return true;
-            }
-
-            if (isReferenced(node.getNodeRef())) {
-              nodeIdsToKeepTracking.add(node.getNodeRef().getId());
+            if (lastTransactionTimestamp > 0) {
+                transactions = trackingComponent.getTransactions(null, lastTransactionTimestamp, null, null, maxTransactionResults);
             } else {
-              nodeIdsToDelete.add(node.getNodeRef().getId());
+                log.warn("no last transaction timestamp, need to fallback to id mode, txnId {}", nextTransactionId);
+                transactions = trackingComponent.getTransactions(nextTransactionId, null, null, null, maxTransactionResults);
+            }
+            Transaction latestTransaction =
+                    !transactions.isEmpty() ? transactions.get(transactions.size() - 1) : null;
+
+            if (latestTransaction == null
+                    || Objects.equals(syncState.getLastTransactionId(), latestTransaction.getId())) {
+                logger.info("nothing to do");
+                break;
             }
 
-            return true;
-          });
+            NodeParameters nodeParameters = new NodeParameters();
+            nodeParameters.setTransactionIds(transactions.stream().map(Transaction::getId).collect(Collectors.toList()));
 
-      if (nodeIdsToDelete.size() > 0) {
-        awareAlfrescoDeletions.forEach(
-            x -> {
-              try {
-                x.OnDeletedInAlfresco(nodeIdsToDelete);
-              } catch (Exception ex) {
-                logger.error(ex.getMessage());
-              }
-            });
-      }
+            Set<String> nodeIdsToKeepTracking = new HashSet<>();
+            Set<String> nodeIdsToDelete = new HashSet<>();
+            trackingComponent.getNodes(
+                    nodeParameters,
+                    node -> {
+                        if (!node.getNodeStatus(qnameDAO).isDeleted()) {
+                            return true;
+                        }
 
-      syncState.setLastTransactionId(latestTransaction.getId());
-      repository.setTransactionalSyncState(syncState);
-      repository.setDeletedNodeIdsToTrack(nodeIdsToKeepTracking);
+                        if (isReferenced(node.getNodeRef())) {
+                            nodeIdsToKeepTracking.add(node.getNodeRef().getId());
+                        } else {
+                            nodeIdsToDelete.add(node.getNodeRef().getId());
+                        }
 
-    } while (transactions.size() > 0);
+                        return true;
+                    });
 
-    List<String> deletedNodeIdsToTrack = repository.getDeletedNodeIdsToTrack(maxDeletedNodeChecks);
-    Set<String> nodeIdsToDelete = new HashSet<>();
-    Set<String> nodeIdsToKeepTracking = new HashSet<>(deletedNodeIdsToTrack);
-    deletedNodeIdsToTrack.forEach(
-        x -> {
-          if (!isReferenced(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, x))) {
-            nodeIdsToDelete.add(x);
-            nodeIdsToKeepTracking.remove(x);
-          }
-        });
-
-    if (nodeIdsToDelete.size() > 0) {
-      awareAlfrescoDeletions.forEach(
-          x -> {
-            try {
-              x.OnDeletedInAlfresco(nodeIdsToDelete);
-            } catch (Exception ex) {
-              logger.error(ex.getMessage());
+            if (!nodeIdsToDelete.isEmpty()) {
+                awareAlfrescoDeletions.forEach(
+                        x -> {
+                            try {
+                                x.OnDeletedInAlfresco(nodeIdsToDelete);
+                            } catch (Exception ex) {
+                                logger.error(ex.getMessage());
+                            }
+                        });
             }
-          });
+
+            syncState.setLastTransactionId(latestTransaction.getId());
+            repository.setTransactionalSyncState(syncState);
+            repository.setDeletedNodeIdsToTrack(nodeIdsToKeepTracking);
+
+        } while (!transactions.isEmpty());
+
+        List<String> deletedNodeIdsToTrack = repository.getDeletedNodeIdsToTrack(maxDeletedNodeChecks);
+        Set<String> nodeIdsToDelete = new HashSet<>();
+        Set<String> nodeIdsToKeepTracking = new HashSet<>(deletedNodeIdsToTrack);
+        deletedNodeIdsToTrack.forEach(
+                x -> {
+                    if (!isReferenced(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, x))) {
+                        nodeIdsToDelete.add(x);
+                        nodeIdsToKeepTracking.remove(x);
+                    }
+                });
+
+        if (!nodeIdsToDelete.isEmpty()) {
+            awareAlfrescoDeletions.forEach(
+                    x -> {
+                        try {
+                            x.OnDeletedInAlfresco(nodeIdsToDelete);
+                        } catch (Exception ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    });
+        }
+        repository.removeDeletedNodeIdsToTrack(nodeIdsToDelete);
+        repository.setDeletedNodeIdsToTrack(nodeIdsToKeepTracking);
+
+        return null;
     }
-    repository.removeDeletedNodeIdsToTrack(nodeIdsToDelete);
-    repository.setDeletedNodeIdsToTrack(nodeIdsToKeepTracking);
 
-    return null;
-  }
+    private boolean isReferenced(NodeRef nodeRef) {
+        QueryStatement query =
+                Query.select(CCConstants.SYS_PROP_NODE_UID)
+                        .from(CCConstants.CCM_TYPE_IO)
+                        .where(
+                                Filters.or(
+                                        Filters.and(
+                                                Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
+                                                Filters.eq(CCConstants.CCM_PROP_IO_ORIGINAL, nodeRef.getId())),
+                                        Filters.and(
+                                                Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
+                                                Filters.eq(CCConstants.CCM_PROP_IO_PUBLISHED_ORIGINAL, nodeRef.toString()))));
 
-  private boolean isReferenced(NodeRef nodeRef) {
-    QueryStatement query =
-            Query.select(CCConstants.SYS_PROP_NODE_UID)
-                    .from(CCConstants.CCM_TYPE_IO)
-                    .where(
-                            Filters.or(
-                                    Filters.and(
-                                            Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
-                                            Filters.eq(CCConstants.CCM_PROP_IO_ORIGINAL, nodeRef.getId())),
-                                    Filters.and(
-                                            Filters.neq(CCConstants.SYS_PROP_NODE_UID, nodeRef.toString()),
-                                            Filters.eq(CCConstants.CCM_PROP_IO_PUBLISHED_ORIGINAL, nodeRef.toString()))));
+        SearchParameters searchParameters = new SearchParameters();
+        searchParameters.setLanguage(SearchService.LANGUAGE_CMIS_ALFRESCO);
+        searchParameters.setMaxPermissionChecks(0);
+        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        searchParameters.addStore(StoreRef.STORE_REF_ARCHIVE_SPACESSTORE);
+        searchParameters.setMaxItems(1); // We only need at least one
+        searchParameters.setQuery(queryBuilder.build(query));
 
-    SearchParameters searchParameters = new SearchParameters();
-    searchParameters.setLanguage(SearchService.LANGUAGE_CMIS_ALFRESCO);
-    searchParameters.setMaxPermissionChecks(0);
-    searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-    searchParameters.addStore(StoreRef.STORE_REF_ARCHIVE_SPACESSTORE);
-    searchParameters.setMaxItems(1); // We only need at least one
-    searchParameters.setQuery(queryBuilder.build(query));
-
-    ResultSet result = searchService.query(searchParameters);
-    return result.getNumberFound() > 0;
-  }
+        ResultSet result = searchService.query(searchParameters);
+        return result.getNumberFound() > 0;
+    }
 }
