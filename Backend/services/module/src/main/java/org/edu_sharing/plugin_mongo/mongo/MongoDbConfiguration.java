@@ -31,7 +31,7 @@ import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor(onConstructor_ = @Autowired(required = false))
-@EnableMongoRepositories(basePackages = "org.edu_sharing.plugin_mongo.repository")
+@EnableMongoRepositories(basePackages = "org.edu_sharing.plugin_mongo")
 public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
 
     @NonNull final MongoSettings mongoSettings;
@@ -102,4 +102,6 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
     MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory){
         return new MongoTransactionManager(dbFactory);
     }
+
+
 }
