@@ -20,7 +20,6 @@ public class DeleteAuthorityMongoAlfOpLogData implements MongoAlfOpLogData {
     private String id;
     private String nodeId;
     private Date timestamp;
-
 }
 
 

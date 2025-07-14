@@ -10,14 +10,17 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogData;
+import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogRetryHandler;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogTransactionListener;
+import org.edu_sharing.plugin_mongo.oplog.authority.DeleteAuthorityMongoAlfOpLogData;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MongodbPersonDeleteOpLogProducer implements NodeServicePolicies.BeforeDeleteNodePolicy {
+public class MongodbPersonDeleteOpLogProducer implements MongoAlfOpLogRetryHandler<DeletePersonMongoAlfOpLogData>, NodeServicePolicies.BeforeDeleteNodePolicy {
 
     private final ObjectProvider<MongodbPersonDeletedAware> deletedAwareProvider;
     private final PolicyComponent policyComponent;
@@ -45,5 +48,30 @@ public class MongodbPersonDeleteOpLogProducer implements NodeServicePolicies.Bef
     public void onHandleCommit(DeletePersonMongoAlfOpLogData entity) {
         deletedAwareProvider.orderedStream()
                 .forEach(bean -> bean.onPersonDeleted(entity));
+    }
+
+
+    @Override
+    public Class<DeletePersonMongoAlfOpLogData> getRetryableType() {
+        return DeletePersonMongoAlfOpLogData.class;
+    }
+
+    @Override
+    public void retry(MongoAlfOpLogData opLogData) {
+        if(!(opLogData instanceof DeletePersonMongoAlfOpLogData)){
+            throw new IllegalArgumentException("Oplog data must be of type DeletePersonMongoAlfOpLogData!");
+        }
+        DeletePersonMongoAlfOpLogData data = (DeletePersonMongoAlfOpLogData)opLogData;
+        if(data.getNodeId() == null){
+            log.error("Node id must not be null!");
+            return;
+        }
+
+        if(nodeService.exists(new NodeRef(data.getNodeId()))){
+            log.warn("Node {} does exist, skipping delete action!", data.getNodeId());
+            return;
+        }
+
+        onHandleCommit(data);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.data.annotation.TypeAlias;
 public class DeletePersonMongoAlfOpLogData implements MongoAlfOpLogData {
     private String nodeId;
     private String username;
-
 }
 
 
