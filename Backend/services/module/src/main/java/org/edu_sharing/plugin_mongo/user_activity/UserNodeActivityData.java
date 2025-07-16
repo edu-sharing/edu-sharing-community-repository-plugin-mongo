@@ -11,7 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document("user_node_events")
-@CompoundIndex(def = "{'nodeId': 1, 'userId': 1, 'type': 1}", unique = true)
 public class UserNodeActivityData {
     String nodeId;
     String userId;
