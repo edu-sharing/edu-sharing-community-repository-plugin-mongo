@@ -13,7 +13,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogData;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogRetryHandler;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogTransactionListener;
-import org.edu_sharing.plugin_mongo.oplog.authority.DeleteAuthorityMongoAlfOpLogData;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

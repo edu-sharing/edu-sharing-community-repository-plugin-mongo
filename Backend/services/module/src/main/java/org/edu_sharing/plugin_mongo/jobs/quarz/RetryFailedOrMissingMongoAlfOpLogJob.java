@@ -57,9 +57,9 @@ public class RetryFailedOrMissingMongoAlfOpLogJob extends AbstractJobMapAnnotati
     private List<MongoAlfOpLogRetryHandler<?>> retryHandlers;
 
     @JobFieldDescription(
-            description = "We need to set an min time offset in milliseconds, so that no running transactions are effected. The default is 10 min",
-            sampleValue = "36000000")
-    protected int minTimeOffset = 24*60*60*1000;
+            description = "We need to set an min time offset in milliseconds, so that no running transactions are effected. The default is 6h",
+            sampleValue = "216000000")
+    protected int minTimeOffset = 6*60*60*1000;
 
 
     @Override
