@@ -6,6 +6,7 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.edu_sharing.alfresco.service.guest.GuestService;
+import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogService;
 import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * Service responsible for tracking user activity on nodes. These actions are backed by the operational log.
+ * This service listens for {@link ActivityOnNodeEvent} events and processes the events asynchronously to
+ * log user interactions with nodes.
+ *
+ * Responsibilities:
+ * - Ignoring events from guest users, system users, or null authority names.
+ * - Resolving the user associated with the authority name from the {@link PersonService}.
+ * - Registering actions such as node interactions in the operational log using the {@link MongoAlfOpLogService}.
+ *
+ * Dependencies:
+ * - {@link GuestService}: Used to determine whether a user is a guest.
+ * - {@link UserNodeActivityDataRepository}: Saves activity data into the MongoDB repository.
+ * - {@link PersonService}: Resolves user information from the authority name.
+ * - {@link MongoAlfOpLogService}: Handles registering operational log entries.
+ *
+ * Event Handling:
+ * - The {@code handleActivityOnNodeEvent} method listens for {@link ActivityOnNodeEvent} instances.
+ * - Filters out events based on guest users, system users, and invalid authority names.
+ * - Extracts activity details, including node reference, user ID, event type, and timestamp.
+ * - Registers the activity using {@link MongoAlfOpLogService}, which ensures the data is stored and processed
+ *   after transaction commit.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,6 +45,8 @@ public class UserNodeActivityTracker {
     private final GuestService guessService;
     private final UserNodeActivityDataRepository userNodeActivityDataRepository;
     private final PersonService personService;
+    private final MongoAlfOpLogService opLogService;
+
 
     @Async
     @EventListener
@@ -33,15 +59,15 @@ public class UserNodeActivityTracker {
         }
 
         NodeRef person = personService.getPerson(event.getAuthorityName());
-        if(person == null){
+        if (person == null) {
             return;
         }
 
-        userNodeActivityDataRepository.save(new UserNodeActivityData(
+        opLogService.registerOpLogAction(new UserNodeActivityData(
                 event.getNodeRef().getId(),
                 person.getId(),
                 event.getType().name(),
                 new Date()
-        ));
+        ), userNodeActivityDataRepository::save);
     }
 }

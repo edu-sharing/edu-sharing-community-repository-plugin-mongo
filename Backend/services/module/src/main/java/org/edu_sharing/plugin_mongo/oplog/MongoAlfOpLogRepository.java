@@ -7,10 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
-/*
- * TODO Scheduled job for cleanup
- *  TODO aware log order
- */
 @Repository
 public interface MongoAlfOpLogRepository extends MongoRepository<MongoAlfOpLog, String> {
 

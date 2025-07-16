@@ -19,6 +19,11 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Service implementation for managing user activity data on nodes using MongoDB.
+ * This class provides functionality to retrieve and manage user activity records,
+ * including handling permission checks and purging user data upon deletion of a user.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
