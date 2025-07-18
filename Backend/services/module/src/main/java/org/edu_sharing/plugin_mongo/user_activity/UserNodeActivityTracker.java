@@ -64,8 +64,10 @@ public class UserNodeActivityTracker {
         }
 
         opLogService.registerOpLogAction(new UserNodeActivityData(
+                null,
                 event.getNodeRef().getId(),
                 person.getId(),
+                event.getAuthorityName(),
                 event.getType().name(),
                 new Date()
         ), userNodeActivityDataRepository::save);

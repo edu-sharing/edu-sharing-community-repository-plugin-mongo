@@ -14,6 +14,7 @@ import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.*;
@@ -40,6 +41,12 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
     @Nullable final List<Codec<?>> codecs;
     @Nullable final List<CodecProvider> codecProviders;
 
+    @Override
+    protected boolean autoIndexCreation() {
+        return true;
+    }
+
+    @NotNull
     @Override
     protected String getDatabaseName() {
         return mongoSettings.getDatabase();
@@ -76,7 +83,6 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
         return builder.build();
     }
 
-
     //@Bean
     //@DependsOn({"mongoDbConfiguration"})
     public CodecRegistry codecRegistry(PojoCodecProvider pojoCodecProvider) {
@@ -99,9 +105,7 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
     }
 
     @Bean
-    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory){
+    public MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory){
         return new MongoTransactionManager(dbFactory);
     }
-
-
 }

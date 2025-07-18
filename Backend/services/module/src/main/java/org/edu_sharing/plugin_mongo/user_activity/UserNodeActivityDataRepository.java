@@ -15,7 +15,7 @@ import java.util.List;
 public interface UserNodeActivityDataRepository extends MongoRepository<UserNodeActivityData, String> {
     void deleteAllByUserId(String userId);
 
-    List<UserNodeActivity> findAllByUserIdAndTimestampAfter(String username, Date after);
+    List<UserNodeActivityData> findAllByUserIdAndTimestampAfter(String username, Date after);
 
-    Page<UserNodeActivity> findAllByTimestampAfter(Date after, Pageable pageable);
+    Page<UserNodeActivityData> findAllByTimestampAfter(Date after, Pageable pageable);
 }

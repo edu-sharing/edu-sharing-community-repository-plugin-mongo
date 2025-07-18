@@ -39,13 +39,14 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
 
     @NotNull
     @Override
-    public Page<UserNodeActivity> getDataForAllUsers(@NotNull Date after, Pageable pageable) {
+    public Page<UserNodeActivity> getDataForAllUsers(@NotNull Date after, int skip, int limit) {
         String username = AuthenticationUtil.getFullyAuthenticatedUser();
         if (!AuthenticationUtil.getAdminUserName().equals(username)) {
             throw new InsufficientPermissionException("User " + username + " has no access to this data!");
         }
 
-        return userNodeActivityDataRepository.findAllByTimestampAfter(after, pageable);
+        Page<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Pageable.ofSize(limit).withPage(skip/limit));
+        return  allByTimestampAfter.map(UserNodeActivity.class::cast);
     }
 
     @NotNull
@@ -62,7 +63,8 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
             throw new IllegalArgumentException("Person with username " + username + " does not exist!");
         }
 
-        return userNodeActivityDataRepository.findAllByUserIdAndTimestampAfter(nodeRef.getId(), after);
+        List<UserNodeActivityData> allByUserIdAndTimestampAfter = userNodeActivityDataRepository.findAllByUserIdAndTimestampAfter(nodeRef.getId(), after);
+        return allByUserIdAndTimestampAfter.stream().map(UserNodeActivity.class::cast).toList();
     }
 
 
