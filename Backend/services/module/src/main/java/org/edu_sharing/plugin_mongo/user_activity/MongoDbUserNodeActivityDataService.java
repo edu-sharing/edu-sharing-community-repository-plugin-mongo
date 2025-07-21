@@ -9,6 +9,8 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.edu_sharing.plugin_mongo.oplog.person.DeletePersonMongoAlfOpLogData;
 import org.edu_sharing.plugin_mongo.oplog.person.MongodbPersonDeletedAware;
 import org.edu_sharing.service.InsufficientPermissionException;
+import org.edu_sharing.service.search.SearchServiceElastic;
+import org.edu_sharing.service.search.SearchServiceFactory;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivity;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivityDataService;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +34,8 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
     private final PersonService personService;
 
     @PostConstruct
-    void init(){
-      log.info("Initializing MongoDbUserNodeActivityDataService");
+    void init() {
+        log.info("Initializing MongoDbUserNodeActivityDataService");
     }
 
 
@@ -45,8 +47,8 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
             throw new InsufficientPermissionException("User " + username + " has no access to this data!");
         }
 
-        Page<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Pageable.ofSize(limit).withPage(skip/limit));
-        return  allByTimestampAfter.map(UserNodeActivity.class::cast);
+        Page<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Pageable.ofSize(limit).withPage(skip / limit));
+        return allByTimestampAfter.map(UserNodeActivity.class::cast);
     }
 
     @NotNull
@@ -59,7 +61,7 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
         }
 
         NodeRef nodeRef = personService.getPersonOrNull(username);
-        if(nodeRef == null) {
+        if (nodeRef == null) {
             throw new IllegalArgumentException("Person with username " + username + " does not exist!");
         }
 
@@ -70,5 +72,7 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
     @Override
     public void onPersonDeleted(DeletePersonMongoAlfOpLogData actionData) {
         userNodeActivityDataRepository.deleteAllByUserId(actionData.getNodeId());
+        SearchServiceElastic elasticSearchService = (SearchServiceElastic) SearchServiceFactory.getLocalService();
+        elasticSearchService.deleteUserActivitiesByUsername(actionData.getUsername());
     }
 }
