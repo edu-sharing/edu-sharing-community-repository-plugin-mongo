@@ -67,7 +67,6 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
         return allByUserIdAndTimestampAfter.stream().map(UserNodeActivity.class::cast).toList();
     }
 
-
     @Override
     public void onPersonDeleted(DeletePersonMongoAlfOpLogData actionData) {
         userNodeActivityDataRepository.deleteAllByUserId(actionData.getNodeId());

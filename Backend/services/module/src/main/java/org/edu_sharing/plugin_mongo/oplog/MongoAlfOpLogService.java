@@ -47,6 +47,14 @@ public class MongoAlfOpLogService {
      *                            processing for the committed log.
      */
     public <T extends MongoAlfOpLogData> void registerOpLogAction(@NonNull T loggingAction, @NonNull Consumer<T> handleCommitCallback) {
+
+        String transactionId = AlfrescoTransactionSupport.getTransactionId();
+        if(transactionId == null) {
+            log.debug("No transaction id found, skipping oplog action registration for {} and execute it immediately", loggingAction);
+            handleCommitCallback.accept(loggingAction);
+            return;
+        }
+
         MongoAlfOpLogTransactionListener<T> tMongoAlfOpLogTransactionListener = new MongoAlfOpLogTransactionListener<>(mongoAlfOpLogRepository, loggingAction, handleCommitCallback);
         AlfrescoTransactionSupport.bindListener(tMongoAlfOpLogTransactionListener);
         log.debug("Registered oplog action {} for transaction listener {}", loggingAction, tMongoAlfOpLogTransactionListener);
