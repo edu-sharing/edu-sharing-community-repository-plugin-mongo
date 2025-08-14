@@ -20,38 +20,38 @@ import org.springframework.stereotype.Component;
  * of "Person" nodes in a MongoDB-backed Alfresco repository. This class listens to
  * the Alfresco BeforeDeleteNodePolicy for "Person" content types, logs delete operations,
  * and provides retry handling for the logged actions.
- *
+ * <p>
  * Implements:
  * - {@link MongoAlfOpLogRetryHandler} to provide retry capabilities for failed
- *   MongoDB operation log handling.
+ * MongoDB operation log handling.
  * - {@link NodeServicePolicies.BeforeDeleteNodePolicy} to listen for "Person"
- *   node deletion events.
- *
+ * node deletion events.
+ * <p>
  * Responsibilities:
  * - Registers itself as a BeforeDeleteNodePolicy for "Person" nodes during initialization.
  * - Logs a delete operation by using {@link MongoAlfOpLogService#registerOpLogAction}
- *   whenever a "Person" node is about to be deleted.
+ * whenever a "Person" node is about to be deleted.
  * - Invokes external handlers implementing {@link MongodbPersonDeletedAware}
- *   after a delete operation is committed.
+ * after a delete operation is committed.
  * - Retries handling of failed delete operation logs with appropriate validation
- *   of operation log data.
- *
+ * of operation log data.
+ * <p>
  * Dependencies:
  * - {@link ObjectProvider<MongodbPersonDeletedAware>} to access handlers
- *   that process person deletion-related actions.
+ * that process person deletion-related actions.
  * - {@link PolicyComponent} to register custom class behavior policies in Alfresco.
  * - {@link NodeService} to interact with the node repository including
- *   retrieving node properties and checking existence.
+ * retrieving node properties and checking existence.
  * - {@link MongoAlfOpLogService} to register and process delete-related operational logs.
- *
+ * <p>
  * Behavior:
  * - During initialization, binds to Alfresco's BeforeDeleteNodePolicy for "Person" nodes.
  * - Before a "Person" node is deleted, logs the delete operation using
- *   {@link MongoAlfOpLogService}, passing the node ID and username.
+ * {@link MongoAlfOpLogService}, passing the node ID and username.
  * - Sends the delete person operation to all registered {@link MongodbPersonDeletedAware}
- *   beans when the operation log is processed.
+ * beans when the operation log is processed.
  * - Validates operation log data during retries, ensuring node existence
- *   and appropriate data structure.
+ * and appropriate data structure.
  */
 @Slf4j
 @Component
@@ -73,7 +73,7 @@ public class MongodbPersonDeleteOpLogProducer implements MongoAlfOpLogRetryHandl
 
     @Override
     public void beforeDeleteNode(NodeRef nodeRef) {
-        String userName = (String)nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
+        String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
         opLogService.registerOpLogAction(new DeletePersonMongoAlfOpLogData(nodeRef.getId(), userName), this::onHandleCommit);
     }
 
@@ -90,16 +90,15 @@ public class MongodbPersonDeleteOpLogProducer implements MongoAlfOpLogRetryHandl
 
     @Override
     public void retry(MongoAlfOpLogData opLogData) {
-        if(!(opLogData instanceof DeletePersonMongoAlfOpLogData)){
-            throw new IllegalArgumentException("Oplog data must be of type DeletePersonMongoAlfOpLogData!");
+        if (!(opLogData instanceof DeletePersonMongoAlfOpLogData data)) {
+            throw new IllegalArgumentException("Oplog data must be of type " + DeletePersonMongoAlfOpLogData.class.getSimpleName() + "!");
         }
-        DeletePersonMongoAlfOpLogData data = (DeletePersonMongoAlfOpLogData)opLogData;
-        if(data.getNodeId() == null){
+        if (data.getNodeId() == null) {
             log.error("Node id must not be null!");
             return;
         }
 
-        if(nodeService.exists(new NodeRef(data.getNodeId()))){
+        if (nodeService.exists(new NodeRef(data.getNodeId()))) {
             log.warn("Node {} does exist, skipping delete action!", data.getNodeId());
             return;
         }
