@@ -21,7 +21,8 @@ public class MongoQAService implements QAService {
     private final QARepository qaRepository;
 
     @Override
-    public List<QAEntry> createQAEntries(@NotNull String nodeId, List<CreateQAEntryDTO> qaEntries) {
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    public List<QAEntry> createQAEntries(@NotNull @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, List<CreateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
 
         List<QAEntry> entries = qaEntries.stream()
@@ -48,7 +49,8 @@ public class MongoQAService implements QAService {
     }
 
     @Override
-    public List<QAEntry> updateQAEntries(@NotNull String nodeId, List<UpdateQAEntryDTO> qaEntries) {
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    public List<QAEntry> updateQAEntries(@NotNull @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, List<UpdateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         Map<String, QAEntry> knownEntities = qaRepository.findAllByNodeIdAndCreator(nodeId, currentUser)
                 .stream()
@@ -85,7 +87,7 @@ public class MongoQAService implements QAService {
 
     @NotNull
     @Override
-    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    @Permission
     public List<QAEntry> getAllQAEntriesOf(@NotNull @NodePermission(CCConstants.PERMISSION_READ) String nodeId, String creator) {
         if (StringUtils.isBlank(creator)) {
             return qaRepository.findAllByNodeId(nodeId);
@@ -104,6 +106,7 @@ public class MongoQAService implements QAService {
     }
 
     @Override
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void delete(@NotNull List<String> ids) {
         qaRepository.deleteAllById(ids);
     }
