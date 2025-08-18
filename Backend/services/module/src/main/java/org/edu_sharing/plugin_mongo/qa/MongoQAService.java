@@ -64,17 +64,23 @@ public class MongoQAService implements QAService {
                 .map(x -> Optional.of(x.getId())
                         .map(knownEntities::get)
                         .map(entry -> {
-                            UpdateQAEntryDTO knownEntity = new UpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel());
+                            UpdateQAEntryDTO knownEntity = new UpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel(), null);
                             if (!knownEntity.equals(x)) {
                                 entry.setAnswer(x.getAnswer());
                                 entry.setQuestion(x.getQuestion());
                                 entry.setUsedText(x.getUsedText());
                                 entry.setEducationalLevel(x.getEducationalLevel());
 
-                                if (!currentUser.equals(entry.getCreatedBy())) {
-                                    entry.setReviewedBy(currentUser);
-                                    entry.setLastReviewed(new Date());
-                                    entry.setEdited(true);
+                                if(x.getReviewed() != null) {
+                                    if (x.getReviewed()) {
+                                        entry.setReviewedBy(currentUser);
+                                        entry.setLastReviewed(new Date());
+                                        entry.setEdited(true);
+                                    } else {
+                                        entry.setReviewedBy(null);
+                                        entry.setLastReviewed(null);
+                                        entry.setEdited(true);
+                                    }
                                 }
                             }
                             return entry;
