@@ -124,7 +124,7 @@ public class QARepositoryImpl implements QARepository, AwareAlfrescoDeletion {
 
     @Override
     public void deleteAllById(List<String> ids) {
-        getCollection().deleteMany(Filters.in(ID, ids));
+        getCollection().deleteMany(Filters.in(ID, ids.stream().map(ObjectId::new).collect(Collectors.toList())));
     }
 
     @NotNull
