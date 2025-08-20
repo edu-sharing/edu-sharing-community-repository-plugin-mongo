@@ -145,7 +145,7 @@
         <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
-        <constructor-arg name="serviceFactory" ref="notificationServiceFactory"/>
+        <constructor-arg name="notificationService" ref="notificationService"/>
     </bean>
 
     <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
@@ -155,6 +155,8 @@
     </bean>
 
     <bean id="suggestionService" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
+<!--      <constructor-arg name="dictionaryComponent" ref="dictionaryComponent"/>-->
+<!--      <constructor-arg name="repository" ref="suggestionRepository"/>-->
     </bean>
 
     <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>

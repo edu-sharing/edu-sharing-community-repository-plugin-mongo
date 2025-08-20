@@ -10,7 +10,6 @@ import org.bson.Document;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.factory.ServiceFactory;
 import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.notification.NotificationService;
@@ -48,9 +47,6 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     private NodeService nodeService;
 
     @Mock
-    private ServiceFactory serviceFactory;
-
-    @Mock
     private NotificationService notificationService;
 
 
@@ -69,8 +65,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 createRatingObject("2", "Bach", null, "good bead", 5d, DateUtils.addDays(now, -3))
         ));
 
-        Mockito.when(serviceFactory.getLocalService()).thenReturn(notificationService);
-        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService, serviceFactory);
+        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService, notificationService);
 
         Mockito.lenient()
                 .when(nodeService.getOriginalNode(anyString()))

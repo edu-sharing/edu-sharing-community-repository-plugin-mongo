@@ -4,7 +4,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
-import com.mongodb.client.result.DeleteResult;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.bson.Document;
@@ -17,11 +16,9 @@ import org.edu_sharing.plugin_mongo.mongo.codec.NodeRefCodec;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.repository.AwareAlfrescoDeletion;
 import org.edu_sharing.repository.client.tools.CCConstants;
-import org.edu_sharing.service.factory.ServiceFactory;
 import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
 import org.edu_sharing.service.notification.NotificationService;
-import org.edu_sharing.service.notification.NotificationServiceFactoryUtility;
 import org.edu_sharing.service.notification.Status;
 import org.edu_sharing.service.permission.annotation.NodePermission;
 import org.edu_sharing.service.permission.annotation.Permission;
@@ -49,7 +46,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
     private final NodeService nodeService;
     private final NotificationService notificationService;
 
-    public RatingServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService, ServiceFactory serviceFactory) {
+    public RatingServiceImpl(MongoDatabaseFactory mongoDatabaseFactory, NodeService nodeService, IntegrityService integrityService, NotificationService notificationService) {
 
         ClassModelBuilder<Rating> ratingClassModelBuilder = ClassModel.builder(Rating.class);
         ((PropertyModelBuilder<String>) ratingClassModelBuilder.getProperty("text")).writeName(RatingConstants.REASON_KEY);
@@ -77,7 +74,7 @@ public class RatingServiceImpl implements RatingService, AwareAlfrescoDeletion {
         this.database = mongoDatabaseFactory.getMongoDatabase().withCodecRegistry(pojoCodecRegistry);
         this.integrityService = integrityService;
         this.nodeService = nodeService;
-        this.notificationService = serviceFactory.getLocalService();
+        this.notificationService = notificationService;
     }
 
     /**
