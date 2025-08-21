@@ -14,6 +14,7 @@ import org.edu_sharing.service.search.SearchServiceFactory;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivity;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivityDataService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,14 +42,17 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
 
     @NotNull
     @Override
-    public Page<UserNodeActivity> getDataForAllUsers(@NotNull Date after, int skip, int limit) {
+    public List<UserNodeActivity> getDataForAllUsers(@NotNull Date after, int limit) {
         String username = AuthenticationUtil.getFullyAuthenticatedUser();
         if (!AuthenticationUtil.getAdminUserName().equals(username)) {
             throw new InsufficientPermissionException("User " + username + " has no access to this data!");
         }
 
-        Page<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Pageable.ofSize(limit).withPage(skip / limit));
-        return allByTimestampAfter.map(UserNodeActivity.class::cast);
+        List<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Limit.of(limit));
+        return allByTimestampAfter
+                .stream()
+                .map(UserNodeActivity.class::cast)
+                .toList();
     }
 
     @NotNull

@@ -1,5 +1,6 @@
 package org.edu_sharing.plugin_mongo.user_activity;
 
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,5 +15,5 @@ public interface UserNodeActivityDataRepository extends MongoRepository<UserNode
 
     List<UserNodeActivityData> findAllByUserIdAndTimestampAfter(String username, Date after);
 
-    Page<UserNodeActivityData> findAllByTimestampAfter(Date after, Pageable pageable);
+    List<UserNodeActivityData> findAllByTimestampAfter(Date after, Limit limit);
 }
