@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.edu_sharing.alfresco.service.guest.GuestService;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogService;
+import org.edu_sharing.repository.server.tools.security.RunAsSystem;
 import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -49,6 +50,7 @@ public class UserNodeActivityTracker {
 
 
     @Async
+    @RunAsSystem
     @EventListener
     public void handleActivityOnNodeEvent(ActivityOnNodeEvent event) {
         if (event.getAuthorityName() == null
