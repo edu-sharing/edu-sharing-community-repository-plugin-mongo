@@ -21,7 +21,8 @@ public class MongoQAService implements QAService {
     private final QARepository qaRepository;
 
     @Override
-    public List<QAEntry> createQAEntries(@NotNull String nodeId, List<CreateQAEntryDTO> qaEntries) {
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    public List<QAEntry> createQAEntries(@NotNull @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, List<CreateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
 
         List<QAEntry> entries = qaEntries.stream()
@@ -48,7 +49,8 @@ public class MongoQAService implements QAService {
     }
 
     @Override
-    public List<QAEntry> updateQAEntries(@NotNull String nodeId, List<UpdateQAEntryDTO> qaEntries) {
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    public List<QAEntry> updateQAEntries(@NotNull @NodePermission(CCConstants.PERMISSION_WRITE) String nodeId, List<UpdateQAEntryDTO> qaEntries) {
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
         Map<String, QAEntry> knownEntities = qaRepository.findAllByNodeIdAndCreator(nodeId, currentUser)
                 .stream()
@@ -62,17 +64,23 @@ public class MongoQAService implements QAService {
                 .map(x -> Optional.of(x.getId())
                         .map(knownEntities::get)
                         .map(entry -> {
-                            UpdateQAEntryDTO knownEntity = new UpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel());
+                            UpdateQAEntryDTO knownEntity = new UpdateQAEntryDTO(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getUsedText(), entry.getEducationalLevel(), null);
                             if (!knownEntity.equals(x)) {
                                 entry.setAnswer(x.getAnswer());
                                 entry.setQuestion(x.getQuestion());
                                 entry.setUsedText(x.getUsedText());
                                 entry.setEducationalLevel(x.getEducationalLevel());
 
-                                if (!currentUser.equals(entry.getCreatedBy())) {
-                                    entry.setReviewedBy(currentUser);
-                                    entry.setLastReviewed(new Date());
-                                    entry.setEdited(true);
+                                if(x.getReviewed() != null) {
+                                    if (x.getReviewed()) {
+                                        entry.setReviewedBy(currentUser);
+                                        entry.setLastReviewed(new Date());
+                                        entry.setEdited(true);
+                                    } else {
+                                        entry.setReviewedBy(null);
+                                        entry.setLastReviewed(null);
+                                        entry.setEdited(true);
+                                    }
                                 }
                             }
                             return entry;
@@ -85,7 +93,7 @@ public class MongoQAService implements QAService {
 
     @NotNull
     @Override
-    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
+    @Permission
     public List<QAEntry> getAllQAEntriesOf(@NotNull @NodePermission(CCConstants.PERMISSION_READ) String nodeId, String creator) {
         if (StringUtils.isBlank(creator)) {
             return qaRepository.findAllByNodeId(nodeId);
@@ -104,6 +112,7 @@ public class MongoQAService implements QAService {
     }
 
     @Override
+    @Permission(value = {CCConstants.CCM_VALUE_TOOLPERMISSION_MANAGE_QA}, requiresUser = true)
     public void delete(@NotNull List<String> ids) {
         qaRepository.deleteAllById(ids);
     }
