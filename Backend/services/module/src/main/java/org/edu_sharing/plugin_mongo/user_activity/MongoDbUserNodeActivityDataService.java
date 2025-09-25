@@ -15,8 +15,6 @@ import org.edu_sharing.service.tracking.user_tracking.UserNodeActivity;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivityDataService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Limit;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -76,7 +74,7 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
     @Override
     public void onPersonDeleted(DeletePersonMongoAlfOpLogData actionData) {
         userNodeActivityDataRepository.deleteAllByUserId(actionData.getNodeId());
-        SearchServiceElastic elasticSearchService = (SearchServiceElastic) SearchServiceFactory.getLocalService();
+        SearchServiceElastic elasticSearchService = (SearchServiceElastic) SearchServiceFactory.getInstance().getLocalService();
         elasticSearchService.deleteUserActivitiesByUsername(actionData.getUsername());
     }
 }

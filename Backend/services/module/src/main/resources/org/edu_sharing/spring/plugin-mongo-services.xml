@@ -141,20 +141,20 @@
     <bean id="customMongoMappingBootstrap" parent="mongoMappingBootstrap">
     </bean>
 
-    <bean id="ratingService" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
+    <bean id="ratingService" primary="true" class="org.edu_sharing.plugin_mongo.rating.RatingServiceImpl">
         <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
         <constructor-arg name="notificationService" ref="notificationService"/>
     </bean>
 
-    <bean id="relationService" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
+    <bean id="relationService" primary="true" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
         <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
         <constructor-arg name="nodeService" ref="nodeService"/>
         <constructor-arg name="integrityService" ref="integrityService"/>
     </bean>
 
-    <bean id="suggestionService" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
+    <bean id="suggestionService" primary="true" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
 <!--      <constructor-arg name="dictionaryComponent" ref="dictionaryComponent"/>-->
 <!--      <constructor-arg name="repository" ref="suggestionRepository"/>-->
     </bean>
