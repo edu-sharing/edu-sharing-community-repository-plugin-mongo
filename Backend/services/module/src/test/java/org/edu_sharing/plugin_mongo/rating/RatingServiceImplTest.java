@@ -7,9 +7,13 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.apache.commons.lang.time.DateUtils;
 import org.bson.Document;
+import org.edu_sharing.alfresco.service.config.model.Config;
+import org.edu_sharing.alfresco.service.config.model.ConfigRating;
+import org.edu_sharing.alfresco.service.config.model.Values;
 import org.edu_sharing.plugin_mongo.integrity.IntegrityService;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
+import org.edu_sharing.service.config.ConfigService;
 import org.edu_sharing.service.factory.ServiceFactory;
 import org.edu_sharing.service.model.NodeRefImpl;
 import org.edu_sharing.service.nodeservice.NodeService;
@@ -53,9 +57,12 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private ConfigService configService;
+
 
     @BeforeEach
-    void initTestSet() {
+    void initTestSet() throws Exception {
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         collection.insertMany(Arrays.asList(
@@ -70,11 +77,22 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         ));
 
         Mockito.when(serviceFactory.getLocalService()).thenReturn(notificationService);
-        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService, serviceFactory);
+        underTest = new RatingServiceImpl(dbFactory, nodeService, integrityService, serviceFactory, configService);
 
         Mockito.lenient()
                 .when(nodeService.getOriginalNode(anyString()))
                 .thenAnswer((Answer<NodeRef>) invocationOnMock -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, invocationOnMock.getArgument(0)));
+
+
+        Config config = new Config();
+        config.values = new Values();
+        config.values .rating = new ConfigRating();
+        config.values .rating.mode = ConfigRating.RatingMode.stars;
+
+        Mockito.lenient()
+                .when(configService.getConfig())
+                .thenReturn(config);
+
     }
 
 
@@ -128,9 +146,10 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
-                ArgumentMatchers.anyString(),
+                ArgumentMatchers.eq(nodeType),
                 ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
+                ArgumentMatchers.any(),
                 ArgumentMatchers.eq(rating),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.eq(Status.ADDED));
@@ -172,9 +191,10 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
-                ArgumentMatchers.anyString(),
+                ArgumentMatchers.eq(nodeType),
                 ArgumentMatchers.anyList(),
                 ArgumentMatchers.anyMap(),
+                ArgumentMatchers.any(),
                 ArgumentMatchers.eq(rating),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.eq(Status.ADDED));
@@ -216,6 +236,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
                 ArgumentMatchers.any());
     }
 
@@ -224,11 +245,13 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
         // given
         String authority = "Müller";
         String nodeId = "1";
+        String nodeType = CCConstants.CCM_TYPE_IO;
 
         MongoCollection<Document> collection = db.getCollection(RatingConstants.COLLECTION_KEY);
         long beforeCount = collection.countDocuments(Filters.eq(RatingConstants.NODEID_KEY, nodeId));
 
         Mockito.when(integrityService.getAuthority()).thenReturn(authority);
+        Mockito.when(nodeService.getType(nodeId)).thenReturn(nodeType);
 
         // when
         underTest.deleteRating(nodeId);
@@ -244,6 +267,7 @@ class RatingServiceImplTest extends AbstractMongoDbContainerTest {
 
         Mockito.verify(notificationService, Mockito.times(1)).notifyRatingChanged(
                 ArgumentMatchers.eq(nodeId),
+                ArgumentMatchers.eq(nodeType),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.any(),
                 ArgumentMatchers.any(),
