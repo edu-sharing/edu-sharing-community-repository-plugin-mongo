@@ -1,12 +1,10 @@
 package org.edu_sharing.plugin_mongo.relation;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.UpdateResult;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
@@ -82,7 +80,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
     @NotNull
     public NodeRelation getRelations(@NotNull String node) {
         Objects.requireNonNull(node, "node must be set");
-        log.debug(String.format("get relations of node %s", node));
+        log.debug("get relations of node {}", node);
 
 
         node = nodeService.getOriginalNode(node).getId();
@@ -209,7 +207,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
         Objects.requireNonNull(toNode, "toNode must be set");
         Objects.requireNonNull(relationType, "relationType must be set");
 
-        log.debug(String.format("delete relation from node %s to node %s of type %s", fromNode, toNode, relationType));
+        log.debug("delete relation from node {} to node {} of type {}", fromNode, toNode, relationType);
 
         fromNode = nodeService.getOriginalNode(fromNode).getId();
         toNode = nodeService.getOriginalNode(toNode).getId();
@@ -218,12 +216,12 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);
 
         UpdateResult result = collection.updateOne(
-                filterReltation(fromNode, toNode, relationType),
+                filterRelation(fromNode, toNode, relationType),
                 createPullRelationUpdate(toNode, relationType));
 
         // search in both directions if relationType is a reference!
         if (result.getModifiedCount() == 0 && relationType == InputRelationType.references) {
-            result = collection.updateOne(filterReltation(toNode, fromNode, relationType),
+            result = collection.updateOne(filterRelation(toNode, fromNode, relationType),
                     createPullRelationUpdate(fromNode, relationType));
         }
 
@@ -239,7 +237,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
                         .append(RelationConstants.RELATION_TYPE_KEY, relationType.toString()));
     }
 
-    private static @NotNull Bson filterReltation(String fromNode, String toNode, @NotNull InputRelationType relationType) {
+    private static @NotNull Bson filterRelation(String fromNode, String toNode, @NotNull InputRelationType relationType) {
         return Filters.and(
                 Filters.eq(fromNode),
                 Filters.elemMatch(RelationConstants.RELATION_KEY,
@@ -259,7 +257,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
         Objects.requireNonNull(actualAuthority, "actualAuthority must be set");
         Objects.requireNonNull(newAuthority, "newAuthority must be set");
 
-        log.debug(String.format("change authority from %s to %s", actualAuthority, newAuthority));
+        log.debug("change authority from {} to {}", actualAuthority, newAuthority);
 
         createIndexes();
         MongoCollection<Document> collection = database.getCollection(RelationConstants.COLLECTION_KEY);
@@ -267,7 +265,7 @@ public class RelationServiceImpl implements RelationService, AwareAlfrescoDeleti
                 Filters.elemMatch(RelationConstants.RELATION_KEY, Filters.eq(RelationConstants.RELATION_CREATOR_KEY, actualAuthority)),
                 Updates.set(RelationConstants.RELATION_KEY + ".$[item].creator", newAuthority),
                 new UpdateOptions().arrayFilters(
-                        Arrays.asList(Filters.eq("item." + RelationConstants.RELATION_CREATOR_KEY, actualAuthority))
+                        List.of(Filters.eq("item." + RelationConstants.RELATION_CREATOR_KEY, actualAuthority))
                 )
         );
     }
