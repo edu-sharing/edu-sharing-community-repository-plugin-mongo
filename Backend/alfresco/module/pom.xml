@@ -98,6 +98,27 @@
       <artifactId>spring-data-mongodb</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongodb-sync-v4-driver</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongock-spring-base</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-artifact</artifactId>
+        </exclusion></exclusions>
+    </dependency>
+
     <!-- provided -->
 
     <dependency>

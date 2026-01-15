@@ -222,6 +222,18 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongodb-sync-v4-driver</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongock-spring-base</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!--test-->
 
     <dependency>
