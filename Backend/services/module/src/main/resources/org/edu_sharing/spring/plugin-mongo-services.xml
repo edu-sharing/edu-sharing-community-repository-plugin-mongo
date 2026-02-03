@@ -148,12 +148,6 @@
         <constructor-arg name="notificationService" ref="notificationService"/>
     </bean>
 
-    <bean id="relationService" primary="true" class="org.edu_sharing.plugin_mongo.relation.RelationServiceImpl">
-        <constructor-arg name="mongoDatabaseFactory" ref="mongoDbFactory"/>
-        <constructor-arg name="nodeService" ref="nodeService"/>
-        <constructor-arg name="integrityService" ref="integrityService"/>
-    </bean>
-
     <bean id="suggestionService" primary="true" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
 <!--      <constructor-arg name="dictionaryComponent" ref="dictionaryComponent"/>-->
 <!--      <constructor-arg name="repository" ref="suggestionRepository"/>-->
