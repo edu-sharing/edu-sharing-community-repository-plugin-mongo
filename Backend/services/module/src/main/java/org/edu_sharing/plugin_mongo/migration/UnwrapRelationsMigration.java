@@ -25,7 +25,7 @@ public class UnwrapRelationsMigration {
                         .and("_id").as("fromNode")
                         .and("relations.node").as("toNode")
                         .and("relations.creator").as("createdBy")
-                        .and("relations.timestamp").as("created")
+                        .and("relations.timestamp").as("createdAt")
                         .and("relations.type").as("type")
                         .and("relations.creator").as("evaluation.approvedBy")
                         .and("relations.timestamp").as("evaluation.approvedAt")

@@ -168,7 +168,7 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
                 .type(request.type())
                 .aiGenerated(request.isAiGenerated())
                 .createdBy(AuthenticationUtil.getFullyAuthenticatedUser())
-                .created(new Date());
+                .createdAt(new Date());
 
         EvaluationData.EvaluationDataBuilder evaluationDataBuilder = EvaluationData.builder();
         if (request.isEvaluated()) {
@@ -193,7 +193,7 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
 
         relation.setMetadata(request.metadata());
         relation.setModifiedBy(AuthenticationUtil.getFullyAuthenticatedUser());
-        relation.setModified(new Date());
+        relation.setModifiedAt(new Date());
         return relationRepository.save(relation);
     }
 

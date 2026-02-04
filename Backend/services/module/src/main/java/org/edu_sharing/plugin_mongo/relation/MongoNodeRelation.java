@@ -36,9 +36,9 @@ public class MongoNodeRelation implements RelationData, TrackedData {
     private String toNode;
     @Indexed
     private String createdBy;
-    private Date created;
+    private Date createdAt;
     private String modifiedBy;
-    private Date modified;
+    private Date modifiedAt;
     private InputRelationType type;
     @Indexed
     private Date timestamp; //for tracking
