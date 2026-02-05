@@ -38,7 +38,7 @@ public class UnwrapRelationsMigration {
         );
 
         mongoTemplate.aggregate(aggregation, SOURCE_COLLECTION, Object.class);
-        //mongoTemplate.dropCollection(SOURCE_COLLECTION);
+        mongoTemplate.dropCollection(SOURCE_COLLECTION);
     }
 
     @RollbackExecution
