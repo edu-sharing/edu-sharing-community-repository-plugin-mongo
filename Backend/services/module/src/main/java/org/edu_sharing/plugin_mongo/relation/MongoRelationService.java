@@ -82,7 +82,6 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
         final String FIELD_METADATA = "metadata";
 
         final String FIELD_DIRECTION = "direction";
-        final String FIELD_OUTPUT_TYPE = "outputType";
 
         final String DIRECTION_OUTGOING = "OUTGOING";
         final String DIRECTION_INCOMING = "INCOMING";
@@ -275,9 +274,12 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
 
     @Override
     public void onIoDeleted(DeleteIoMongoAlfOpLogData actionData) {
-        // TODO veröffentlichte kopien checken
-        List<MongoNodeRelation> nodesToDelete = relationRepository.findAllByFromNodeOrToNode(actionData.getNodeId(), actionData.getNodeId());
-        mongoTrackingService.trackDeletedData(nodesToDelete.stream().map(MongoNodeRelation::toEssential).toList());
-        relationRepository.deleteAll(nodesToDelete);
+        String originalNode = nodeService.getOriginalNode(actionData.getNodeId()).getId();
+        List<String> publishedCopies = nodeService.getPublishedCopies(originalNode);
+        if(publishedCopies.isEmpty()) {
+            List<MongoNodeRelation> nodesToDelete = relationRepository.findAllByFromNodeOrToNode(originalNode, originalNode);
+            mongoTrackingService.trackDeletedData(nodesToDelete.stream().map(MongoNodeRelation::toEssential).toList());
+            relationRepository.deleteAll(nodesToDelete);
+        }
     }
 }
