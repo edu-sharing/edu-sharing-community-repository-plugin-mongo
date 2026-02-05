@@ -81,7 +81,6 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
         final String FIELD_TYPE = "type";
         final String FIELD_METADATA = "metadata";
 
-        final String FIELD_TARGET_NODE = "targetNode";
         final String FIELD_DIRECTION = "direction";
         final String FIELD_OUTPUT_TYPE = "outputType";
 
@@ -102,7 +101,12 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
                 .then(DIRECTION_OUTGOING)
                 .otherwise(DIRECTION_INCOMING);
 
-        final ConditionalOperators.Cond targetNode = ConditionalOperators
+        final ConditionalOperators.Cond fromNode = ConditionalOperators
+                .when(ComparisonOperators.Eq.valueOf(FIELD_FROM_NODE).equalToValue(nodeId))
+                .thenValueOf(FIELD_FROM_NODE)
+                .otherwiseValueOf(FIELD_TO_NODE);
+
+        final ConditionalOperators.Cond toNode = ConditionalOperators
                 .when(ComparisonOperators.Eq.valueOf(FIELD_FROM_NODE).equalToValue(nodeId))
                 .thenValueOf(FIELD_TO_NODE)
                 .otherwiseValueOf(FIELD_FROM_NODE);
@@ -110,7 +114,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
         final AddFieldsOperation normalizeFields = Aggregation.addFields()
                 .addFieldWithValue(FIELD_METADATA,
                         ConditionalOperators.ifNull(FIELD_METADATA).then(Collections.emptyMap()))
-                .addFieldWithValue(FIELD_TARGET_NODE, targetNode)
+                .addFieldWithValue(FIELD_FROM_NODE, fromNode)
+                .addFieldWithValue(FIELD_TO_NODE, toNode)
                 .addFieldWithValue(FIELD_DIRECTION, isOutgoing)
                 .build();
 
