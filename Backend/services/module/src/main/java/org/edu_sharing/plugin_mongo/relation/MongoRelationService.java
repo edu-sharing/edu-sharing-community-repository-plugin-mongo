@@ -150,8 +150,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
     @NotNull
     @Override
     @PreAuthorize("@toolPermissionServiceImpl.hasToolPermission(T(org.edu_sharing.repository.client.tools.CCConstants).CCM_VALUE_TOOLPERMISSION_MANAGE_RELATIONS) " +
-            "and hasPermission(#request.fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)" +
-            "and hasPermission(#request.toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)")
+            "and hasPermission(#request.fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)" +
+            "and hasPermission(#request.toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)")
     public RelationData createRelation(@NotNull CreateRelationRequest request) {
 
         if (request.fromNode().equals(request.toNode())) {
@@ -189,8 +189,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
     @NotNull
     @Override
     @PreAuthorize("@toolPermissionServiceImpl.hasToolPermission(T(org.edu_sharing.repository.client.tools.CCConstants).CCM_VALUE_TOOLPERMISSION_MANAGE_RELATIONS) " +
-            "and hasPermission(#request.fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)" +
-            "and hasPermission(#request.toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)")
+            "and hasPermission(#request.fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)" +
+            "and hasPermission(#request.toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)")
     public RelationData updateRelation(@NotNull UpdateRelationRequest request) {
         MongoNodeRelation relation = relationRepository.findByFromNodeAndToNodeAndType(request.fromNode(), request.toNode(), request.type())
                 .orElseThrow(() -> new IllegalArgumentException("Relation not found"));
@@ -203,8 +203,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
 
     @Override
     @PreAuthorize("@toolPermissionServiceImpl.hasToolPermission(T(org.edu_sharing.repository.client.tools.CCConstants).CCM_VALUE_TOOLPERMISSION_MANAGE_RELATIONS) " +
-            "and hasPermission(#fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)" +
-            "and hasPermission(#toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)")
+            "and hasPermission(#fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)" +
+            "and hasPermission(#toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)")
     public void deleteRelation(@NotNull String fromNode, @NotNull String toNode, @NotNull InputRelationType relationType) {
         log.debug("delete relation from node {} to node {} of type {}", fromNode, toNode, relationType);
         Optional<MongoNodeRelation> relation = relationRepository.findByFromNodeAndToNodeAndType(fromNode, toNode, relationType);
@@ -252,8 +252,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
     @NotNull
     @Override
     @PreAuthorize("@toolPermissionServiceImpl.hasToolPermission(T(org.edu_sharing.repository.client.tools.CCConstants).CCM_VALUE_TOOLPERMISSION_MANAGE_RELATIONS) " +
-            "and hasPermission(#fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)" +
-            "and hasPermission(#toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_READ)")
+            "and hasPermission(#fromNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)" +
+            "and hasPermission(#toNode, T(org.edu_sharing.repository.client.tools.CCConstants).PERMISSION_RELATION)")
     public RelationData approveRelation(@NotNull String fromNode, @NotNull String toNode, @NotNull InputRelationType relationType) {
         MongoNodeRelation relation = relationRepository.findByFromNodeAndToNodeAndType(fromNode, toNode, relationType)
                 .orElseThrow(() -> new IllegalArgumentException("Relation not found"));
