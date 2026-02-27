@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.relation;
 
 import com.mongodb.client.result.UpdateResult;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -48,8 +49,10 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
 
     @Override
     @PreAuthorize("T(org.edu_sharing.service.authority.AuthorityServiceHelper).isAdmin()")
-    public List<RelationData> getTrackedData(Date from, Limit limit) {
-        return relationRepository.findAllByTimestampAfter(from, limit)
+    public List<RelationData> getTrackedData(@NotNull @NonNull Date from, Date to, Limit limit) {
+        return (to !=null
+                ? relationRepository.findAllByTimestampBetween(from, to, limit)
+                : relationRepository.findAllByTimestampAfter(from, limit))
                 .stream()
                 .map(RelationData.class::cast)
                 .toList();
@@ -57,8 +60,8 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
 
     @Override
     @PreAuthorize("T(org.edu_sharing.service.authority.AuthorityServiceHelper).isAdmin()")
-    public List<RelationData> getDeletedTrackedData(Date from, Limit limit) {
-        return mongoTrackingService.getDeletedTrackedData(from, limit, MongoNodeRelation.class)
+    public List<RelationData> getDeletedTrackedData(@NotNull @NonNull Date from, Date to, Limit limit) {
+        return mongoTrackingService.getDeletedTrackedData(from, to, limit, MongoNodeRelation.class)
                 .stream()
                 .map(x -> {
                     MongoNodeRelation content = x.getContent();

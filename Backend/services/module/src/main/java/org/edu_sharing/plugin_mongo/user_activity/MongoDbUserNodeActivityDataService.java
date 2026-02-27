@@ -1,6 +1,7 @@
 package org.edu_sharing.plugin_mongo.user_activity;
 
 import jakarta.annotation.PostConstruct;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -40,13 +41,16 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
 
     @NotNull
     @Override
-    public List<UserNodeActivity> getDataForAllUsers(@NotNull Date after, int limit) {
+    public List<UserNodeActivity> getDataForAllUsers(@NotNull @NonNull Date after, Date before, int limit) {
         String username = AuthenticationUtil.getFullyAuthenticatedUser();
         if (!AuthenticationUtil.getAdminUserName().equals(username)) {
             throw new InsufficientPermissionException("User " + username + " has no access to this data!");
         }
 
-        List<UserNodeActivityData> allByTimestampAfter = userNodeActivityDataRepository.findAllByTimestampAfter(after, Limit.of(limit));
+        List<UserNodeActivityData> allByTimestampAfter = before != null
+                ? userNodeActivityDataRepository.findAllByTimestampBetween(after, before, Limit.of(limit))
+                : userNodeActivityDataRepository.findAllByTimestampAfter(after, Limit.of(limit));
+
         return allByTimestampAfter
                 .stream()
                 .map(UserNodeActivity.class::cast)

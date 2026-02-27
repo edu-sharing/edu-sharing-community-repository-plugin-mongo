@@ -43,7 +43,9 @@ public class MongoTrackingService {
                 .toList());
     }
 
-    public <T> List<DeletedTrackedData<T>> getDeletedTrackedData(Date from, Limit limit, Class<? extends T> entityClass) {
-        return deletedTrackedDataRepository.findAllByTimestampAfterAndCollectionName(from, mongoTemplate.getCollectionName(entityClass), limit);
+    public <T> List<DeletedTrackedData<T>> getDeletedTrackedData(Date from, Date to, Limit limit, Class<? extends T> entityClass) {
+        return to != null
+                ? deletedTrackedDataRepository.findAllByTimestampBetweenAndCollectionName(from, to, mongoTemplate.getCollectionName(entityClass), limit)
+                : deletedTrackedDataRepository.findAllByTimestampAfterAndCollectionName(from, mongoTemplate.getCollectionName(entityClass), limit);
     }
 }
