@@ -83,8 +83,12 @@ public class MongoSuggestionService implements SuggestionService {
                         }
                     }
                 }
-                throw new IllegalArgumentException(x.getPropertyId() + " is not assignable to " + targetType.getName());
 
+                if(Number.class.isAssignableFrom(valueClass) && Number.class.isAssignableFrom(targetType)){
+                    return;
+                }
+
+                throw new IllegalArgumentException(x.getPropertyId() + " is not assignable to " + targetType.getName());
             }
         });
 
