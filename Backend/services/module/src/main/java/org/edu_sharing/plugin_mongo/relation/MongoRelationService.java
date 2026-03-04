@@ -61,14 +61,7 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
     @Override
     @PreAuthorize("T(org.edu_sharing.service.authority.AuthorityServiceHelper).isAdmin()")
     public List<RelationData> getDeletedTrackedData(@NotNull @NonNull Date from, Date to, Limit limit) {
-        return mongoTrackingService.getDeletedTrackedData(from, to, limit, MongoNodeRelation.class)
-                .stream()
-                .map(x -> {
-                    MongoNodeRelation content = x.getContent();
-                    content.setTimestamp(x.getTimestamp());
-                    return (RelationData) content;
-                })
-                .toList();
+        return mongoTrackingService.getDeletedTrackedData(from, to, limit, MongoNodeRelation.class, RelationData.class);
     }
 
 

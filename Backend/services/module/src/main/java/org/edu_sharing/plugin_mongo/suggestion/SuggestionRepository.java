@@ -1,23 +1,23 @@
 package org.edu_sharing.plugin_mongo.suggestion;
 
-import org.edu_sharing.service.suggestion.Suggestion;
+import org.edu_sharing.plugin_mongo.tracking.MongoTrackingRepository;
+import org.edu_sharing.service.suggestion.PropertySuggestion;
 import org.edu_sharing.service.suggestion.SuggestionStatus;
+import org.springframework.data.mongodb.repository.Query;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
-public interface SuggestionRepository {
-    List<Suggestion> saveAny(List<Suggestion> suggestions);
+public interface SuggestionRepository extends MongoTrackingRepository<MongoPropertySuggestion, String>, CustomSuggestionRepository {
 
-    void deleteByNodeIdAndCreatedBy(String nodeId, String providerId);
+    @Query("{ 'nodeId': ?0, 'propertyId': ?1, 'status': { $ne: ?2 }, 'value': ?3 }")
+    PropertySuggestion findByNodeIdAndPropertyIdAndNotStatusAndValue(String nodeId, String propertyId, SuggestionStatus suggestionStatus, Object value);
 
-    List<Suggestion> updateStatus(String nodeId, List<String> ids, SuggestionStatus status, String modifiedBy, Date modified);
+    void deleteByNodeIdAndCreatedBy(String nodeId, String createdBy);
 
-    List<Suggestion> findAllByNodeId(String nodeId);
+    void deleteByNodeIdAndCreatedByAndVersionIn(String nodeId, String createdBy, List<String> version);
 
-    Suggestion findByNodeIdAndPropertyIdAndNotStatusAndValue(String nodeId, String propertyId, SuggestionStatus suggestionStatus, Object value);
+    List<MongoPropertySuggestion> findAllByNodeId(String nodeId);
 
-    List<Suggestion> findAllByNodeIdAndInStatus(String nodeId, List<SuggestionStatus> status);
-
-    void deleteByNodeIdAndCreatedByAndInVersion(String nodeId, String fullyAuthenticatedUser, List<String> versions);
+    List<PropertySuggestion> findAllByNodeIdAndStatusIn(String nodeId, Collection<SuggestionStatus> statuses);
 }

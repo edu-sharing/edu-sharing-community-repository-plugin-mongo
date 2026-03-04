@@ -43,9 +43,34 @@ public class MongoTrackingService {
                 .toList());
     }
 
-    public <T> List<DeletedTrackedData<T>> getDeletedTrackedData(Date from, Date to, Limit limit, Class<? extends T> entityClass) {
-        return to != null
+    public <T extends TrackedData> List<T> getDeletedTrackedData(Date from, Date to, Limit limit, Class<T> entityClass) {
+        List<DeletedTrackedData<T>> deletedTrackedData = (to != null
                 ? deletedTrackedDataRepository.findAllByTimestampBetweenAndCollectionName(from, to, mongoTemplate.getCollectionName(entityClass), limit)
-                : deletedTrackedDataRepository.findAllByTimestampAfterAndCollectionName(from, mongoTemplate.getCollectionName(entityClass), limit);
+                : deletedTrackedDataRepository.findAllByTimestampAfterAndCollectionName(from, mongoTemplate.getCollectionName(entityClass), limit));
+
+        return deletedTrackedData
+                .stream()
+                .map(x->{
+                    T content= x.getContent();
+                    content.setTimestamp(x.getTimestamp());
+                    return content;
+                })
+                .toList();
+    }
+
+    public <S, T extends TrackedData> List<S> getDeletedTrackedData(Date from, Date to, Limit limit, Class<T> entityClass, Class<S> returnType) {
+        List<DeletedTrackedData<T>> deletedTrackedData = (to != null
+                ? deletedTrackedDataRepository.findAllByTimestampBetweenAndCollectionName(from, to, mongoTemplate.getCollectionName(entityClass), limit)
+                : deletedTrackedDataRepository.findAllByTimestampAfterAndCollectionName(from, mongoTemplate.getCollectionName(entityClass), limit));
+
+        return deletedTrackedData
+                .stream()
+                .map(x->{
+                    T content= x.getContent();
+                    content.setTimestamp(x.getTimestamp());
+                    return content;
+                })
+                .map(returnType::cast)
+                .toList();
     }
 }
