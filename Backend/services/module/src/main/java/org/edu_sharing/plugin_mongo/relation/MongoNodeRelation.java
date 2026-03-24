@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.edu_sharing.plugin_mongo.tracking.TrackedData;
 import org.edu_sharing.service.relations.InputRelationType;
 import org.edu_sharing.service.relations.OutputRelationType;
 import org.edu_sharing.service.relations.RelationData;
@@ -29,7 +28,7 @@ import java.util.Objects;
 })
 @NoArgsConstructor
 @AllArgsConstructor
-public class MongoNodeRelation implements RelationData, TrackedData {
+public class MongoNodeRelation implements RelationData {
     @Id
     private String id;
     private String fromNode;
@@ -40,8 +39,6 @@ public class MongoNodeRelation implements RelationData, TrackedData {
     private String modifiedBy;
     private Date modifiedAt;
     private InputRelationType type;
-    @Indexed
-    private Date timestamp; //for tracking
 
     private boolean aiGenerated;
     private EvaluationData evaluation;
@@ -74,22 +71,6 @@ public class MongoNodeRelation implements RelationData, TrackedData {
     @Override
     public int hashCode() {
         return Objects.hash(fromNode, toNode, type);
-    }
-
-    /**
-     * Creates an essential representation of the current {@code MongoNodeRelation} object.
-     * The essential representation includes only the core attributes: {@code id}, {@code fromNode},
-     * {@code toNode}, and {@code type}.
-     *
-     * @return A new {@code MongoNodeRelation} instance containing the essential fields of the current object.
-     */
-    public MongoNodeRelation toEssential(){
-        return MongoNodeRelation.builder()
-                .id(id)
-                .fromNode(fromNode)
-                .toNode(toNode)
-                .type(type)
-                .build();
     }
 }
 

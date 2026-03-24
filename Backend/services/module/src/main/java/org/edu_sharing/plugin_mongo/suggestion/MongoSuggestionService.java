@@ -9,8 +9,6 @@ import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.namespace.QName;
 import org.edu_sharing.plugin_mongo.oplog.io.DeleteIoMongoAlfOpLogData;
 import org.edu_sharing.plugin_mongo.oplog.io.MongodbIoDeletedAware;
-import org.edu_sharing.plugin_mongo.tracking.MongoTrackingService;
-import org.edu_sharing.plugin_mongo.tracking.TrackingServiceCallback;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.restservices.suggestions.v1.dto.CreateSuggestionRequestDTO;
 import org.edu_sharing.service.nodeservice.NodeService;
@@ -20,8 +18,6 @@ import org.edu_sharing.service.suggestion.PropertySuggestion;
 import org.edu_sharing.service.suggestion.SuggestionService;
 import org.edu_sharing.service.suggestion.SuggestionStatus;
 import org.edu_sharing.service.suggestion.SuggestionType;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Limit;
 
 import java.util.*;
 import java.util.function.Function;
@@ -29,14 +25,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MongoSuggestionService implements SuggestionService, TrackingServiceCallback<PropertySuggestion>, MongodbIoDeletedAware {
+public class MongoSuggestionService implements SuggestionService, MongodbIoDeletedAware {
 
     private final SuggestionRepository repository;
     private final DictionaryComponent dictionaryComponent;
     private final NodeService nodeService;
-    private final MongoTrackingService mongoTrackingService;
 
-    Map<QName, Class<?>> typeMapping = new HashMap<>() {{
+    private final Map<QName, Class<?>> typeMapping = new HashMap<>() {{
         put(DataTypeDefinition.TEXT, String.class);
         put(DataTypeDefinition.MLTEXT, String.class);
         put(DataTypeDefinition.NODE_REF, String.class);
@@ -49,7 +44,7 @@ public class MongoSuggestionService implements SuggestionService, TrackingServic
         put(DataTypeDefinition.BOOLEAN, Boolean.class);
     }};
 
-    Map<Class<?>, Function<String, Object>> typeConverterMapping = new HashMap<>() {{
+    private final Map<Class<?>, Function<String, Object>> typeConverterMapping = new HashMap<>() {{
         put(Long.class, Long::parseLong);
         put(Double.class, Double::parseDouble);
         put(Boolean.class, Boolean::parseBoolean);
@@ -88,7 +83,7 @@ public class MongoSuggestionService implements SuggestionService, TrackingServic
                             x.setValue(stringObjectFunction.apply((String) x.getValue()));
                             return;
                         } catch (Exception e) {
-                            log.error("Can't convert {} of type {} to {} because: {}", x.getValue(), valueClass, targetType, e.getMessage(), e);
+                            log.error("Can't convert {} of type {} to {} on {} because: {}", x.getValue(), valueClass, targetType, x.getPropertyId(), e.getMessage(), e);
                         }
                     }
                 }
@@ -119,8 +114,13 @@ public class MongoSuggestionService implements SuggestionService, TrackingServic
                         .createdBy(AuthenticationUtil.getFullyAuthenticatedUser())
                         .build())
                 .collect(Collectors.toList());
-        return repository.saveAny(suggestions);
+        List<PropertySuggestion> propertySuggestions = repository.saveAny(suggestions);
+
+        touchNode(nodeId);
+
+        return propertySuggestions;
     }
+
 
     @Override
     @Permission(value = CCConstants.CCM_VALUE_TOOLPERMISSION_SUGGESTION_WRITE, requiresUser = true)
@@ -130,15 +130,16 @@ public class MongoSuggestionService implements SuggestionService, TrackingServic
         } else {
             repository.deleteByNodeIdAndCreatedByAndVersionIn(nodeId, AuthenticationUtil.getFullyAuthenticatedUser(), versions);
         }
+
+        touchNode(nodeId);
     }
 
     @Override
     @Permission(value = CCConstants.CCM_VALUE_TOOLPERMISSION_SUGGESTION_WRITE, requiresUser = true)
     public List<PropertySuggestion> updateStatus(@NodePermission({CCConstants.PERMISSION_WRITE}) String nodeId, List<String> ids, SuggestionStatus status) {
-        return repository.updateStatus(nodeId, ids, status, AuthenticationUtil.getFullyAuthenticatedUser(), new Date())
-                .stream()
-                .map(PropertySuggestion.class::cast)
-                .toList();
+        List<PropertySuggestion> propertySuggestions = repository.updateStatus(nodeId, ids, status, AuthenticationUtil.getFullyAuthenticatedUser(), new Date());
+        touchNode(nodeId);
+        return propertySuggestions;
     }
 
     @Override
@@ -163,23 +164,14 @@ public class MongoSuggestionService implements SuggestionService, TrackingServic
         List<String> publishedCopies = nodeService.getPublishedCopies(originalNode);
         if (publishedCopies.isEmpty()) {
             List<MongoPropertySuggestion> nodesToDelete = repository.findAllByNodeId(originalNode);
-            mongoTrackingService.trackDeletedData(nodesToDelete);
             repository.deleteAll(nodesToDelete);
         }
     }
-
-    @Override
-    public List<PropertySuggestion> getTrackedData(@NotNull Date from, Date to, Limit limit) {
-        return (to != null
-                ? repository.findAllByTimestampBetween(from, to, limit)
-                : repository.findAllByTimestampAfter(from, limit))
-                .stream()
-                .map(PropertySuggestion.class::cast)
-                .toList();
-    }
-
-    @Override
-    public List<PropertySuggestion> getDeletedTrackedData(@NotNull Date from, Date to, Limit limit) {
-        return mongoTrackingService.getDeletedTrackedData(from, to, limit, MongoPropertySuggestion.class, PropertySuggestion.class);
+    
+    private void touchNode(String nodeId) {
+        AuthenticationUtil.runAsSystem(() -> {
+            nodeService.touch(nodeId, true);
+            return null;
+        });
     }
 }

@@ -12,7 +12,8 @@
     <context:component-scan base-package="org.edu_sharing"/>
 
     <!-- bootstrap meta data-->
-    <bean id="mongoMetaDataBootstrap" class="org.edu_sharing.plugin_mongo.datamodel.MongoMetaDataBootstrap" init-method="bootstrap" abstract="true">
+    <bean id="mongoMetaDataBootstrap" class="org.edu_sharing.plugin_mongo.datamodel.MongoMetaDataBootstrap"
+          init-method="bootstrap" abstract="true">
         <property name="modelDictionary" ref="mongoModelDictionary"/>
     </bean>
 
@@ -148,9 +149,12 @@
         <constructor-arg name="notificationService" ref="notificationService"/>
     </bean>
 
+    <bean id="relationService" primary="true" class="org.edu_sharing.plugin_mongo.relation.MongoRelationService"/>
+
     <bean id="suggestionService" primary="true" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
-<!--      <constructor-arg name="dictionaryComponent" ref="dictionaryComponent"/>-->
-<!--      <constructor-arg name="repository" ref="suggestionRepository"/>-->
+        <constructor-arg name="dictionaryComponent" ref="DictionaryService"/>
+        <constructor-arg name="repository" ref="suggestionRepository"/>
+        <constructor-arg name="nodeService" ref="nodeService"/>
     </bean>
 
     <bean id="metadataClassProvider" class="org.edu_sharing.plugin_mongo.service.legacy.DefaultMetadataClassProvider"/>

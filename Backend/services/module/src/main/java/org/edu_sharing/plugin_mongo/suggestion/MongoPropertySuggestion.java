@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.edu_sharing.plugin_mongo.tracking.TrackedData;
 import org.edu_sharing.service.suggestion.PropertySuggestion;
 import org.edu_sharing.service.suggestion.SuggestionStatus;
 import org.edu_sharing.service.suggestion.SuggestionType;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -25,7 +23,7 @@ import java.util.Date;
         @CompoundIndex(name = "nodeId_1_status_1_propertyId_1_value_1", def = "{'nodeId': 1, 'status': 1, 'propertyId': 1, 'value': 1}"),
         @CompoundIndex(name = "nodeId_1_status_1__id_1", def = "{'nodeId': 1, 'status': 1, '_id': 1}")
 })
-public class MongoPropertySuggestion implements PropertySuggestion, TrackedData {
+public class MongoPropertySuggestion implements PropertySuggestion {
     private String id;
     private String nodeId;
     private String version;
@@ -42,7 +40,4 @@ public class MongoPropertySuggestion implements PropertySuggestion, TrackedData 
     private String createdBy;
     private Date modified;
     private String modifiedBy;
-
-    @Indexed
-    private Date timestamp;  //for tracking
 }
