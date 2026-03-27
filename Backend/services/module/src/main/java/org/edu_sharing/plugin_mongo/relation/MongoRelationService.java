@@ -1,16 +1,11 @@
 package org.edu_sharing.plugin_mongo.relation;
 
-import com.mongodb.client.result.UpdateResult;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.bson.Document;
 import org.edu_sharing.plugin_mongo.oplog.io.DeleteIoMongoAlfOpLogData;
 import org.edu_sharing.plugin_mongo.oplog.io.MongodbIoDeletedAware;
-import org.edu_sharing.plugin_mongo.tracking.MongoTrackingDataUtils;
-import org.edu_sharing.plugin_mongo.tracking.MongoTrackingService;
-import org.edu_sharing.plugin_mongo.tracking.TrackingServiceCallback;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.restservices.relation.v1.model.CreateRelationRequest;
 import org.edu_sharing.restservices.relation.v1.model.UpdateRelationRequest;
@@ -19,8 +14,7 @@ import org.edu_sharing.service.relations.RelationData;
 import org.edu_sharing.service.nodeservice.annotation.NodeOriginal;
 import org.edu_sharing.service.relations.*;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.Limit;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,41 +22,19 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
-@Primary
-@Service("relationService")
 @RequiredArgsConstructor
-public class MongoRelationService implements RelationService, TrackingServiceCallback<RelationData>, MongodbIoDeletedAware {
+public class MongoRelationService implements RelationService, MongodbIoDeletedAware {
 
 
     private final RelationRepository relationRepository;
     private final MongoTemplate mongoTemplate;
     private final NodeService nodeService;
     private final ProjectionFactory projectionFactory = new SpelAwareProxyProjectionFactory();
-    private final MongoTrackingService mongoTrackingService;
-
-
-    @Override
-    @PreAuthorize("T(org.edu_sharing.service.authority.AuthorityServiceHelper).isAdmin()")
-    public List<RelationData> getTrackedData(@NotNull @NonNull Date from, Date to, Limit limit) {
-        return (to !=null
-                ? relationRepository.findAllByTimestampBetween(from, to, limit)
-                : relationRepository.findAllByTimestampAfter(from, limit))
-                .stream()
-                .map(RelationData.class::cast)
-                .toList();
-    }
-
-    @Override
-    @PreAuthorize("T(org.edu_sharing.service.authority.AuthorityServiceHelper).isAdmin()")
-    public List<RelationData> getDeletedTrackedData(@NotNull @NonNull Date from, Date to, Limit limit) {
-        return mongoTrackingService.getDeletedTrackedData(from, to, limit, MongoNodeRelation.class, RelationData.class);
-    }
 
 
     @NotNull
@@ -169,7 +141,6 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
                 .aiGenerated(request.isAiGenerated())
                 .createdBy(AuthenticationUtil.getFullyAuthenticatedUser())
                 .createdAt(new Date());
-
         EvaluationData.EvaluationDataBuilder evaluationDataBuilder = EvaluationData.builder();
         if (request.isEvaluated()) {
             evaluationDataBuilder
@@ -179,7 +150,12 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
         }
         relationBuilder.evaluation(evaluationDataBuilder.build());
 
-        return relationRepository.save(relationBuilder.build());
+        RelationData result = relationRepository.save(relationBuilder.build());
+
+        touch(request.fromNode());
+        touch(request.toNode());
+
+        return result;
     }
 
     @NotNull
@@ -194,7 +170,12 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
         relation.setMetadata(request.metadata());
         relation.setModifiedBy(AuthenticationUtil.getFullyAuthenticatedUser());
         relation.setModifiedAt(new Date());
-        return relationRepository.save(relation);
+        RelationData result = relationRepository.save(relation);
+
+        touch(request.fromNode());
+        touch(request.toNode());
+
+        return result;
     }
 
     @Override
@@ -204,9 +185,10 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
     public void deleteRelation(@NotNull String fromNode, @NotNull String toNode, @NotNull InputRelationType relationType) {
         log.debug("delete relation from node {} to node {} of type {}", fromNode, toNode, relationType);
         Optional<MongoNodeRelation> relation = relationRepository.findByFromNodeAndToNodeAndType(fromNode, toNode, relationType);
-        relation.ifPresent(x -> {
-            mongoTrackingService.trackDeletedData(x.toEssential());
-            relationRepository.delete(x);
+        relation.ifPresent(r -> {
+            relationRepository.delete(r);
+            touch(r.getToNode());
+            touch(r.getFromNode());
         });
     }
 
@@ -239,10 +221,30 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
                                 .then(newAuthority)
                                 .otherwise("$evaluation.approvedBy")
                 );
-        MongoTrackingDataUtils.updateTimeStamp(update);
-        UpdateResult result = mongoTemplate.updateMulti(query, update, MongoNodeRelation.class);
-        log.debug("Updated {} documents changing authority from {} to {}",
-                result.getModifiedCount(), actualAuthority, newAuthority);
+
+
+        int updatedNodes = 0;
+
+        while (true) {
+            FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
+            MongoNodeRelation modifiedDoc = mongoTemplate.findAndModify(
+                    query,
+                    update,
+                    options,
+                    MongoNodeRelation.class
+            );
+
+            if (modifiedDoc == null) {
+                break;
+            }
+
+            updatedNodes++;
+            touch(modifiedDoc.getToNode());
+            touch(modifiedDoc.getFromNode());
+        }
+
+        log.debug("Updated {} documents changing authority from {} to {}. Updated nodes: {}",
+                updatedNodes, actualAuthority, newAuthority, updatedNodes);
     }
 
     @NotNull
@@ -265,17 +267,32 @@ public class MongoRelationService implements RelationService, TrackingServiceCal
                 .build();
 
         relation.setEvaluation(evaluation);
-        return relationRepository.save(relation);
+        RelationData save = relationRepository.save(relation);
+
+        touch(relation.getFromNode());
+        touch(relation.getToNode());
+
+        return save;
     }
 
     @Override
     public void onIoDeleted(DeleteIoMongoAlfOpLogData actionData) {
         String originalNode = nodeService.getOriginalNode(actionData.getNodeId()).getId();
         List<String> publishedCopies = nodeService.getPublishedCopies(originalNode);
-        if(publishedCopies.isEmpty()) {
+        if (publishedCopies.isEmpty()) {
             List<MongoNodeRelation> nodesToDelete = relationRepository.findAllByFromNodeOrToNode(originalNode, originalNode);
-            mongoTrackingService.trackDeletedData(nodesToDelete.stream().map(MongoNodeRelation::toEssential).toList());
             relationRepository.deleteAll(nodesToDelete);
         }
+    }
+
+    private void touch(String nodeId) {
+        AuthenticationUtil.runAsSystem(() -> {
+            try {
+                nodeService.touch(nodeId, false);
+            } catch (Exception e) {
+                log.warn("Touch node {} failed: {}", nodeId, e.getMessage(), e);
+            }
+            return null;
+        });
     }
 }
