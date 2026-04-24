@@ -81,16 +81,13 @@ public class InfoResolver implements GraphQLResolver<Info> {
         }
 
         String defaultImageUrl = URLTool.getBaseUrl() + "/" + CCConstants.DEFAULT_PREVIEW_IMG;
-        Action action = ActionObserver.getInstance().getAction(nodeRef, CCConstants.ACTION_NAME_CREATE_THUMBNAIL);
-        if (action == null || action.getExecutionStatus().equals(ActionStatus.Completed)) {
-            NodeRef previewProps = nodeService.getChild(nodeRef.getStoreRef(), nodeRef.getId(),
-                    CCConstants.CM_TYPE_THUMBNAIL, CCConstants.CM_NAME, CCConstants.CM_VALUE_THUMBNAIL_NAME_imgpreview_png);
+        NodeRef previewProps = nodeService.getChild(nodeRef.getStoreRef(), nodeRef.getId(),
+                CCConstants.CM_TYPE_THUMBNAIL, CCConstants.CM_NAME, CCConstants.CM_VALUE_THUMBNAIL_NAME_imgpreview_png);
 
-            if (previewProps != null) {
-                previewBuilder.url(nodeService.getPreviewUrl(nodeRef.getStoreRef().getProtocol(), nodeRef.getStoreRef().getIdentifier(), nodeRef.getId(), version));
-                previewBuilder.type(PreviewType.TYPE_GENERATED);
-                return previewBuilder.build();
-            }
+        if (previewProps != null) {
+            previewBuilder.url(nodeService.getPreviewUrl(nodeRef.getStoreRef().getProtocol(), nodeRef.getStoreRef().getIdentifier(), nodeRef.getId(), version));
+            previewBuilder.type(PreviewType.TYPE_GENERATED);
+            return previewBuilder.build();
         }
 
         previewBuilder.url(defaultImageUrl);
