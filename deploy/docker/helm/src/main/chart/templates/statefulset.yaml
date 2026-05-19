@@ -24,6 +24,10 @@ spec:
         {{- with merge .Values.podAnnotations .Values.global.annotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        {{- if .Values.global.backup.velero.enabled }}
+        checksum/configmap-backup: {{ include (print .Template.BasePath "/configmap-backup.yaml") . | sha256sum | trunc 63 }}
+        backup.velero.io/backup-volumes: share-data
+        {{- end }}
     spec:
       {{- if (default .Values.global.cluster.storage.data.permission .Values.persistence.data.permission) }}
       initContainers:
@@ -120,20 +124,23 @@ spec:
         startupProbe:
           exec:
             command:
-              {{- if semverCompare "<5" $.Values.image.tag }}
               - bash
               - -ec
-              - >-
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' |
-                grep -q 'true'
-              {{- else }}
-              - bash
-              - -ec
-              - >-
-                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
-                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
-                throw new Error("Not ready") }'
-              {{- end }}
+              - |
+                BACKUP_ROOT="/bitnami/backup/${HOSTNAME%-*}"
+                if [[ -f "${BACKUP_ROOT}/velero.restore.required" ]]; then
+                  [[ -f "${BACKUP_ROOT}/velero.restore.completed" ]] || exit 1
+                  rm -f "${BACKUP_ROOT}/velero.restore.required"
+                  rm -f "${BACKUP_ROOT}/velero.restore.completed"
+                fi
+                exec mongosh \
+                  --quiet \
+                  --port $MONGODB_PORT_NUMBER \
+                  --username "$MONGODB_ROOT_USER" \
+                  --password "$MONGODB_ROOT_PASSWORD" \
+                  --authenticationDatabase admin \
+                  --eval 'const h=db.hello(); if (!(h.isWritablePrimary || h.secondary)) { throw new Error("Not ready") }' \
+                  >/dev/null
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -143,18 +150,17 @@ spec:
         livenessProbe:
           exec:
             command:
-              {{- if semverCompare "<5" $.Values.image.tag }}
-              - mongo
-              - --disableImplicitSessions
-              - --eval
-              - "db.adminCommand('ping')"
-              {{- else }}
               - bash
               - -ec
-              - >-
-                exec mongosh --port $MONGODB_PORT_NUMBER --eval
-                'db.adminCommand("ping")'
-              {{- end }}
+              - |
+                exec mongosh \
+                  --quiet \
+                  --port $MONGODB_PORT_NUMBER \
+                  --username "$MONGODB_ROOT_USER" \
+                  --password "$MONGODB_ROOT_PASSWORD" \
+                  --authenticationDatabase admin \
+                  --eval 'db.adminCommand("ping")' \
+                  >/dev/null
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -164,20 +170,17 @@ spec:
         readinessProbe:
           exec:
             command:
-              {{- if semverCompare "<5" $.Values.image.tag }}
               - bash
               - -ec
-              - >-
-                mongo --disableImplicitSessions --eval 'db.hello().isWritablePrimary || db.hello().secondary' |
-                grep -q 'true'
-              {{- else }}
-              - bash
-              - -ec
-              - >-
-                exec mongosh --port $MONGODB_PORT_NUMBER --eval 'if
-                (!(db.hello().isWritablePrimary || db.hello().secondary)) {
-                throw new Error("Not ready") }'
-              {{- end }}
+              - |
+                exec mongosh \
+                  --quiet \
+                  --port $MONGODB_PORT_NUMBER \
+                  --username "$MONGODB_ROOT_USER" \
+                  --password "$MONGODB_ROOT_PASSWORD" \
+                  --authenticationDatabase admin \
+                  --eval 'const h=db.hello(); if (!(h.isWritablePrimary || h.secondary)) { throw new Error("Not ready") }' \
+                  >/dev/null
           failureThreshold: {{ .failureThreshold }}
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -200,6 +203,16 @@ spec:
           - name: file
             mountPath: /opt/bitnami/mongodb/conf/mongodb.conf
             subPath: mongodb.conf
+          {{- end }}
+          {{- if .Values.global.backup.velero.enabled }}
+          - name: share-data
+            mountPath: /bitnami/backup
+          - name: backup
+            mountPath: /scripts/backup-pre.sh
+            subPath: backup-pre.sh
+          - name: backup
+            mountPath: /scripts/restore-post.sh
+            subPath: restore-post.sh
           {{- end }}
       {{- if .Values.sidecar.metrics.enabled }}
       - name: {{ include "edusharing_common_lib.names.name" . }}-metrics
@@ -305,6 +318,14 @@ spec:
         configMap:
           name: {{ include "edusharing_common_lib.names.name" . }}-file
           defaultMode: 0755
+      {{- if .Values.global.backup.velero.enabled }}
+      - name: backup
+        configMap:
+          name: {{ include "edusharing_common_lib.names.name" . }}-backup
+          defaultMode: 0755
+      - name: share-data
+        {{ tpl .Values.persistence.share.data.type . | nindent 8 }}
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: data

@@ -1,0 +1,107 @@
+{{- if .Values.global.backup.velero.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edusharing_common_lib.names.name" . }}-backup
+  labels: {{ include "edusharing_common_lib.labels.app" . | nindent 4 }}
+data:
+  backup-pre.sh: |-
+    #!/bin/bash
+    set -euo pipefail
+    trap 'echo "ERROR at line $LINENO, exit code $?"' ERR
+
+    BACKUP_ROOT="/bitnami/backup/${HOSTNAME%-*}"
+    mkdir -p "${BACKUP_ROOT}"
+
+    exec > >(tee -a "${BACKUP_ROOT}/backup-pre-${HOSTNAME##*-}.log") 2>&1
+    set -x
+
+    MONGO_PORT="${MONGODB_PORT_NUMBER:-27017}"
+    MONGO_URI="mongodb://${HOSTNAME}:${MONGO_PORT}"
+    MONGO_AUTH_ARGS=(
+      --username "$MONGODB_ROOT_USER"
+      --password "$MONGODB_ROOT_PASSWORD"
+      --authenticationDatabase admin
+    )
+
+    echo "waiting for MongoDB ready"
+    until mongosh "${MONGO_URI}/admin" "${MONGO_AUTH_ARGS[@]}" --quiet --eval \
+      'const h=db.hello(); if (!(h.isWritablePrimary || h.secondary)) { throw new Error("Not ready") }' >/dev/null; do
+      echo -n "."
+      sleep 5
+    done
+
+    echo "waiting for MongoDB primary state"
+    while true; do
+      IS_PRIMARY="$(mongosh "${MONGO_URI}/admin" "${MONGO_AUTH_ARGS[@]}" --quiet --eval \
+        'db.hello().isWritablePrimary ? "true" : "false"' 2>/dev/null || true)"
+      if [[ "$IS_PRIMARY" == "true" || "$IS_PRIMARY" == "false" ]]; then
+        break
+      fi
+      echo -n "."
+      sleep 5
+    done
+
+    if [[ "$IS_PRIMARY" == "true" ]]; then
+      DUMP_FILE="${BACKUP_ROOT}/${MONGODB_DATABASE}.gz"
+      mkdir -p "$(dirname "$DUMP_FILE")"
+      rm -f "$DUMP_FILE"
+
+      mongodump \
+        --uri="${MONGO_URI}" "${MONGO_AUTH_ARGS[@]}" \
+        --db "${MONGODB_DATABASE}" \
+        --gzip \
+        --archive="$DUMP_FILE"
+
+      test -s "$DUMP_FILE"
+    fi
+  restore-post.sh: |-
+    #!/bin/bash
+    set -euo pipefail
+    trap 'echo "ERROR at line $LINENO, exit code $?"' ERR
+
+    BACKUP_ROOT="/bitnami/backup/${HOSTNAME%-*}"
+    mkdir -p "${BACKUP_ROOT}"
+
+    exec > >(tee -a "${BACKUP_ROOT}/restore-post-${HOSTNAME##*-}.log") 2>&1
+    set -x
+
+    MONGO_PORT="${MONGODB_PORT_NUMBER:-27017}"
+    MONGO_URI="mongodb://${HOSTNAME}:${MONGO_PORT}"
+    MONGO_AUTH_ARGS=(
+      --username "$MONGODB_ROOT_USER"
+      --password "$MONGODB_ROOT_PASSWORD"
+      --authenticationDatabase admin
+    )
+
+    echo "waiting for MongoDB ready"
+    until mongosh "${MONGO_URI}/admin" "${MONGO_AUTH_ARGS[@]}" --quiet --eval \
+      'const h=db.hello(); if (!(h.isWritablePrimary || h.secondary)) { throw new Error("Not ready") }' >/dev/null; do
+      echo -n "."
+      sleep 5
+    done
+
+    echo "waiting for MongoDB primary state"
+    while true; do
+      IS_PRIMARY="$(mongosh "${MONGO_URI}/admin" "${MONGO_AUTH_ARGS[@]}" --quiet --eval \
+        'db.hello().isWritablePrimary ? "true" : "false"' 2>/dev/null || true)"
+      if [[ "$IS_PRIMARY" == "true" || "$IS_PRIMARY" == "false" ]]; then
+        break
+      fi
+      echo -n "."
+      sleep 5
+    done
+
+    if [[ "$IS_PRIMARY" == "true" ]]; then
+      DUMP_FILE="${BACKUP_ROOT}/${MONGODB_DATABASE}.gz"
+      test -s "$DUMP_FILE"
+
+      mongorestore \
+        --uri="${MONGO_URI}" "${MONGO_AUTH_ARGS[@]}" \
+        --drop \
+        --gzip \
+        --archive="$DUMP_FILE"
+
+      touch "${BACKUP_ROOT}/velero.restore.completed"
+    fi
+{{- end }}

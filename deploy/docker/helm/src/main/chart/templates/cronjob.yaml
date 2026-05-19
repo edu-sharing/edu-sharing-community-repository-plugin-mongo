@@ -1,3 +1,4 @@
+{{- if not .Values.global.backup.velero.enabled }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -102,3 +103,4 @@ spec:
           volumes:
           - name: share-data
             {{ tpl .Values.persistence.share.data.type . | nindent 12 }}
+{{- end }}
