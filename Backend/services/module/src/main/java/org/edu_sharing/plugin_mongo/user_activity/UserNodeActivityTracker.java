@@ -6,8 +6,6 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.edu_sharing.alfresco.service.guest.GuestService;
-import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogData;
-import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogRetryHandler;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogService;
 import org.edu_sharing.repository.server.tools.security.RunAsSystem;
 import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
@@ -57,16 +55,21 @@ import java.util.concurrent.Executor;
  * the activity actually happened, so {@code occurredAt} is captured here, at event-handling time,
  * for anything that needs to show users when the activity actually occurred.
  *
- * <p>Also implements {@link MongoAlfOpLogRetryHandler} so {@code RetryFailedOrMissingMongoAlfOpLogJob}
- * can replay a write that never completed (e.g. the process crashed between commit and the async
- * write in {@code handleActivityOnNodeEvent} finishing) - that job re-dispatches purely by the
- * persisted data's runtime type, not by resurrecting the original callback (which, being a lambda
- * closure, was never itself persisted anywhere), so a handler must be registered here explicitly.
+ * <p>This class deliberately implements NO interfaces: {@code @RunAsSystem} forces Spring AOP to
+ * proxy this bean, and with zero interfaces implemented Spring can only use a CGLIB (subclass)
+ * proxy, which inherits every public method - so {@code @EventListener} always finds
+ * {@code handleActivityOnNodeEvent}. Adding an interface here (this used to also implement
+ * {@code MongoAlfOpLogRetryHandler} directly) makes Spring prefer a JDK dynamic proxy instead,
+ * which exposes ONLY the declared interface(s) - not this class's own methods - so
+ * {@code @EventListener} registration fails at context startup with "Need to invoke method
+ * ... but not found in any interface(s) of the exposed proxy type". The retry handler for
+ * {@link UserNodeActivityData} therefore lives in the separate {@link UserNodeActivityRetryHandler}
+ * bean instead of here.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserNodeActivityTracker implements MongoAlfOpLogRetryHandler<UserNodeActivityData> {
+public class UserNodeActivityTracker {
 
     private final GuestService guessService;
     private final UserNodeActivityDataRepository userNodeActivityDataRepository;
@@ -112,19 +115,5 @@ public class UserNodeActivityTracker implements MongoAlfOpLogRetryHandler<UserNo
             log.error("Failed to persist user node activity for node {} user {}: {}",
                     data.getNodeId(), data.getUsername(), e.getMessage(), e);
         }
-    }
-
-    @Override
-    public Class<UserNodeActivityData> getRetryableType() {
-        return UserNodeActivityData.class;
-    }
-
-    @Override
-    public void retry(MongoAlfOpLogData opLogData) {
-        if (!(opLogData instanceof UserNodeActivityData data)) {
-            throw new IllegalArgumentException("Oplog data must be of type " + UserNodeActivityData.class.getSimpleName() + "!");
-        }
-        // called from a background job, not a latency-sensitive request path - no need to offload
-        userNodeActivityDataRepository.saveWithServerTimestamp(data);
     }
 }
