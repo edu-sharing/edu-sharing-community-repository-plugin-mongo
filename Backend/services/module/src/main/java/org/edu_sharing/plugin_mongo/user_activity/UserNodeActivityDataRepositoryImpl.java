@@ -24,6 +24,7 @@ public class UserNodeActivityDataRepositoryImpl implements UserNodeActivityDataR
                 .set("userId", entity.getUserId())
                 .set("username", entity.getUsername())
                 .set("type", entity.getType())
+                .set("occurredAt", entity.getOccurredAt())
                 .currentDate("timestamp");
         FindAndModifyOptions options = FindAndModifyOptions.options().upsert(true).returnNew(true);
         UserNodeActivityData saved = mongoTemplate.findAndModify(query, update, options, UserNodeActivityData.class);

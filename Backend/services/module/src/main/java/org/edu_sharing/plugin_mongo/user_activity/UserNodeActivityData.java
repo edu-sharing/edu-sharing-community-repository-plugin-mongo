@@ -3,9 +3,9 @@ package org.edu_sharing.plugin_mongo.user_activity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nonapi.io.github.classgraph.json.Id;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogData;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivity;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,5 +25,19 @@ public class UserNodeActivityData implements MongoAlfOpLogData, UserNodeActivity
     String userId;
     String username;
     String type;
+    /**
+     * MongoDB server-assigned write time (via $currentDate in
+     * {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), used purely as the
+     * polling cursor for {@code GenericTimebaseTracker} - NOT when the activity actually happened.
+     * Async dispatch and the retry job can delay the write well past the real event time (the
+     * retry job's default offset alone is 6h), so this must never be shown to users as "when" an
+     * activity occurred. See {@link #occurredAt} for that.
+     */
     Date timestamp;
+    /**
+     * When the activity actually happened, captured client-side at event-handling time (see
+     * {@link UserNodeActivityTracker#handleActivityOnNodeEvent}) - this is what should be shown to
+     * users, never {@link #timestamp}.
+     */
+    Date occurredAt;
 }

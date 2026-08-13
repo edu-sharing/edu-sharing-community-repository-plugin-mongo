@@ -14,6 +14,7 @@ import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.concurrent.Executor;
 
 /**
@@ -51,7 +52,10 @@ import java.util.concurrent.Executor;
  * timestamp is assigned by MongoDB itself at write time (see
  * {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), not captured here, since
  * only the server knows exactly when the write is actually applied. Must use that method, not the
- * inherited {@code save(...)}, for any write to this repository.
+ * inherited {@code save(...)}, for any write to this repository. That write-time value is only a
+ * polling cursor, though - it can lag well behind (e.g. the retry job's default 6h offset) when
+ * the activity actually happened, so {@code occurredAt} is captured here, at event-handling time,
+ * for anything that needs to show users when the activity actually occurred.
  *
  * <p>Also implements {@link MongoAlfOpLogRetryHandler} so {@code RetryFailedOrMissingMongoAlfOpLogJob}
  * can replay a write that never completed (e.g. the process crashed between commit and the async
@@ -94,7 +98,8 @@ public class UserNodeActivityTracker implements MongoAlfOpLogRetryHandler<UserNo
                 person.getId(),
                 event.getAuthorityName(),
                 event.getType().name(),
-                null
+                null,
+                new Date()
         );
 
         opLogService.registerOpLogAction(data, saved -> taskExecutor.execute(() -> persist(saved)));
