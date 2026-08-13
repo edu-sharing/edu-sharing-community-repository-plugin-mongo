@@ -6,6 +6,8 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.edu_sharing.alfresco.service.guest.GuestService;
+import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogData;
+import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogRetryHandler;
 import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogService;
 import org.edu_sharing.repository.server.tools.security.RunAsSystem;
 import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
@@ -50,11 +52,17 @@ import java.util.concurrent.Executor;
  * {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), not captured here, since
  * only the server knows exactly when the write is actually applied. Must use that method, not the
  * inherited {@code save(...)}, for any write to this repository.
+ *
+ * <p>Also implements {@link MongoAlfOpLogRetryHandler} so {@code RetryFailedOrMissingMongoAlfOpLogJob}
+ * can replay a write that never completed (e.g. the process crashed between commit and the async
+ * write in {@code handleActivityOnNodeEvent} finishing) - that job re-dispatches purely by the
+ * persisted data's runtime type, not by resurrecting the original callback (which, being a lambda
+ * closure, was never itself persisted anywhere), so a handler must be registered here explicitly.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserNodeActivityTracker {
+public class UserNodeActivityTracker implements MongoAlfOpLogRetryHandler<UserNodeActivityData> {
 
     private final GuestService guessService;
     private final UserNodeActivityDataRepository userNodeActivityDataRepository;
@@ -89,13 +97,29 @@ public class UserNodeActivityTracker {
                 null
         );
 
-        opLogService.registerOpLogAction(data, saved -> taskExecutor.execute(() -> {
-            try {
-                userNodeActivityDataRepository.saveWithServerTimestamp(saved);
-            } catch (Exception e) {
-                log.error("Failed to persist user node activity for node {} user {}: {}",
-                        saved.getNodeId(), saved.getUsername(), e.getMessage(), e);
-            }
-        }));
+        opLogService.registerOpLogAction(data, saved -> taskExecutor.execute(() -> persist(saved)));
+    }
+
+    private void persist(UserNodeActivityData data) {
+        try {
+            userNodeActivityDataRepository.saveWithServerTimestamp(data);
+        } catch (Exception e) {
+            log.error("Failed to persist user node activity for node {} user {}: {}",
+                    data.getNodeId(), data.getUsername(), e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Class<UserNodeActivityData> getRetryableType() {
+        return UserNodeActivityData.class;
+    }
+
+    @Override
+    public void retry(MongoAlfOpLogData opLogData) {
+        if (!(opLogData instanceof UserNodeActivityData data)) {
+            throw new IllegalArgumentException("Oplog data must be of type " + UserNodeActivityData.class.getSimpleName() + "!");
+        }
+        // called from a background job, not a latency-sensitive request path - no need to offload
+        userNodeActivityDataRepository.saveWithServerTimestamp(data);
     }
 }
