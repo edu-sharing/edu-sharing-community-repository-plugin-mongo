@@ -16,6 +16,7 @@ import org.edu_sharing.service.tracking.user_tracking.UserNodeActivity;
 import org.edu_sharing.service.tracking.user_tracking.UserNodeActivityDataService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -47,9 +48,11 @@ public class MongoDbUserNodeActivityDataService implements UserNodeActivityDataS
             throw new InsufficientPermissionException("User " + username + " has no access to this data!");
         }
 
+        // the poller resumes from the last entry of the returned batch, so it must come back oldest-first
+        Sort oldestFirst = Sort.by(Sort.Direction.ASC, "timestamp");
         List<UserNodeActivityData> allByTimestampAfter = before != null
-                ? userNodeActivityDataRepository.findAllByTimestampBetween(after, before, Limit.of(limit))
-                : userNodeActivityDataRepository.findAllByTimestampAfter(after, Limit.of(limit));
+                ? userNodeActivityDataRepository.findAllByTimestampBetween(after, before, oldestFirst, Limit.of(limit))
+                : userNodeActivityDataRepository.findAllByTimestampAfter(after, oldestFirst, Limit.of(limit));
 
         return allByTimestampAfter
                 .stream()

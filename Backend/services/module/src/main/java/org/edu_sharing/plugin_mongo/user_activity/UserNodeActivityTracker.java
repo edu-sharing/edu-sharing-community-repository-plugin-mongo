@@ -13,8 +13,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
 /**
  * Service responsible for tracking user activity on nodes. These actions are backed by the operational log.
  * This service listens for {@link ActivityOnNodeEvent} events and processes the events asynchronously to
@@ -34,9 +32,15 @@ import java.util.Date;
  * Event Handling:
  * - The {@code handleActivityOnNodeEvent} method listens for {@link ActivityOnNodeEvent} instances.
  * - Filters out events based on guest users, system users, and invalid authority names.
- * - Extracts activity details, including node reference, user ID, event type, and timestamp.
- * - Registers the activity using {@link MongoAlfOpLogService}, which ensures the data is stored and processed
- *   after transaction commit.
+ * - Extracts activity details, including node reference, user ID and event type.
+ * - Registers the activity via {@link MongoAlfOpLogService}. Note that because this method is
+ *   {@code @Async}, it runs on a thread with no Alfresco transaction bound, so
+ *   {@code registerOpLogAction} takes its "no transaction found" path and writes immediately -
+ *   it does NOT wait for any transaction commit here, despite what that path's log message may
+ *   suggest. The write timestamp is assigned by MongoDB itself at write time (see
+ *   {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), not captured here,
+ *   since only the server knows exactly when the write is actually applied. Must use that method,
+ *   not the inherited {@code save(...)}, for any write to this repository.
  */
 @Slf4j
 @Service
@@ -71,7 +75,7 @@ public class UserNodeActivityTracker {
                 person.getId(),
                 event.getAuthorityName(),
                 event.getType().name(),
-                new Date()
-        ), userNodeActivityDataRepository::save);
+                null
+        ), userNodeActivityDataRepository::saveWithServerTimestamp);
     }
 }
