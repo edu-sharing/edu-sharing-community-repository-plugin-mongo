@@ -40,4 +40,14 @@ public class UserNodeActivityData implements MongoAlfOpLogData, UserNodeActivity
      * users, never {@link #timestamp}.
      */
     Date occurredAt;
+
+    /**
+     * Overrides the Lombok-generated getter: documents written before this field existed have it
+     * as null in MongoDB, and callers (REST API consumers, the tracker's ES indexing) should not
+     * each have to know to fall back to {@link #timestamp} themselves - normalizing it once here
+     * means every reader, present and future, gets a populated value for free.
+     */
+    public Date getOccurredAt() {
+        return occurredAt != null ? occurredAt : timestamp;
+    }
 }
