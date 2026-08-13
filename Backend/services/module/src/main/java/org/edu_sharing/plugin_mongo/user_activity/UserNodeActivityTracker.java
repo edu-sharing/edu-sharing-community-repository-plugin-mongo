@@ -10,13 +10,13 @@ import org.edu_sharing.plugin_mongo.oplog.MongoAlfOpLogService;
 import org.edu_sharing.repository.server.tools.security.RunAsSystem;
 import org.edu_sharing.service.tracking.ActivityOnNodeEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.Executor;
 
 /**
  * Service responsible for tracking user activity on nodes. These actions are backed by the operational log.
- * This service listens for {@link ActivityOnNodeEvent} events and processes the events asynchronously to
- * log user interactions with nodes.
+ * This service listens for {@link ActivityOnNodeEvent} events and logs user interactions with nodes.
  *
  * Responsibilities:
  * - Ignoring events from guest users, system users, or null authority names.
@@ -33,14 +33,23 @@ import org.springframework.stereotype.Service;
  * - The {@code handleActivityOnNodeEvent} method listens for {@link ActivityOnNodeEvent} instances.
  * - Filters out events based on guest users, system users, and invalid authority names.
  * - Extracts activity details, including node reference, user ID and event type.
- * - Registers the activity via {@link MongoAlfOpLogService}. Note that because this method is
- *   {@code @Async}, it runs on a thread with no Alfresco transaction bound, so
- *   {@code registerOpLogAction} takes its "no transaction found" path and writes immediately -
- *   it does NOT wait for any transaction commit here, despite what that path's log message may
- *   suggest. The write timestamp is assigned by MongoDB itself at write time (see
- *   {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), not captured here,
- *   since only the server knows exactly when the write is actually applied. Must use that method,
- *   not the inherited {@code save(...)}, for any write to this repository.
+ * - Registers the activity via {@link MongoAlfOpLogService}, which binds a listener to the CURRENT
+ *   Alfresco transaction: {@code afterCommit()} fires only if that transaction actually commits, and
+ *   is skipped on rollback; if {@link org.alfresco.repo.transaction.RetryingTransactionHelper} retries
+ *   the surrounding unit of work, only the attempt that actually commits gets an {@code afterCommit()}
+ *   call, so a retried action is not double-counted.
+ *
+ * <p>This method deliberately does NOT use {@code @Async}: doing so would run it on a thread with no
+ * Alfresco transaction bound, so {@code registerOpLogAction} would take its "no transaction found"
+ * path and write immediately - with no rollback/retry protection at all (this was the case here
+ * before, and both problems above - phantom activity records for actions that never actually
+ * committed, and duplicate records across retries - applied). Instead, only the actual MongoDB write
+ * (the slow part, in a network round trip) is offloaded to {@code taskExecutor} from inside
+ * {@code afterCommit()}, keeping request latency low without losing that protection. The write
+ * timestamp is assigned by MongoDB itself at write time (see
+ * {@link UserNodeActivityDataRepositoryCustom#saveWithServerTimestamp}), not captured here, since
+ * only the server knows exactly when the write is actually applied. Must use that method, not the
+ * inherited {@code save(...)}, for any write to this repository.
  */
 @Slf4j
 @Service
@@ -51,9 +60,11 @@ public class UserNodeActivityTracker {
     private final UserNodeActivityDataRepository userNodeActivityDataRepository;
     private final PersonService personService;
     private final MongoAlfOpLogService opLogService;
+    // SpringConfigRoot#taskExecutor is currently the only Executor bean in the application, so
+    // this resolves unambiguously by type; a @Qualifier would need repository-mongo's own
+    // lombok.config (unlike the core repo's) to actually reach the generated constructor parameter.
+    private final Executor taskExecutor;
 
-
-    @Async
     @RunAsSystem
     @EventListener
     public void handleActivityOnNodeEvent(ActivityOnNodeEvent event) {
@@ -69,13 +80,22 @@ public class UserNodeActivityTracker {
             return;
         }
 
-        opLogService.registerOpLogAction(new UserNodeActivityData(
+        UserNodeActivityData data = new UserNodeActivityData(
                 null,
                 event.getNodeRef().getId(),
                 person.getId(),
                 event.getAuthorityName(),
                 event.getType().name(),
                 null
-        ), userNodeActivityDataRepository::saveWithServerTimestamp);
+        );
+
+        opLogService.registerOpLogAction(data, saved -> taskExecutor.execute(() -> {
+            try {
+                userNodeActivityDataRepository.saveWithServerTimestamp(saved);
+            } catch (Exception e) {
+                log.error("Failed to persist user node activity for node {} user {}: {}",
+                        saved.getNodeId(), saved.getUsername(), e.getMessage(), e);
+            }
+        }));
     }
 }
