@@ -31,8 +31,8 @@ public class UnwrapRelationsMigration {
                         .and("relations.timestamp").as("evaluation.approvedAt")
                         .andExclude("_id"),
                 addFields()
-                        .addFieldWithValue("isAiGenerated", false)
-                        .addFieldWithValue("evaluation.isApproved", true)
+                        .addFieldWithValue("aiGenerated", false)
+                        .addFieldWithValue("evaluation.approved", true)
                         .build(),
                 merge().intoCollection(TARGET_COLLECTION).build()
         );
