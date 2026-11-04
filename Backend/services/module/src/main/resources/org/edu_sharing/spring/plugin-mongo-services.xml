@@ -151,6 +151,19 @@
 
     <bean id="relationService" primary="true" class="org.edu_sharing.plugin_mongo.relation.MongoRelationService"/>
 
+    <!-- scopes: overrides the core adapter (base-services.xml), referenced by name in AppContextConfig -->
+    <bean id="scopeService" primary="true" class="org.edu_sharing.plugin_mongo.scope.MongoScopeService">
+        <constructor-arg name="assignmentRepository" ref="scopeAssignmentRepository"/>
+        <constructor-arg name="historyRepository" ref="scopeHistoryRepository"/>
+        <constructor-arg name="changeRepository" ref="scopeChangeRepository"/>
+        <constructor-arg name="bulkJobRepository" ref="scopeBulkJobRepository"/>
+        <constructor-arg name="definitionService" ref="scopeDefinitionServiceImpl"/>
+        <constructor-arg name="nodeService" ref="nodeService"/>
+        <constructor-arg name="permissionService" ref="permissionService"/>
+        <constructor-arg name="dictionaryService" ref="DictionaryService"/>
+        <constructor-arg name="bulkJobRunner" ref="scopeBulkJobRunner"/>
+    </bean>
+
     <bean id="suggestionService" primary="true" class="org.edu_sharing.plugin_mongo.suggestion.MongoSuggestionService">
         <constructor-arg name="dictionaryComponent" ref="DictionaryService"/>
         <constructor-arg name="repository" ref="suggestionRepository"/>
