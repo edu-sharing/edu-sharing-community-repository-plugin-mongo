@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.StoreRef;
 import org.edu_sharing.plugin_mongo.util.AbstractMongoDbContainerTest;
 import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.nodeservice.RecurseMode;
 import org.edu_sharing.service.permission.PermissionService;
 import org.edu_sharing.service.scope.*;
 import org.edu_sharing.service.search.model.SearchToken;
@@ -26,6 +27,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -47,6 +49,7 @@ class ScopeBulkJobRunnerTest extends AbstractMongoDbContainerTest {
     private final AtomicBoolean inScope = new AtomicBoolean();
     private final List<Map<String, String[]>> searchCriteria = new ArrayList<>();
     private MockedStatic<AuthenticationUtil> authenticationUtil;
+    private NodeService nodeService;
 
     @BeforeEach
     void setUp() {
@@ -68,7 +71,7 @@ class ScopeBulkJobRunnerTest extends AbstractMongoDbContainerTest {
                 .fields(ScopeAssignmentRulesTest.DEFINITION.getFields())
                 .baseQuery(ScopeBaseQuery.builder().version(7).queries(List.of()).build())
                 .build()));
-        NodeService nodeService = mock(NodeService.class);
+        nodeService = mock(NodeService.class);
         when(nodeService.getOriginalNode(anyString())).thenAnswer(i -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, i.getArgument(0)));
         when(nodeService.getOriginalNode("copy1")).thenReturn(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "n1"));
         when(nodeService.getProperty(eq(WORKSPACE), eq(STORE), anyString(), eq(CCConstants.CM_PROP_VERSIONABLELABEL))).thenReturn("2.0");
@@ -199,6 +202,34 @@ class ScopeBulkJobRunnerTest extends AbstractMongoDbContainerTest {
         MongoScopeHistoryEntry n1 = template.findAll(MongoScopeHistoryEntry.class).stream().filter(h -> h.getNodeId().equals("n1")).findFirst().orElseThrow();
         assertEquals(List.of("a"), n1.getFrom());
         assertEquals(List.of("a", "b"), n1.getTo());
+    }
+
+    /**
+     * organization converted to a scope: all content below the shared folder gets an entry, existing
+     * entries stay unchanged, collection references are skipped
+     */
+    @Test
+    void folderImportCreatesOnlyMissingEntries() {
+        when(nodeService.getChildrenRecursive(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "folder", List.of(CCConstants.CCM_TYPE_IO), RecurseMode.Folders))
+                .thenReturn(Stream.of("n1", "n2", "ref", "n3").map(id -> new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id)).toList());
+        when(nodeService.hasAspect(WORKSPACE, STORE, "ref", CCConstants.CCM_ASPECT_COLLECTION_IO_REFERENCE)).thenReturn(true);
+        assignments.save(MongoScopeAssignment.builder().id(MongoScopeAssignment.createId(SCOPE, "n2")).scopeId(SCOPE).nodeId("n2")
+                .properties(Map.of("ccm:editorial_inventory", List.of("rejected"))).excluded(true).source(ScopeSource.USER).build());
+
+        String jobId = job(ScopeBulkRequest.builder()
+                .folderId("folder")
+                .properties(Map.of("ccm:editorial_inventory", List.of("accepted")))
+                .createOnly(true)
+                .build());
+        underTest.run(jobId);
+
+        assertEquals(ScopeBulkStatus.State.FINISHED, jobs.findById(jobId).orElseThrow().getState());
+        assertEquals(3, jobs.findById(jobId).orElseThrow().getTotal());
+        assertEquals(List.of("accepted"), assignments.findByScopeIdAndNodeId(SCOPE, "n1").orElseThrow().getProperties().get("ccm:editorial_inventory"));
+        assertEquals(List.of("accepted"), assignments.findByScopeIdAndNodeId(SCOPE, "n3").orElseThrow().getProperties().get("ccm:editorial_inventory"));
+        assertEquals(List.of("rejected"), assignments.findByScopeIdAndNodeId(SCOPE, "n2").orElseThrow().getProperties().get("ccm:editorial_inventory"));
+        assertTrue(assignments.findByScopeIdAndNodeId(SCOPE, "ref").isEmpty());
+        assertEquals(3, assignments.count());
     }
 
     @Test

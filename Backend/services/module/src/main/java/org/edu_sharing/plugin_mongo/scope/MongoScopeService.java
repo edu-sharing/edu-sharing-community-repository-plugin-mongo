@@ -250,6 +250,9 @@ public class MongoScopeService implements ScopeService {
         if (request == null || (request.getNodeIds() == null) == (request.getSearch() == null)) {
             throw new IllegalArgumentException("exactly one of nodeIds or search must be set");
         }
+        if (request.getFolderId() != null || request.isCreateOnly()) {
+            throw new IllegalArgumentException("folderId and createOnly are internal");
+        }
         if (!request.isDelete()) {
             boolean removes = request.getRemoveValues() != null && !request.getRemoveValues().isEmpty();
             if ((request.getProperties() == null || request.getProperties().isEmpty()) && !removes) {
@@ -279,6 +282,33 @@ public class MongoScopeService implements ScopeService {
                 .request(request)
                 .build());
         // queued: returns immediately, runs as the current user
+        bulkJobRunner.run(job.getJobId());
+        return job.getJobId();
+    }
+
+    @Override
+    @Permission(requiresGlobalAdmin = true)
+    public String startFolderImport(String scopeId) {
+        ScopeDefinition definition = getDefinition(scopeId);
+        if (definition.getFolderId() == null) {
+            return null;
+        }
+        ScopeBulkRequest request = ScopeBulkRequest.builder()
+                .folderId(definition.getFolderId())
+                .properties(ScopeAssignmentRules.uploadProperties(definition))
+                .createOnly(true)
+                .reason("organization converted to scope")
+                .build();
+        MongoScopeBulkJob job = bulkJobRepository.save(MongoScopeBulkJob.builder()
+                .jobId(UUID.randomUUID().toString())
+                .scopeId(scopeId)
+                .state(ScopeBulkStatus.State.QUEUED)
+                .failed(new ArrayList<>())
+                .startedBy(AuthenticationUtil.getFullyAuthenticatedUser())
+                .startedAt(new Date())
+                .request(request)
+                .build());
+        // queued: returns immediately, runs as the current user (admin, Read on every node)
         bulkJobRunner.run(job.getJobId());
         return job.getJobId();
     }

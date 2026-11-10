@@ -9,6 +9,7 @@ import org.edu_sharing.repository.client.tools.CCConstants;
 import org.edu_sharing.repository.server.jobs.annotations.Queued;
 import org.edu_sharing.repository.server.tools.ApplicationInfoList;
 import org.edu_sharing.service.nodeservice.NodeService;
+import org.edu_sharing.service.nodeservice.RecurseMode;
 import org.edu_sharing.service.permission.PermissionService;
 import org.edu_sharing.service.scope.*;
 import org.edu_sharing.service.search.SearchServiceElastic;
@@ -111,6 +112,9 @@ public class ScopeBulkJobRunner {
         if (request.getNodeIds() != null) {
             return request.getNodeIds().stream().distinct().toList();
         }
+        if (request.getFolderId() != null) {
+            return AuthenticationUtil.runAsSystem(() -> collectFolderContent(request.getFolderId()));
+        }
         ScopeBaseQuery.Query search = request.getSearch();
         Map<String, String[]> criteria = new HashMap<>();
         if (search.getCriteria() != null) {
@@ -120,6 +124,18 @@ public class ScopeBulkJobRunner {
         token.setFacets(new ArrayList<>());
         token.setExcludes(Arrays.asList("preview", "collections", "children"));
         return scopeContextResolver.runWithScope(scopeId, () -> searchAll(search, criteria, token));
+    }
+
+    /**
+     * content below the folder (recursive through folders, so no child objects), like the upload policy. Collection
+     * references are skipped (they live in collections, not in folders)
+     */
+    List<String> collectFolderContent(String folderId) {
+        return nodeService.getChildrenRecursive(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, folderId, List.of(CCConstants.CCM_TYPE_IO), RecurseMode.Folders).stream()
+                .map(org.alfresco.service.cmr.repository.NodeRef::getId)
+                .filter(nodeId -> !nodeService.hasAspect(StoreRef.PROTOCOL_WORKSPACE, StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.getIdentifier(),
+                        nodeId, CCConstants.CCM_ASPECT_COLLECTION_IO_REFERENCE))
+                .toList();
     }
 
     /**
@@ -180,6 +196,9 @@ public class ScopeBulkJobRunner {
                 assignmentOps.remove(Query.query(Criteria.where("_id").is(assignment.getId())));
                 history.add(historyEntry(scopeId, originalId, null, null, null, actor, now, request.getReason(), baseQueryVersion, contentVersion));
                 changed.add(originalId);
+                continue;
+            }
+            if (assignment != null && request.isCreateOnly()) {
                 continue;
             }
             Map<String, List<String>> before = assignment == null ? Map.of() : assignment.getProperties();

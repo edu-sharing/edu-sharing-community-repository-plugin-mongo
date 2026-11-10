@@ -332,6 +332,39 @@ class MongoScopeServiceTest extends AbstractMongoDbContainerTest {
     }
 
     @Test
+    void startBulkRejectsInternalFields() {
+        assertThrows(IllegalArgumentException.class, () -> underTest.startBulk(SCOPE, ScopeBulkRequest.builder()
+                .nodeIds(List.of("n1")).properties(Map.of("ccm:editorial_release", List.of("released"))).folderId("folder").build()));
+        assertThrows(IllegalArgumentException.class, () -> underTest.startBulk(SCOPE, ScopeBulkRequest.builder()
+                .nodeIds(List.of("n1")).properties(Map.of("ccm:editorial_release", List.of("released"))).createOnly(true).build()));
+        verifyNoInteractions(bulkJobRunner);
+    }
+
+    @Test
+    void folderImportQueuesAJobWithTheUploadValues() throws NoSuchMethodException {
+        when(definitionService.getDefinition(SCOPE)).thenReturn(Optional.of(ScopeDefinition.builder()
+                .scopeId(SCOPE)
+                .folderId("folder")
+                .fields(List.of(ScopeField.builder().id("ccm:editorial_inventory").uploadValues(List.of("accepted")).build()))
+                .build()));
+
+        String jobId = underTest.startFolderImport(SCOPE);
+
+        verify(bulkJobRunner).run(jobId);
+        ScopeBulkRequest request = bulkJobs.findById(jobId).orElseThrow().getRequest();
+        assertEquals("folder", request.getFolderId());
+        assertTrue(request.isCreateOnly());
+        assertEquals(Map.of("ccm:editorial_inventory", List.of("accepted")), request.getProperties());
+        assertTrue(MongoScopeService.class.getMethod("startFolderImport", String.class).getAnnotation(Permission.class).requiresGlobalAdmin());
+    }
+
+    @Test
+    void folderImportWithoutFolderStartsNoJob() {
+        assertNull(underTest.startFolderImport(SCOPE));
+        verifyNoInteractions(bulkJobRunner);
+    }
+
+    @Test
     void uploadCreatesEntryWithUploadValues() {
         ScopeDefinition definition = ScopeDefinition.builder()
                 .scopeId(SCOPE)
