@@ -48,6 +48,8 @@ public class MongoRelationService implements RelationService, MongodbIoDeletedAw
         final String FIELD_TO_NODE = "toNode";
         final String FIELD_TYPE = "type";
         final String FIELD_METADATA = "metadata";
+        final String FIELD_AI_GENERATED = "aiGenerated";
+        final String FIELD_EVALUATION_APPROVED = "evaluation.approved";
 
         final String FIELD_DIRECTION = "direction";
 
@@ -81,6 +83,11 @@ public class MongoRelationService implements RelationService, MongodbIoDeletedAw
         final AddFieldsOperation normalizeFields = Aggregation.addFields()
                 .addFieldWithValue(FIELD_METADATA,
                         ConditionalOperators.ifNull(FIELD_METADATA).then(Collections.emptyMap()))
+                // primitive getters on the projection proxy fail on missing fields, so default them
+                .addFieldWithValue(FIELD_AI_GENERATED,
+                        ConditionalOperators.ifNull(FIELD_AI_GENERATED).then(false))
+                .addFieldWithValue(FIELD_EVALUATION_APPROVED,
+                        ConditionalOperators.ifNull(FIELD_EVALUATION_APPROVED).then(false))
                 .addFieldWithValue(FIELD_FROM_NODE, fromNode)
                 .addFieldWithValue(FIELD_TO_NODE, toNode)
                 .addFieldWithValue(FIELD_DIRECTION, isOutgoing)
